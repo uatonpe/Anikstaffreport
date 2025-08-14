@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>दैनिक अहवाल प्रणाली</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+    :root { --primary-color: #273c75; --secondary-color: #44bd32; --secondary-hover: #2ecc71; --white-color: #ffffff; --text-color: #333; --border-color: #ddd; --shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
+    body { font-family: 'Poppins', Arial, sans-serif; background: linear-gradient(135deg, #e0eafc, #cfdef3); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; box-sizing: border-box; }
+    header { background: var(--primary-color); padding: 15px 20px; color: var(--white-color); text-align: center; font-size: 24px; font-weight: 600; border-radius: 12px; box-shadow: var(--shadow); width: 100%; max-width: 500px; margin-bottom: 20px; }
+    .card { background: var(--white-color); padding: 25px; border-radius: 15px; box-shadow: var(--shadow); width: 100%; max-width: 500px; box-sizing: border-box; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-color); font-size: 15px; }
+    select, textarea, input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 14px; font-family: 'Poppins', sans-serif; box-sizing: border-box; }
+    select:focus, textarea:focus, input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(39, 60, 117, 0.1); }
+    .submit-btn { background: var(--secondary-color); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 18px; font-weight: 600; transition: background-color 0.3s; margin-top: 10px; }
+    .submit-btn:disabled { background-color: #95a5a6; cursor: not-allowed; }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
+    .modal-content { background: white; padding: 30px; border-radius: 15px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.2); max-width: 90%; width: 400px; }
+    .loader { border: 8px solid #f3f3f3; border-radius: 50%; border-top: 8px solid var(--primary-color); width: 60px; height: 60px; animation: spin 1s linear infinite; margin: 0 auto 20px auto; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    #closeModalBtn { background: var(--primary-color); color: white; border: none; padding: 10px 25px; border-radius: 8px; cursor: pointer; font-size: 16px; margin-top: 20px; display: none; }
+    .role-form { border-top: 2px solid var(--primary-color); padding-top: 15px; margin-top: 15px; }
+    .input-group { display: flex; gap: 10px; margin-bottom: 10px; }
+    .input-group > div { flex: 1; }
+    h4 { color: var(--primary-color); margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;}
+</style>
+</head>
+<body>
+
+<header>दैनिक अहवाल प्रणाली</header>
+
+<div class="card">
+    <div class="form-group"><label for="branchSelect">शाखा निवडा</label><select id="branchSelect" disabled><option>लोड होत आहे...</option></select></div>
+    <div class="form-group"><label for="employeeSelect">कर्मचारी नाव</label><select id="employeeSelect" disabled><option>आधी शाखा निवडा...</option></select></div>
+    <div class="form-group"><label for="reportDate">अहवाल दिनांक</label><input type="date" id="reportDate"></div>
+    <div class="form-group"><label for="leaveSelect">आज रजा होती का?</label><select id="leaveSelect"><option value="नाही">नाही</option><option value="होय">होय</option></select></div>
+
+    <!-- Role-specific forms container -->
+    <div id="roleFormsContainer">
+        <!-- CA Form -->
+        <div id="form-CA" class="role-form" style="display:none;">
+            <h4>CA - क्रेडिट असिस्टंट अहवाल</h4>
+            <div class="form-group"><label>आजचे केलेले कलेक्शन रेग्युलर</label><div class="input-group"><div><input type="number" id="ca_reg_count" placeholder="खाते संख्या"></div><div><input type="number" id="ca_reg_amt" placeholder="रक्कम"></div></div></div>
+            <div class="form-group"><label>आजचे केलेले ओडी / पास्टडयु कलेक्शन</label><div class="input-group"><div><input type="number" id="ca_odpast_count" placeholder="खाते संख्या"></div><div><input type="number" id="ca_odpast_amt" placeholder="रक्कम"></div></div></div>
+            <div class="form-group"><label>आजच्या एकुण गट बैठकांची माहिती</label><div class="input-group"><div><input type="text" id="ca_meeting_village" placeholder="गावाचे नांव"></div><div><input type="number" id="ca_meeting_count" placeholder="बैठकांची संख्या"></div></div></div>
+            <div class="input-group"><div><input type="number" id="ca_member_selection" placeholder="किती सदस्यांची निवड"></div><div><input type="number" id="ca_forms_filled" placeholder="किती गट फॉर्म भरले"></div></div>
+            <div class="form-group"><label for="ca_notes">आजच्या इतर विशेष नोंदी</label><textarea id="ca_notes" rows="3"></textarea></div>
+        </div>
+
+        <!-- FX Form -->
+        <div id="form-FX" class="role-form" style="display:none;">
+            <h4>FX - फील्ड एक्झिक्युटिव्ह अहवाल</h4>
+            <div class="form-group"><label>आजचे अॅ्प्रोयझल</label><div class="input-group"><div><input type="number" id="fx_appraisal_count" placeholder="गटांची संख्या"></div><div><input type="text" id="fx_appraisal_villages" placeholder="कुठल्या गावांमध्ये"></div></div></div>
+            <div class="form-group"><label for="fx_recovery_help">रिकवरी मध्ये मदत (काय स्वरूपाची)</label><textarea id="fx_recovery_help" rows="2"></textarea></div>
+            <div class="form-group"><label>आजचे पास्ट डयु कलेक्शन</label><div class="input-group"><div><input type="number" id="fx_pastdue_count" placeholder="खाते संख्या"></div><div><input type="number" id="fx_pastdue_amt" placeholder="रक्कम"></div></div></div>
+            <div class="form-group"><label for="fx_notes">आजच्या इतर विशेष नोंदी</label><textarea id="fx_notes" rows="3"></textarea></div>
+        </div>
+
+        <!-- BM Form -->
+        <div id="form-BM" class="role-form" style="display:none;">
+            <h4>BM - शाखा व्यवस्थापक अहवाल</h4>
+            <div class="form-group"><label>आजचे एकुण लोन वाटप</label><div class="input-group"><div><input type="text" id="bm_disburse_village" placeholder="गावाचे नांव"></div><div><input type="number" id="bm_disburse_members" placeholder="मेंबरची संख्या"></div></div><input type="number" id="bm_disburse_amt" placeholder="एकूण वाटप रक्कम"></div>
+            <div class="form-group"><label>आजचे एकुण युनिटचे कलेक्शन</label><div class="input-group"><div><input type="number" id="bm_coll_regular" placeholder="रेग्युलर"></div><div><input type="number" id="bm_coll_pastdue" placeholder="पास्ट डयु"></div></div><div class="input-group"><div><input type="number" id="bm_coll_od" placeholder="ओडी"></div><div><input type="number" id="bm_coll_total" placeholder="एकूण"></div></div></div>
+            <div class="form-group"><label>आजचे अॅप्रायझल स्टेटस</label><div class="input-group"><div><input type="number" id="bm_appr_approved" placeholder="मंजुर केले"></div><div><input type="number" id="bm_appr_rejected" placeholder="रद्द केले"></div></div><textarea id="bm_reject_reason" placeholder="रद्द करण्याची कारणे..." rows="2"></textarea></div>
+            <div class="form-group"><label for="bm_investment_amt">आपल्या प्रयत्नातुन आलेली गुंतवणूक (रक्कम)</label><input type="number" id="bm_investment_amt"></div>
+            <div class="form-group"><label for="bm_notes">आजच्या इतर विशेष नोंदी</label><textarea id="bm_notes" rows="3"></textarea></div>
+        </div>
+
+        <!-- TA Form -->
+        <div id="form-TA" class="role-form" style="display:none;">
+            <h4>TA - युनिट अकाऊंटंट अहवाल</h4>
+            <div class="form-group"><label for="ta_analysis_reports">आज किती अॅनालिसीस रिर्पाट काढले?</label><input type="number" id="ta_analysis_reports"></div>
+            <div class="form-group"><label>आजचे कलेक्शन मॅच झाले का?</label><select id="ta_coll_match"><option value="">-- निवडा --</option><option value="होय">होय</option><option value="नाही">नाही</option></select><textarea id="ta_match_reason" placeholder="नाही, तर का?" rows="2" style="display:none; margin-top:10px;"></textarea></div>
+            <div class="form-group"><label>सिस्टीम अपडेट तारीख</label><div class="input-group"><div><label for="ta_finance_update">फायनान्स सिस्टीम</label><input type="date" id="ta_finance_update"></div><div><label for="ta_spmb_update">SPMB टि सिस्टीम</label><input type="date" id="ta_spmb_update"></div></div></div>
+            <div class="form-group"><label>आजचे रिकव्हरी ट्रॅकर पाठवले काय?</label><select id="ta_recovery_tracker"><option value="">-- निवडा --</option><option value="होय">होय</option><option value="नाही">नाही</option></select></div>
+            <div class="form-group"><label for="ta_notes">आजच्या इतर विशेष नोंदी</label><textarea id="ta_notes" rows="3"></textarea></div>
+        </div>
+    </div>
+    <button class="submit-btn" onclick="submitReport()">सबमिट करा</button>
+</div>
+
+<!-- Modal -->
+<div id="statusModal" class="modal-overlay"><div class="modal-content"><div id="loaderContainer"><div class="loader"></div><p>डेटा अपलोड होत आहे...</p></div><div id="successMessageContainer" style="display: none;"><div class="success-message"></div><button id="closeModalBtn">ठीक आहे</button></div></div></div>
+
+<script>
+    // ▼▼▼▼▼ तुमच्या अचूक व्हेरिएबल्स येथे टाका ▼▼▼▼▼
+    const API_KEY = "AIzaSyCib9D8dkRRV7MyGDfTcCqaubl19RnCdhQ"; // तुमची API की
+    const SHEET_ID = "1or7yTCZLhu1qdTijEBC--9lHsigVb3yy1nY-qByHIGY"; // तुमचा शीट आयडी
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzbGXkE59O5Rf8VUzFFunbXavr2rRQMWNYExZazIHB6hA0aHNsGJqWIWwCgFk4AoXio/exec"; // तुमची नवीन Web App URL
+    const STAFF_SHEET = "StaffList";
+    
+    // Global variables
+    let staffList = [];
+    let currentUserRole = '';
+
+    // Element references
+    const statusModal = document.getElementById('statusModal');
+    const loaderContainer = document.getElementById('loaderContainer');
+    const successMessageContainer = document.getElementById('successMessageContainer');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const submitBtn = document.querySelector('.submit-btn');
+    const roleFormsContainer = document.getElementById('roleFormsContainer');
+    const leaveSelect = document.getElementById('leaveSelect');
+    const branchSelect = document.getElementById('branchSelect');
+    const employeeSelect = document.getElementById('employeeSelect');
+    
+    // --- STAFF LOADING ---
+    async function loadStaff() {
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${STAFF_SHEET}?key=${API_KEY}`;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`API call failed: Status ${response.status}. Check API Key and Sheet permissions.`);
+            }
+            const data = await response.json();
+            staffList = data.values ? data.values.slice(1) : []; // [Name, Branch, Role]
+
+            // Populate Branches
+            const branches = [...new Set(staffList.map(row => row[1]))].filter(Boolean);
+            branchSelect.innerHTML = '<option value="">-- शाखा निवडा --</option>';
+            branches.forEach(branch => {
+                const option = document.createElement('option');
+                option.value = branch;
+                option.textContent = branch;
+                branchSelect.appendChild(option);
+            });
+            branchSelect.disabled = false;
+
+            // Set default date
+            document.getElementById('reportDate').valueAsDate = new Date();
+
+        } catch (error) {
+            console.error("Error loading staff list:", error);
+            alert("कर्मचारी यादी लोड करण्यात अयशस्वी! \n1. तुमची API Key बरोबर आहे का ते तपासा.\n2. गूगल शीटच्या 'Share' सेटिंग्ज 'Anyone with the link can view' आहेत का ते तपासा.\n3. कन्सोल (Inspect > Console) मध्ये अधिक माहितीसाठी तपासा.");
+            branchSelect.innerHTML = '<option>एरर!</option>';
+        }
+    }
+
+    // --- FORM LOGIC ---
+    function showRoleForm(role) {
+        currentUserRole = role ? role.toUpperCase() : '';
+        document.querySelectorAll('.role-form').forEach(form => form.style.display = 'none');
+        const formToShow = document.getElementById(`form-${currentUserRole}`);
+        if (formToShow) {
+            formToShow.style.display = 'block';
+        }
+    }
+
+    // --- SUBMISSION LOGIC ---
+    async function submitReport() {
+        const branch = branchSelect.value;
+        const name = employeeSelect.value;
+        const leave = leaveSelect.value;
+        const reportDateInput = document.getElementById('reportDate').value;
+        
+        if (!branch || !name || !reportDateInput) {
+            alert("⚠️ कृपया शाखा, नाव आणि दिनांक निवडा.");
+            return;
+        }
+
+        let reportData = {};
+        if (leave === "होय") {
+            reportData = { role: currentUserRole, notes: "रजा" };
+        } else {
+            // Data collection from forms... (same as before)
+            switch (currentUserRole) {
+                case 'CA': reportData = { role: 'CA', ca_reg_count: document.getElementById('ca_reg_count').value, ca_reg_amt: document.getElementById('ca_reg_amt').value, ca_odpast_count: document.getElementById('ca_odpast_count').value, ca_odpast_amt: document.getElementById('ca_odpast_amt').value, ca_meeting_village: document.getElementById('ca_meeting_village').value, ca_meeting_count: document.getElementById('ca_meeting_count').value, ca_member_selection: document.getElementById('ca_member_selection').value, ca_forms_filled: document.getElementById('ca_forms_filled').value, notes: document.getElementById('ca_notes').value }; break;
+                case 'FX': reportData = { role: 'FX', fx_appraisal_count: document.getElementById('fx_appraisal_count').value, fx_appraisal_villages: document.getElementById('fx_appraisal_villages').value, fx_recovery_help: document.getElementById('fx_recovery_help').value, fx_pastdue_count: document.getElementById('fx_pastdue_count').value, fx_pastdue_amt: document.getElementById('fx_pastdue_amt').value, notes: document.getElementById('fx_notes').value }; break;
+                case 'BM': reportData = { role: 'BM', bm_disburse_village: document.getElementById('bm_disburse_village').value, bm_disburse_members: document.getElementById('bm_disburse_members').value, bm_disburse_amt: document.getElementById('bm_disburse_amt').value, bm_coll_regular: document.getElementById('bm_coll_regular').value, bm_coll_pastdue: document.getElementById('bm_coll_pastdue').value, bm_coll_od: document.getElementById('bm_coll_od').value, bm_coll_total: document.getElementById('bm_coll_total').value, bm_appr_approved: document.getElementById('bm_appr_approved').value, bm_appr_rejected: document.getElementById('bm_appr_rejected').value, bm_reject_reason: document.getElementById('bm_reject_reason').value, bm_investment_amt: document.getElementById('bm_investment_amt').value, notes: document.getElementById('bm_notes').value }; break;
+                case 'TA': reportData = { role: 'TA', ta_analysis_reports: document.getElementById('ta_analysis_reports').value, ta_coll_match: document.getElementById('ta_coll_match').value, ta_match_reason: document.getElementById('ta_match_reason').value, ta_finance_update: document.getElementById('ta_finance_update').value, ta_spmb_update: document.getElementById('ta_spmb_update').value, ta_recovery_tracker: document.getElementById('ta_recovery_tracker').value, notes: document.getElementById('ta_notes').value }; break;
+                default: reportData = { role: currentUserRole || 'Other', notes: "Not Applicable" };
+            }
+        }
+        
+        const formattedDate = new Date(reportDateInput).toLocaleDateString('en-GB', { timeZone: 'Asia/Kolkata' });
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "सबमिट होत आहे...";
+        loaderContainer.style.display = 'block';
+        successMessageContainer.style.display = 'none';
+        statusModal.style.display = 'flex';
+        
+        try {
+            const response = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify({ date: formattedDate, name, branch, leave, report: JSON.stringify(reportData) }) });
+            const result = await response.json();
+            if (result.status !== "success") throw new Error(result.message);
+
+            const reportDateForMessage = new Date(reportDateInput).toLocaleDateString('mr-IN', { day: '2-digit', month: 'long', year: 'numeric' });
+            document.querySelector('.success-message').innerHTML = `<strong>${name}</strong>, दिनांक ${reportDateForMessage} रोजीचा आपला अहवाल यशस्वीरित्या नोंदविला गेला आहे.`;
+            loaderContainer.style.display = 'none';
+            successMessageContainer.style.display = 'block';
+            closeModalBtn.style.display = 'inline-block';
+        } catch (error) {
+            alert("❌ अहवाल सबमिट करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा. Error: " + error.message);
+            resetFormState(false);
+        }
+    }
+
+    function resetFormState(clearAll = true) {
+        statusModal.style.display = 'none';
+        submitBtn.disabled = false;
+        submitBtn.textContent = "सबमिट करा";
+        if (clearAll) {
+            document.querySelectorAll('.role-form input, .role-form textarea, .role-form select').forEach(input => input.value = '');
+            leaveSelect.value = 'नाही';
+            roleFormsContainer.style.display = 'block';
+            document.getElementById('ta_match_reason').style.display = 'none';
+        }
+    }
+
+    // --- EVENT LISTENERS & INITIAL LOAD ---
+    branchSelect.addEventListener('change', () => {
+        const selectedBranch = branchSelect.value;
+        employeeSelect.innerHTML = '<option value="">-- नाव निवडा --</option>';
+        if (selectedBranch) {
+            const employeesInBranch = staffList.filter(row => row[1] === selectedBranch);
+            employeesInBranch.forEach(emp => {
+                const option = document.createElement('option');
+                option.value = emp[0];
+                option.textContent = emp[0];
+                employeeSelect.appendChild(option);
+            });
+            employeeSelect.disabled = false;
+        } else {
+            employeeSelect.disabled = true;
+        }
+        showRoleForm(''); // Reset role form
+    });
+    
+    employeeSelect.addEventListener('change', (e) => {
+        const selectedName = e.target.value;
+        const staffMember = staffList.find(s => s[0] === selectedName);
+        const role = staffMember ? staffMember[2] : '';
+        showRoleForm(role);
+    });
+    
+    leaveSelect.addEventListener('change', () => {
+        roleFormsContainer.style.display = leaveSelect.value === 'होय' ? 'none' : 'block';
+    });
+
+    document.getElementById('ta_coll_match').addEventListener('change', (e) => {
+        document.getElementById('ta_match_reason').style.display = e.target.value === 'नाही' ? 'block' : 'none';
+    });
+    
+    closeModalBtn.addEventListener('click', () => { resetFormState(true); });
+    
+    // Initial load
+    document.addEventListener('DOMContentLoaded', loadStaff);
+</script>
+</body>
+</html>
