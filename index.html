@@ -85,14 +85,16 @@
 <div id="statusModal" class="modal-overlay"><div class="modal-content"><div id="loaderContainer"><div class="loader"></div><p>डेटा अपलोड होत आहे...</p></div><div id="successMessageContainer" style="display: none;"><div class="success-message"></div><button id="closeModalBtn">ठीक आहे</button></div></div></div>
 
 <script>
-    // ▼▼▼▼▼ तुमच्या अचूक व्हेरिएबल्स येथे टाका ▼▼▼▼▼
+    // ▼▼▼▼▼ कॉन्फिगरेशन व्हेरिएबल्स ▼▼▼▼▼
     const API_KEY = "AIzaSyCib9D8dkRRV7MyGDfTcCqaubl19RnCdhQ"; // तुमची API की
     const SHEET_ID = "1or7yTCZLhu1qdTijEBC--9lHsigVb3yy1nY-qByHIGY"; // तुमचा शीट आयडी
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzbGXkE59O5Rf8VUzFFunbXavr2rRQMWNYExZazIHB6hA0aHNsGJqWIWwCgFk4AoXio/exec"; // तुमची नवीन Web App URL
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzbGXkE59O5Rf8VUzFFunbXavr2rRQMWNYExZazIHB6hA0aHNsGJqWIWwCgFk4AoXio/exec"; // तुमची Web App URL
     const STAFF_SHEET = "StaffList";
+    const REPORTS_SHEET = "Reports"; // नवीन व्हेरिएबल
     
     // Global variables
     let staffList = [];
+    let existingReports = []; // नवीन व्हेरिएबल: [ [date1, name1], [date2, name2] ]
     let currentUserRole = '';
 
     // Element references
@@ -105,17 +107,27 @@
     const leaveSelect = document.getElementById('leaveSelect');
     const branchSelect = document.getElementById('branchSelect');
     const employeeSelect = document.getElementById('employeeSelect');
+    const reportDateInput = document.getElementById('reportDate');
     
-    // --- STAFF LOADING ---
-    async function loadStaff() {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${STAFF_SHEET}?key=${API_KEY}`;
+    // --- INITIAL DATA LOADING ---
+    async function loadInitialData() {
+        const staffUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${STAFF_SHEET}?key=${API_KEY}`;
+        const reportsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${REPORTS_SHEET}!B:C?key=${API_KEY}`; // फक्त तारीख आणि नाव लोड करा
+
         try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`API call failed: Status ${response.status}. Check API Key and Sheet permissions.`);
-            }
-            const data = await response.json();
-            staffList = data.values ? data.values.slice(1) : []; // [Name, Branch, Role]
+            const [staffResponse, reportsResponse] = await Promise.all([
+                fetch(staffUrl),
+                fetch(reportsUrl)
+            ]);
+
+            if (!staffResponse.ok) throw new Error(`Staff list API call failed: Status ${staffResponse.status}.`);
+            if (!reportsResponse.ok) throw new Error(`Reports list API call failed: Status ${reportsResponse.status}.`);
+
+            const staffData = await staffResponse.json();
+            const reportsData = await reportsResponse.json();
+
+            staffList = staffData.values ? staffData.values.slice(1) : [];
+            existingReports = reportsData.values ? reportsData.values.slice(1) : []; 
 
             // Populate Branches
             const branches = [...new Set(staffList.map(row => row[1]))].filter(Boolean);
@@ -128,12 +140,13 @@
             });
             branchSelect.disabled = false;
 
-            // Set default date
-            document.getElementById('reportDate').valueAsDate = new Date();
+            // Set default date and validate it
+            reportDateInput.valueAsDate = new Date();
+            validateDate();
 
         } catch (error) {
-            console.error("Error loading staff list:", error);
-            alert("कर्मचारी यादी लोड करण्यात अयशस्वी! \n1. तुमची API Key बरोबर आहे का ते तपासा.\n2. गूगल शीटच्या 'Share' सेटिंग्ज 'Anyone with the link can view' आहेत का ते तपासा.\n3. कन्सोल (Inspect > Console) मध्ये अधिक माहितीसाठी तपासा.");
+            console.error("Error loading initial data:", error);
+            alert("डेटा लोड करण्यात अयशस्वी! कृपया तुमचे इंटरनेट कनेक्शन, API Key आणि शीटच्या परवानग्या तपासा.");
             branchSelect.innerHTML = '<option>एरर!</option>';
         }
     }
@@ -147,24 +160,57 @@
             formToShow.style.display = 'block';
         }
     }
+    
+    // --- DATE VALIDATION LOGIC ---
+    function validateDate() {
+        const selectedDate = new Date(reportDateInput.value);
+        const today = new Date();
+        
+        // वेळेचा भाग काढून टाकण्यासाठी तारखा रीसेट करा
+        selectedDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+
+        const threeDaysAgo = new Date(today);
+        threeDaysAgo.setDate(today.getDate() - 3);
+
+        if (selectedDate < threeDaysAgo) {
+            alert("तुमचे रिपोर्ट ३ दिवसांपेक्षा जास्त प्र​लंबित आहेत, त्यामुळे तुम्हांला ते अपलोड करता येणार नाही.");
+            submitBtn.disabled = true;
+            return false;
+        } else {
+            submitBtn.disabled = false;
+            return true;
+        }
+    }
 
     // --- SUBMISSION LOGIC ---
     async function submitReport() {
         const branch = branchSelect.value;
         const name = employeeSelect.value;
         const leave = leaveSelect.value;
-        const reportDateInput = document.getElementById('reportDate').value;
         
-        if (!branch || !name || !reportDateInput) {
+        if (!branch || !name || !reportDateInput.value) {
             alert("⚠️ कृपया शाखा, नाव आणि दिनांक निवडा.");
             return;
         }
+        
+        // 1. तारीख मर्यादा पुन्हा तपासा
+        if (!validateDate()) return;
+        
+        const formattedDate = new Date(reportDateInput.value).toLocaleDateString('en-GB', { timeZone: 'Asia/Kolkata' });
 
+        // 2. डुप्लिकेट रिपोर्ट तपासा
+        const isDuplicate = existingReports.some(report => report[0] === formattedDate && report[1] === name);
+        if (isDuplicate) {
+            alert("या तारखेचा अहवाल तुम्ही आधीच सबमिट केला आहे.");
+            return;
+        }
+
+        // --- Data collection (हा भाग तसाच राहील) ---
         let reportData = {};
         if (leave === "होय") {
             reportData = { role: currentUserRole, notes: "रजा" };
         } else {
-            // Data collection from forms... (same as before)
             switch (currentUserRole) {
                 case 'CA': reportData = { role: 'CA', ca_reg_count: document.getElementById('ca_reg_count').value, ca_reg_amt: document.getElementById('ca_reg_amt').value, ca_odpast_count: document.getElementById('ca_odpast_count').value, ca_odpast_amt: document.getElementById('ca_odpast_amt').value, ca_meeting_village: document.getElementById('ca_meeting_village').value, ca_meeting_count: document.getElementById('ca_meeting_count').value, ca_member_selection: document.getElementById('ca_member_selection').value, ca_forms_filled: document.getElementById('ca_forms_filled').value, notes: document.getElementById('ca_notes').value }; break;
                 case 'FX': reportData = { role: 'FX', fx_appraisal_count: document.getElementById('fx_appraisal_count').value, fx_appraisal_villages: document.getElementById('fx_appraisal_villages').value, fx_recovery_help: document.getElementById('fx_recovery_help').value, fx_pastdue_count: document.getElementById('fx_pastdue_count').value, fx_pastdue_amt: document.getElementById('fx_pastdue_amt').value, notes: document.getElementById('fx_notes').value }; break;
@@ -174,8 +220,6 @@
             }
         }
         
-        const formattedDate = new Date(reportDateInput).toLocaleDateString('en-GB', { timeZone: 'Asia/Kolkata' });
-
         submitBtn.disabled = true;
         submitBtn.textContent = "सबमिट होत आहे...";
         loaderContainer.style.display = 'block';
@@ -187,11 +231,15 @@
             const result = await response.json();
             if (result.status !== "success") throw new Error(result.message);
 
-            const reportDateForMessage = new Date(reportDateInput).toLocaleDateString('mr-IN', { day: '2-digit', month: 'long', year: 'numeric' });
+            const reportDateForMessage = new Date(reportDateInput.value).toLocaleDateString('mr-IN', { day: '2-digit', month: 'long', year: 'numeric' });
             document.querySelector('.success-message').innerHTML = `<strong>${name}</strong>, दिनांक ${reportDateForMessage} रोजीचा आपला अहवाल यशस्वीरित्या नोंदविला गेला आहे.`;
             loaderContainer.style.display = 'none';
             successMessageContainer.style.display = 'block';
             closeModalBtn.style.display = 'inline-block';
+            
+            // नवीन रिपोर्ट यशस्वीरित्या सबमिट झाल्यावर, त्याला existingReports मध्ये जोडा
+            existingReports.push([formattedDate, name]);
+
         } catch (error) {
             alert("❌ अहवाल सबमिट करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा. Error: " + error.message);
             resetFormState(false);
@@ -226,7 +274,7 @@
         } else {
             employeeSelect.disabled = true;
         }
-        showRoleForm(''); // Reset role form
+        showRoleForm('');
     });
     
     employeeSelect.addEventListener('change', (e) => {
@@ -244,10 +292,13 @@
         document.getElementById('ta_match_reason').style.display = e.target.value === 'नाही' ? 'block' : 'none';
     });
     
+    // नवीन इव्हेंट लिसनर
+    reportDateInput.addEventListener('change', validateDate);
+    
     closeModalBtn.addEventListener('click', () => { resetFormState(true); });
     
     // Initial load
-    document.addEventListener('DOMContentLoaded', loadStaff);
+    document.addEventListener('DOMContentLoaded', loadInitialData);
 </script>
 </body>
 </html>
