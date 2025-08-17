@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>कर्मचारी कामगिरी अहवाल</title>
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary-bg: #f0f2f5; --card-bg: #ffffff; --header-bg-start: #1B4F72; --header-bg-end: #5DADE2; --primary-text: #34495E; --secondary-text: #7F8C8D; --accent-color: #5DADE2; --border-color: #e5e7eb; --shadow-light: rgba(0,0,0,0.05); --shadow-medium: rgba(0,0,0,0.1);
+    }
+    body { font-family: 'Inter', 'Noto Sans Devanagari', sans-serif; background: var(--primary-bg); margin: 0; padding: 0; color: var(--primary-text); }
+    .loader { text-align: center; padding: 50px; font-size: 20px; font-weight: 500; }
+    header { background: linear-gradient(90deg, var(--header-bg-start), var(--header-bg-end)); padding: 20px 30px; color: white; text-align: center; font-size: 26px; font-weight: 700; letter-spacing: 1px; box-shadow: 0 4px 12px var(--shadow-medium); }
+    .main-container { padding: 20px; max-width: 1400px; margin: 0 auto; }
+    .card { background: var(--card-bg); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px var(--shadow-light); margin-bottom: 20px; }
+    .card h3 { margin-top: 0; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; font-size: 20px; }
+    .filters-grid, .individual-filters { display: grid; gap: 20px; align-items: flex-end; }
+    .filters-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    .individual-filters { grid-template-columns: 2fr 1fr; }
+    .filter-group { display: flex; flex-direction: column; gap: 8px; }
+    label { font-weight: 600; font-size: 14px; }
+    input[type="date"], select, button { border: 1px solid var(--border-color); padding: 10px 12px; border-radius: 6px; font-family: 'Inter', 'Noto Sans Devanagari', sans-serif; font-size: 14px; width: 100%; box-sizing: border-box; }
+    button { background-color: var(--header-bg-start); color: white; border: none; font-weight: 600; cursor: pointer; transition: background-color 0.3s ease; }
+    button:hover { background-color: var(--accent-color); }
+    #report-output, #individual-analysis-result { margin-top: 20px; overflow-x: auto;}
+    table { width: 100%; border-collapse: collapse; white-space: nowrap; }
+    th, td { padding: 12px 15px; text-align: left; font-size: 14px; border: 1px solid var(--border-color); }
+    th { background: #f8f9fa; font-weight: 600; text-transform: uppercase; color: var(--secondary-text); }
+    tbody tr:nth-child(even) { background-color: #fcfcfc; }
+    tbody tr:hover { background-color: #f1f5f9; }
+    .analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px; }
+    .kpi-summary { background: #f8f9fa; padding: 15px; border-radius: 8px; }
+    .kpi-summary p { margin: 0 0 10px 0; display: flex; justify-content: space-between; }
+    .kpi-summary strong { color: var(--primary-text); }
+    .opinion { background: #e8f0fe; padding: 15px; border-radius: 8px; border-left: 5px solid var(--accent-color); }
+    .opinion h4 { margin-top: 0; }
+    @media (max-width: 768px) {
+        .filters-grid, .individual-filters, .analysis-grid { grid-template-columns: 1fr; }
+    }
+</style>
+</head>
+<body>
+
+<header>कर्मचारी कामगिरी अहवाल (Performance Report)</header>
+<div class="main-container">
+    <div id="loader" class="loader">
+        <p>तुमच्या संस्थेचा डेटा लोड होत आहे, कृपया प्रतीक्षा करा...</p>
+    </div>
+
+    <div id="content" style="display: none;">
+        <!-- सामೂहिक कामगिरी अहवाल -->
+        <div class="card">
+            <h3><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>सामूहिक कामगिरी अहवाल (Collective Performance)</h3>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label for="startDate">पासून (Start Date):</label>
+                    <input type="date" id="startDate">
+                </div>
+                <div class="filter-group">
+                    <label for="endDate">पर्यंत (End Date):</label>
+                    <input type="date" id="endDate">
+                </div>
+                <div class="filter-group">
+                    <label for="branchFilter">युनिट / शाखा निवडा:</label>
+                    <select id="branchFilter">
+                        <option value="ALL">सर्व शाखा</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="roleFilter">स्टाफचा प्रकार निवडा:</label>
+                    <select id="roleFilter">
+                        <option value="CA">CA (क्रेडिट असिस्टंट)</option>
+                        <option value="FX">FX (फील्ड एक्झिक्युटिव्ह)</option>
+                        <option value="BM">BM (शाखा व्यवस्थापक)</option>
+                        <option value="TA">TA (युनिट अकाऊंटंट)</option>
+                    </select>
+                </div>
+                <button onclick="generateCollectiveReport()">अहवाल तयार करा</button>
+            </div>
+            <div id="report-output"></div>
+        </div>
+
+        <!-- वैयक्तिक कामगिरी विश्लेषण -->
+        <div class="card">
+            <h3><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>वैयक्तिक कामगिरी विश्लेषण (Individual Analysis)</h3>
+            <p>कर्मचाऱ्याचा तपशीलवार अहवाल पाहण्यासाठी, खाली त्यांचे नाव निवडा. (वर निवडलेल्या तारखा लागू होतील)</p>
+            <div class="individual-filters">
+                <div class="filter-group">
+                    <label for="staffNameFilter">कर्मचारी निवडा:</label>
+                    <select id="staffNameFilter">
+                        <option value="">-- कर्मचारी निवडा --</option>
+                    </select>
+                </div>
+                <button onclick="generateIndividualAnalysis()">विश्लेषण करा</button>
+            </div>
+            <div id="individual-analysis-result"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// --- CONFIGURATION ---
+const API_KEY = "AIzaSyCib9D8dkRRV7MyGDfTcCqaubl19RnCdhQ";
+const SHEET_ID = "1or7yTCZLhu1qdTijEBC--9lHsigVb3yy1nY-qByHIGY";
+const STAFF_SHEET = "StaffList";
+const REPORTS_SHEET = "Reports";
+
+const appState = {
+    allStaff: [],
+    allReports: [],
+    dataLoaded: false
+};
+
+// --- DATA FETCHING AND INITIALIZATION ---
+window.onload = async function() {
+    try {
+        const staffPromise = fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${STAFF_SHEET}?key=${API_KEY}`);
+        const reportPromise = fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${REPORTS_SHEET}?key=${API_KEY}`);
+        const [staffRes, reportRes] = await Promise.all([staffPromise, reportPromise]);
+        
+        if (!staffRes.ok) throw new Error(`Staff list API call failed: ${staffRes.status}`);
+        if (!reportRes.ok) throw new Error(`Reports list API call failed: ${reportRes.status}`);
+        
+        const staffData = await staffRes.json();
+        const reportData = await reportRes.json();
+        
+        appState.allStaff = staffData.values ? staffData.values.slice(1).filter(s => s[0] && s[0].trim() !== '') : [];
+        appState.allReports = reportData.values ? reportData.values.slice(1).map(createReportObject).filter(r => r.name) : [];
+        
+        populateFilters();
+        appState.dataLoaded = true;
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+
+        // Set default date range to the current month
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        document.getElementById('startDate').valueAsDate = firstDay;
+        document.getElementById('endDate').valueAsDate = today;
+
+    } catch (error) {
+        console.error("Error loading data:", error);
+        document.getElementById('loader').innerHTML = `<p style="color:red;">डेटा लोड करण्यात अयशस्वी: ${error.message}. कृपया पेज রিফ্রেশ करा.</p>`;
+    }
+};
+
+function populateFilters() {
+    const branches = [...new Set(appState.allStaff.map(row => row[1]))].filter(Boolean).sort();
+    const branchFilter = document.getElementById('branchFilter');
+    branches.forEach(branch => {
+        const option = document.createElement('option');
+        option.value = branch.toUpperCase();
+        option.textContent = branch;
+        branchFilter.appendChild(option);
+    });
+
+    const staffNames = [...new Set(appState.allStaff.map(row => row[0]))].filter(Boolean).sort();
+    const staffNameFilter = document.getElementById('staffNameFilter');
+    staffNames.forEach(name => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        staffNameFilter.appendChild(option);
+    });
+}
+
+// --- DATA PROCESSING AND REPORT GENERATION ---
+
+function generateCollectiveReport() {
+    if (!appState.dataLoaded) { alert("Data is not loaded yet."); return; }
+    
+    const { start, end } = getValidatedDates();
+    if (!start || !end) return;
+
+    const selectedBranch = document.getElementById('branchFilter').value;
+    const selectedRole = document.getElementById('roleFilter').value;
+    const outputDiv = document.getElementById('report-output');
+
+    // Filter staff based on branch and role
+    const filteredStaff = appState.allStaff.filter(staff => {
+        const staffBranch = staff[1] ? staff[1].toUpperCase() : '';
+        const staffRole = staff[2] ? staff[2].toUpperCase() : '';
+        return (selectedBranch === "ALL" || staffBranch === selectedBranch) && staffRole === selectedRole;
+    });
+
+    if (filteredStaff.length === 0) {
+        outputDiv.innerHTML = `<p>या निकषांमध्ये कोणताही कर्मचारी सापडला नाही.</p>`;
+        return;
+    }
+
+    // Filter reports for the date range
+    const filteredReports = appState.allReports.filter(report => {
+        const reportDate = parseSheetDate(report.date);
+        return reportDate >= start && reportDate <= end;
+    });
+
+    let tableHTML = `<h4>${selectedRole} - कामगिरी अहवाल (${start.toLocaleDateString('mr-IN')} ते ${end.toLocaleDateString('mr-IN')})</h4>`;
+    tableHTML += '<table>';
+    
+    // Create role-specific table
+    switch(selectedRole) {
+        case 'CA':
+            tableHTML += `<thead><tr><th>कर्मचारी</th><th>अहवाल दिवस</th><th>एकूण रेग्युलर कलेक्शन (रु.)</th><th>एकूण OD/पास्टडयु कलेक्शन (रु.)</th><th>एकूण बैठका</th><th>नवीन सदस्य निवड</th></tr></thead><tbody>`;
+            filteredStaff.forEach(staff => {
+                const staffReports = filteredReports.filter(r => r.name === staff[0]);
+                const stats = staffReports.reduce((acc, r) => {
+                    acc.reg_amt += parseFloat(r.ca_reg_amt || 0);
+                    acc.odpast_amt += parseFloat(r.ca_odpast_amt || 0);
+                    acc.meeting_count += parseInt(r.ca_meeting_count || 0);
+                    acc.member_selection += parseInt(r.ca_member_selection || 0);
+                    return acc;
+                }, { reg_amt: 0, odpast_amt: 0, meeting_count: 0, member_selection: 0 });
+                tableHTML += `<tr><td>${staff[0]}</td><td>${staffReports.length}</td><td>${formatCurrency(stats.reg_amt)}</td><td>${formatCurrency(stats.odpast_amt)}</td><td>${stats.meeting_count}</td><td>${stats.member_selection}</td></tr>`;
+            });
+            break;
+        case 'FX':
+            tableHTML += `<thead><tr><th>कर्मचारी</th><th>अहवाल दिवस</th><th>एकूण अॅप्रोयझल गट</th><th>एकूण पास्ट डयु कलेक्शन (रु.)</th></tr></thead><tbody>`;
+            filteredStaff.forEach(staff => {
+                const staffReports = filteredReports.filter(r => r.name === staff[0]);
+                const stats = staffReports.reduce((acc, r) => {
+                    acc.appraisal_count += parseInt(r.fx_appraisal_count || 0);
+                    acc.pastdue_amt += parseFloat(r.fx_pastdue_amt || 0);
+                    return acc;
+                }, { appraisal_count: 0, pastdue_amt: 0 });
+                tableHTML += `<tr><td>${staff[0]}</td><td>${staffReports.length}</td><td>${stats.appraisal_count}</td><td>${formatCurrency(stats.pastdue_amt)}</td></tr>`;
+            });
+            break;
+        case 'BM':
+            tableHTML += `<thead><tr><th>कर्मचारी</th><th>अहवाल दिवस</th><th>एकूण वाटप रक्कम (रु.)</th><th>एकूण कलेक्शन (रु.)</th><th>मंजूर अॅप्रायझल</th><th>रद्द अॅप्रायझल</th></tr></thead><tbody>`;
+            filteredStaff.forEach(staff => {
+                const staffReports = filteredReports.filter(r => r.name === staff[0]);
+                const stats = staffReports.reduce((acc, r) => {
+                    acc.disburse_amt += parseFloat(r.bm_disburse_amt || 0);
+                    acc.coll_total += parseFloat(r.bm_coll_total || 0);
+                    acc.appr_approved += parseInt(r.bm_appr_approved || 0);
+                    acc.appr_rejected += parseInt(r.bm_appr_rejected || 0);
+                    return acc;
+                }, { disburse_amt: 0, coll_total: 0, appr_approved: 0, appr_rejected: 0 });
+                tableHTML += `<tr><td>${staff[0]}</td><td>${staffReports.length}</td><td>${formatCurrency(stats.disburse_amt)}</td><td>${formatCurrency(stats.coll_total)}</td><td>${stats.appr_approved}</td><td>${stats.appr_rejected}</td></tr>`;
+            });
+            break;
+        case 'TA':
+            tableHTML += `<thead><tr><th>कर्मचारी</th><th>अहवाल दिवस</th><th>कलेक्शन मॅच (होय)</th><th>कलेक्शन मॅच (नाही)</th><th>रिकव्हरी ट्रॅकर पाठवले</th></tr></thead><tbody>`;
+             filteredStaff.forEach(staff => {
+                const staffReports = filteredReports.filter(r => r.name === staff[0]);
+                const stats = staffReports.reduce((acc, r) => {
+                    if (r.ta_coll_match === 'होय') acc.coll_match_yes++;
+                    if (r.ta_coll_match === 'नाही') acc.coll_match_no++;
+                    if (r.ta_recovery_tracker === 'होय') acc.recovery_yes++;
+                    return acc;
+                }, { coll_match_yes: 0, coll_match_no: 0, recovery_yes: 0 });
+                tableHTML += `<tr><td>${staff[0]}</td><td>${staffReports.length}</td><td>${stats.coll_match_yes}</td><td>${stats.coll_match_no}</td><td>${stats.recovery_yes}</td></tr>`;
+            });
+            break;
+    }
+
+    tableHTML += '</tbody></table>';
+    outputDiv.innerHTML = tableHTML;
+}
+
+
+function generateIndividualAnalysis() {
+    const selectedStaffName = document.getElementById('staffNameFilter').value;
+    const outputDiv = document.getElementById('individual-analysis-result');
+    if (!selectedStaffName) {
+        outputDiv.innerHTML = `<p style="color:orange;">कृपया विश्लेषण करण्यासाठी एका कर्मचाऱ्याचे नाव निवडा.</p>`;
+        return;
+    }
+
+    const { start, end } = getValidatedDates();
+    if (!start || !end) return;
+
+    const staffInfo = appState.allStaff.find(s => s[0] === selectedStaffName);
+    const role = staffInfo ? staffInfo[2] : 'N/A';
+
+    const workingDays = getWorkingDays(start, end);
+    const staffReports = appState.allReports.filter(r => {
+        const reportDate = parseSheetDate(r.date);
+        return r.name === selectedStaffName && reportDate >= start && reportDate <= end && r.leave !== 'होय';
+    });
+    
+    const submissionRate = workingDays > 0 ? (staffReports.length / workingDays) * 100 : 0;
+    
+    let metrics = {
+        totalReports: staffReports.length,
+        workingDays: workingDays,
+        submissionRate: submissionRate.toFixed(1)
+    };
+
+    let detailsHTML = `<div class="kpi-summary">
+        <h4>मुख्य आकडेवारी</h4>
+        <p><strong>कामाचे दिवस:</strong> <span>${workingDays}</span></p>
+        <p><strong>अहवाल सादर केलेले दिवस:</strong> <span>${staffReports.length}</span></p>
+        <p><strong>अहवाल सादर करण्याचे प्रमाण:</strong> <span>${metrics.submissionRate}%</span></p>
+        <hr>`;
+
+    switch(role) {
+        case 'CA':
+            const caStats = staffReports.reduce((acc, r) => {
+                acc.reg_amt += parseFloat(r.ca_reg_amt || 0);
+                acc.odpast_amt += parseFloat(r.ca_odpast_amt || 0);
+                acc.total_coll = acc.reg_amt + acc.odpast_amt;
+                acc.meeting_count += parseInt(r.ca_meeting_count || 0);
+                return acc;
+            }, { reg_amt: 0, odpast_amt: 0, total_coll:0, meeting_count: 0 });
+            metrics = {...metrics, ...caStats};
+            detailsHTML += `<p><strong>एकूण कलेक्शन:</strong> <span>${formatCurrency(caStats.total_coll)}</span></p>
+                          <p><strong>एकूण बैठका:</strong> <span>${caStats.meeting_count}</span></p>`;
+            break;
+        case 'FX':
+            const fxStats = staffReports.reduce((acc, r) => {
+                acc.appraisal_count += parseInt(r.fx_appraisal_count || 0);
+                acc.pastdue_amt += parseFloat(r.fx_pastdue_amt || 0);
+                return acc;
+            }, { appraisal_count: 0, pastdue_amt: 0 });
+            metrics = {...metrics, ...fxStats};
+            detailsHTML += `<p><strong>एकूण अॅप्रोयझल:</strong> <span>${fxStats.appraisal_count}</span></p>
+                          <p><strong>एकूण पास्ट डयु कलेक्शन:</strong> <span>${formatCurrency(fxStats.pastdue_amt)}</span></p>`;
+            break;
+        case 'BM':
+            const bmStats = staffReports.reduce((acc, r) => {
+                acc.disburse_amt += parseFloat(r.bm_disburse_amt || 0);
+                acc.coll_total += parseFloat(r.bm_coll_total || 0);
+                return acc;
+            }, { disburse_amt: 0, coll_total: 0 });
+            metrics = {...metrics, ...bmStats};
+            detailsHTML += `<p><strong>एकूण वाटप:</strong> <span>${formatCurrency(bmStats.disburse_amt)}</span></p>
+                          <p><strong>एकूण कलेक्शन:</strong> <span>${formatCurrency(bmStats.coll_total)}</span></p>`;
+            break;
+        case 'TA':
+             const taStats = staffReports.reduce((acc, r) => {
+                if (r.ta_coll_match === 'होय') acc.coll_match_yes++;
+                if (r.ta_coll_match === 'नाही') acc.coll_match_no++;
+                return acc;
+            }, { coll_match_yes: 0, coll_match_no: 0 });
+            metrics = {...metrics, ...taStats};
+            detailsHTML += `<p><strong>कलेक्शन मॅच (होय):</strong> <span>${taStats.coll_match_yes} दिवस</span></p>
+                          <p><strong>कलेक्शन मॅच (नाही):</strong> <span>${taStats.coll_match_no} दिवस</span></p>`;
+            break;
+    }
+    detailsHTML += `</div>`;
+
+    const opinionHTML = `<div class="opinion"><h4>स्वयंचलित मत (System Opinion)</h4><p>${createPerformanceSummary(role, metrics)}</p></div>`;
+
+    outputDiv.innerHTML = `
+        <h4>${selectedStaffName} - ${role} (${start.toLocaleDateString('mr-IN')} ते ${end.toLocaleDateString('mr-IN')})</h4>
+        <div class="analysis-grid">${detailsHTML}${opinionHTML}</div>`;
+}
+
+// --- HELPER FUNCTIONS ---
+
+function getValidatedDates() {
+    const startInput = document.getElementById('startDate').value;
+    const endInput = document.getElementById('endDate').value;
+    if (!startInput || !endInput) {
+        alert("कृपया 'पासून' आणि 'पर्यंत' दोन्ही तारखा निवडा.");
+        return {};
+    }
+    const start = new Date(startInput);
+    const end = new Date(endInput);
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
+    if (start > end) {
+        alert("सुरुवातची तारीख शेवटच्या तारखेपेक्षा जास्त असू शकत नाही.");
+        return {};
+    }
+    return { start, end };
+}
+
+function createReportObject(row) {
+    return {
+        date: row[1], name: row[2], branch: row[3], leave: row[4], role: row[5],
+        ca_reg_count: row[6], ca_reg_amt: row[7], ca_odpast_count: row[8], ca_odpast_amt: row[9], ca_meeting_village: row[10], ca_meeting_count: row[11], ca_member_selection: row[12], ca_forms_filled: row[13],
+        fx_appraisal_count: row[14], fx_appraisal_villages: row[15], fx_recovery_help: row[16], fx_pastdue_count: row[17], fx_pastdue_amt: row[18],
+        bm_disburse_village: row[19], bm_disburse_members: row[20], bm_disburse_amt: row[21], bm_coll_regular: row[22], bm_coll_pastdue: row[23], bm_coll_od: row[24], bm_coll_total: row[25], bm_appr_approved: row[26], bm_appr_rejected: row[27], bm_reject_reason: row[28], bm_investment_amt: row[29],
+        ta_analysis_reports: row[30], ta_coll_match: row[31], ta_match_reason: row[32], ta_finance_update: row[33], ta_spmb_update: row[34], ta_recovery_tracker: row[35],
+        notes: row[36]
+    };
+}
+
+function parseSheetDate(dateString) {
+    if (!dateString) return null;
+    const parts = dateString.split('/');
+    // DD/MM/YYYY format
+    return new Date(parts[2], parts[1] - 1, parts[0]);
+}
+
+function formatCurrency(num) {
+    return new Intl.NumberFormat('mr-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(num || 0);
+}
+
+function getWorkingDays(startDate, endDate) {
+    let count = 0;
+    const curDate = new Date(startDate.getTime());
+    while (curDate <= endDate) {
+        const dayOfWeek = curDate.getDay();
+        if (dayOfWeek !== 0) { // 0 is Sunday
+            count++;
+        }
+        curDate.setDate(curDate.getDate() + 1);
+    }
+    return count;
+}
+
+
+function createPerformanceSummary(role, metrics) {
+    if (metrics.totalReports === 0) {
+        return "निवडलेल्या कालावधीत या कर्मचाऱ्याने कोणताही कामाचा अहवाल दाखल केलेला नाही. ते रजेवर असू शकतात किंवा डेटा उपलब्ध नाही.";
+    }
+
+    let summaryPoints = [];
+
+    // Reporting Consistency
+    if (metrics.submissionRate >= 90) {
+        summaryPoints.push("अहवाल दाखल करण्यात अत्यंत नियमित आहेत.");
+    } else if (metrics.submissionRate >= 70) {
+        summaryPoints.push("अहवाल दाखल करण्यात नियमित आहेत, पण काही वेळा अहवाल चुकले आहेत.");
+    } else {
+        summaryPoints.push("अहवाल दाखल करण्यात अनियमितता दिसून येते, ज्याची चौकशी करणे आवश्यक आहे.");
+    }
+
+    // Role-Specific Analysis
+    switch(role) {
+        case 'CA':
+            if (metrics.total_coll > 0) {
+                summaryPoints.push(`त्यांचे एकूण कलेक्शन ${formatCurrency(metrics.total_coll)} समाधानकारक दिसते.`);
+            } else {
+                summaryPoints.push("या कालावधीत कोणतेही कलेक्शन नोंदवलेले नाही.");
+            }
+            if (metrics.meeting_count > 0) {
+                summaryPoints.push("ते नियमितपणे गट बैठका घेत असल्याचे दिसते.");
+            }
+            break;
+        case 'FX':
+            if (metrics.appraisal_count > 0) {
+                summaryPoints.push(`त्यांनी ${metrics.appraisal_count} गटांचे अॅप्रोयझल पूर्ण केले आहे, जे कामातील प्रगती दर्शवते.`);
+            } else {
+                 summaryPoints.push("या कालावधीत कोणतेही नवीन अॅप्रोयझल नोंदवलेले नाही.");
+            }
+            break;
+        case 'BM':
+            if (metrics.disburse_amt > 0 && metrics.coll_total > 0) {
+                summaryPoints.push(`त्यांनी ${formatCurrency(metrics.disburse_amt)} रकमेचे यशस्वीरित्या वाटप केले आहे आणि ${formatCurrency(metrics.coll_total)} कलेक्शन मिळवले आहे, जे एक चांगली कामगिरी आहे.`);
+            } else if (metrics.coll_total > 0) {
+                summaryPoints.push(`त्यांनी ${formatCurrency(metrics.coll_total)} कलेक्शन मिळवले आहे.`);
+            } else {
+                summaryPoints.push("या कालावधीत कोणतेही मोठे आर्थिक व्यवहार (वाटप/कलेक्शन) नोंदवलेले नाहीत.");
+            }
+            break;
+        case 'TA':
+            const mismatch_rate = metrics.coll_match_no > 0 ? (metrics.coll_match_no / metrics.totalReports) * 100 : 0;
+            if (mismatch_rate === 0) {
+                summaryPoints.push("त्यांच्या कामात अचूकता आहे, कारण कलेक्शन नेहमी मॅच होत आहे.");
+            } else if (mismatch_rate <= 10) {
+                summaryPoints.push("त्यांचे काम बहुतेक वेळा अचूक असते, पण क्वचित कलेक्शनमध्ये तफावत आढळते.");
+            } else {
+                summaryPoints.push("कलेक्शन मॅच न होण्याचे प्रमाण जास्त आहे, यावर लक्ष देण्याची गरज आहे.");
+            }
+            break;
+    }
+    
+    // Concluding remark
+    if (metrics.submissionRate < 50 && summaryPoints.length > 1) {
+        summaryPoints.push("एकूणच, कामाचा आउटपुट दिसत असला तरी, रिपोर्टिंगमध्ये सुधारणा आवश्यक आहे.");
+    } else if (metrics.submissionRate > 80 && summaryPoints.length > 1) {
+         summaryPoints.push("एकूणच, त्यांची कामगिरी चांगली आणि सातत्यपूर्ण दिसते.");
+    }
+
+    return summaryPoints.join(' ');
+}
+
+</script>
+</body>
+</html>
