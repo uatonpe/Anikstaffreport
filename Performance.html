@@ -133,7 +133,7 @@ const SHEET_ID = "1or7yTCZLhu1qdTijEBC--9lHsigVb3yy1nY-qByHIGY";
 const STAFF_SHEET = "StaffList";
 const REPORTS_SHEET = "Reports";
 const appState = { allStaff: [], allReports: [], dataLoaded: false };
-// Define report headers for modal display - UPDATED with new BM and TA fields
+
 const reportHeaders = [
     "Timestamp", "तारीख", "नाव", "शाखा", "रजेवर?", "पद", "भेटीचे ठिकाण (CA)", "नियमित कलेक्शन रक्कम (CA)",
     "नियमित कलेक्शन सदस्य (CA)", "OD/पास्ट ड्यु रक्कम (CA)", "OD/पास्ट ड्यु सदस्य (CA)", "एकूण बैठका (CA)", "नवीन सदस्य निवड (CA)",
@@ -210,14 +210,11 @@ function populateFilters() {
 
 function createReportObject(r){
     const obj = { fullData: r };
-    // Simplified mapping based on new reportHeaders
     obj.date = r[1]; obj.name = r[2]; obj.branch = r[3]; obj.leave = r[4]; obj.role = r[5];
     obj.ca_reg_amt=r[7]; obj.ca_odpast_amt=r[9]; obj.ca_meeting_count=r[11]; obj.ca_member_selection=r[12]; obj.ca_forms_filled=r[13];
     obj.fx_appraisal_count=r[14]; obj.fx_recovery_help=r[16]; obj.fx_pastdue_count=r[17]; obj.fx_pastdue_amt=r[18];
-    // BM fields - UPDATED indices
     obj.bm_disburse_members=r[20]; obj.bm_disburse_amt=r[21]; obj.bm_appraisal_approved=r[22]; obj.bm_appraisal_rejected=r[23];
     obj.bm_coll_total=r[27]; obj.bm_investment_amt=r[31];
-    // TA fields - UPDATED indices
     obj.ta_analysis_reports=r[32]; obj.ta_coll_match=r[33]; obj.ta_finance_update=r[35]; obj.ta_spmb_update=r[36]; obj.ta_recovery_tracker=r[37];
     return obj;
 }
@@ -236,7 +233,7 @@ function generateCollectiveReport() {
     
     const filteredReports = appState.allReports.filter(r => { const d = parseSheetDate(r.date); return d && d >= start && d <= end; });
     
-    let tableHTML = `<h4>${selectedRole} - कामगिरी अहवाल (${start.toLocaleDateString('mr-IN')} ते ${end.toLocaleDateString('mr-IN')})</h4><table>`;
+    let tableHTML = `<h4>${selectedRole} - कामगिरी अहवाल (${start.toLocaleDateString('en-IN')} ते ${end.toLocaleDateString('en-IN')})</h4><table>`;
     let headers = ['कर्मचारी'];
     
     switch(selectedRole) {
@@ -256,13 +253,20 @@ function generateCollectiveReport() {
                 const ca = staffReports.reduce((a, r) => { a.coll += parseFloat(r.ca_reg_amt || 0) + parseFloat(r.ca_odpast_amt || 0); a.meets += parseInt(r.ca_meeting_count || 0); a.mems += parseInt(r.ca_member_selection || 0); a.forms += parseInt(r.ca_forms_filled || 0); return a; }, { coll: 0, meets: 0, mems: 0, forms: 0 });
                 row += `<td>${formatCurrency(ca.coll)}</td><td>${ca.meets}</td><td>${ca.mems}</td><td>${ca.forms}</td>`; break;
             case 'FX':
-                const fx = staffReports.reduce((a, r) => { a.appr += parseInt(r.fx_appraisal_count || 0); a.past_amt += parseFloat(r.fx_pastdue_amt || 0); a.past_cnt += parseInt(r.fx_pastdue_count || 0); a.help += (r.fx_recovery_help && r.fx_recovery_help !== 'काही नाही' ? 1 : 0); return a; }, { appr: 0, past_amt: 0, past_cnt: 0, help: 0 });
+                const fx = staffReports.reduce((a, r) => { a.appr += parseInt(r.fx_appraisal_count || 0); a.past_amt += parseFloat(r.fx_pastdue_amt || 0); a.past_cnt += parseInt(r.fx_pastdue_count || 0); a.help += ((r.fx_recovery_help || '').trim() && r.fx_recovery_help.toLowerCase() !== 'काही नाही' ? 1 : 0); return a; }, { appr: 0, past_amt: 0, past_cnt: 0, help: 0 });
                 row += `<td>${fx.appr}</td><td>${formatCurrency(fx.past_amt)} / ${fx.past_cnt}</td><td>${fx.help}</td>`; break;
             case 'BM':
                 const bm = staffReports.reduce((a, r) => { a.disb_amt += parseFloat(r.bm_disburse_amt || 0); a.disb_mem += parseInt(r.bm_disburse_members || 0); a.coll += parseFloat(r.bm_coll_total || 0); a.inv += parseFloat(r.bm_investment_amt || 0); a.appr_appr += parseInt(r.bm_appraisal_approved || 0); a.appr_rej += parseInt(r.bm_appraisal_rejected || 0); return a; }, { disb_amt: 0, disb_mem: 0, coll: 0, inv: 0, appr_appr: 0, appr_rej: 0 });
                 row += `<td>${formatCurrency(bm.disb_amt)} / ${bm.disb_mem}</td><td>${formatCurrency(bm.coll)}</td><td>${bm.appr_appr} / ${bm.appr_rej}</td><td>${formatCurrency(bm.inv)}</td>`; break;
             case 'TA':
-                const ta = staffReports.reduce((a, r) => { a.yes += (r.ta_coll_match === 'होय' ? 1 : 0); a.no += (r.ta_coll_match === 'नाही' ? 1 : 0); a.analysis += parseInt(r.ta_analysis_reports || 0); a.updates += (r.ta_finance_update === 'होय' ? 1 : 0) + (r.ta_spmb_update === 'होय' ? 1 : 0); a.rec_track += (r.ta_recovery_tracker === 'होय' ? 1 : 0); return a; }, { yes: 0, no: 0, analysis: 0, updates: 0, rec_track: 0 });
+                const ta = staffReports.reduce((a, r) => { 
+                    a.yes += ((r.ta_coll_match || '').trim().toLowerCase() === 'होय' ? 1 : 0); 
+                    a.no += ((r.ta_coll_match || '').trim().toLowerCase() === 'नाही' ? 1 : 0); 
+                    a.analysis += parseInt(r.ta_analysis_reports || 0); 
+                    a.updates += (((r.ta_finance_update || '').trim().toLowerCase() === 'होय' ? 1 : 0) + ((r.ta_spmb_update || '').trim().toLowerCase() === 'होय' ? 1 : 0)); 
+                    a.rec_track += ((r.ta_recovery_tracker || '').trim().toLowerCase() === 'होय' ? 1 : 0); 
+                    return a; 
+                }, { yes: 0, no: 0, analysis: 0, updates: 0, rec_track: 0 });
                 row += `<td>${ta.analysis}</td><td>${ta.yes} / ${ta.no}</td><td>${ta.updates}</td><td>${ta.rec_track}</td>`; break;
         }
         tableHTML += row + `</tr>`;
@@ -294,13 +298,13 @@ function generateIndividualAnalysis() {
     const icon_doc = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>`;
     const icon_send = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>`;
 
-    kpiHTML += createKpiCard('रिपोर्टिंग प्रमाण', `${submissionRate.toFixed(0)}% <span style="font-size:14px;font-weight:400;color:#566573;">(${staffReports.length}/${totalDays} दिवस)</span>`, icon_submit, getPerformanceColor(submissionRate, true));
+    kpiHTML += createKpiCard('रिपोर्टिंग प्रमाण', `${submissionRate.toFixed(0)}% <span style="font-size:14px;font-weight:400;color:#566573;">(${staffReports.length}/${totalDays} days)</span>`, icon_submit, getPerformanceColor(submissionRate, true));
 
     switch(role) {
-        case 'CA': const ca = staffReports.reduce((a,r) => { a.reg_amt += parseFloat(r.ca_reg_amt || 0); a.od_amt += parseFloat(r.ca_odpast_amt || 0); a.meets += parseInt(r.ca_meeting_count || 0); a.mems += parseInt(r.ca_member_selection || 0); a.forms += parseInt(r.ca_forms_filled || 0); return a; }, {reg_amt:0, od_amt:0, meets:0, mems:0, forms:0}); metrics = {...metrics, ...ca}; kpiHTML += createKpiCard('एकूण कलेक्शन', formatCurrency(ca.reg_amt + ca.od_amt), icon_money); kpiHTML += createKpiCard('एकूण बैठका', ca.meets, icon_people); kpiHTML += createKpiCard('नवीन सदस्य', ca.mems, icon_people); kpiHTML += createKpiCard('भरलेले फॉर्म', ca.forms, icon_doc); break;
-        case 'FX': const fx = staffReports.reduce((a,r) => { a.appr += parseInt(r.fx_appraisal_count || 0); a.past_amt += parseFloat(r.fx_pastdue_amt || 0); a.past_cnt += parseInt(r.fx_pastdue_count || 0); a.help += (r.fx_recovery_help && r.fx_recovery_help.toLowerCase() !== 'काही नाही' ? 1 : 0); return a; }, {appr:0, past_amt:0, past_cnt:0, help:0}); metrics = {...metrics, ...fx}; kpiHTML += createKpiCard('एकूण अॅप्रोयझल', fx.appr, icon_check); kpiHTML += createKpiCard('पास्ट डयु कलेक्शन', `${formatCurrency(fx.past_amt)} (${fx.past_cnt} खाती)`, icon_money); kpiHTML += createKpiCard('रिकव्हरी मदत', `${fx.help} वेळा`, icon_people); break;
+        case 'CA': const ca = staffReports.reduce((a,r) => { a.coll += parseFloat(r.ca_reg_amt || 0) + parseFloat(r.ca_odpast_amt || 0); a.meets += parseInt(r.ca_meeting_count || 0); a.mems += parseInt(r.ca_member_selection || 0); a.forms += parseInt(r.ca_forms_filled || 0); return a; }, {coll:0, meets:0, mems:0, forms:0}); metrics = {...metrics, ...ca}; kpiHTML += createKpiCard('एकूण कलेक्शन', formatCurrency(ca.coll), icon_money); kpiHTML += createKpiCard('एकूण बैठका', ca.meets, icon_people); kpiHTML += createKpiCard('नवीन सदस्य', ca.mems, icon_people); kpiHTML += createKpiCard('भरलेले फॉर्म', ca.forms, icon_doc); break;
+        case 'FX': const fx = staffReports.reduce((a,r) => { a.appr += parseInt(r.fx_appraisal_count || 0); a.past_amt += parseFloat(r.fx_pastdue_amt || 0); a.past_cnt += parseInt(r.fx_pastdue_count || 0); a.help += ((r.fx_recovery_help || '').trim() && r.fx_recovery_help.toLowerCase() !== 'काही नाही' ? 1 : 0); return a; }, {appr:0, past_amt:0, past_cnt:0, help:0}); metrics = {...metrics, ...fx}; kpiHTML += createKpiCard('एकूण अॅप्रोयझल', fx.appr, icon_check); kpiHTML += createKpiCard('पास्ट डयु कलेक्शन', `${formatCurrency(fx.past_amt)} (${fx.past_cnt} खाती)`, icon_money); kpiHTML += createKpiCard('रिकव्हरी मदत', `${fx.help} वेळा`, icon_people); break;
         case 'BM': const bm = staffReports.reduce((a,r) => { a.disb_amt += parseFloat(r.bm_disburse_amt || 0); a.disb_mem += parseInt(r.bm_disburse_members || 0); a.coll += parseFloat(r.bm_coll_total || 0); a.inv += parseFloat(r.bm_investment_amt || 0); a.appr_appr += parseInt(r.bm_appraisal_approved || 0); a.appr_rej += parseInt(r.bm_appraisal_rejected || 0); return a; }, {disb_amt:0, disb_mem:0, coll:0, inv:0, appr_appr:0, appr_rej:0}); metrics = {...metrics, ...bm}; kpiHTML += createKpiCard('एकूण वाटप', `${formatCurrency(bm.disb_amt)} (${bm.disb_mem} सदस्य)`, icon_money); kpiHTML += createKpiCard('एकूण कलेक्शन', formatCurrency(bm.coll), icon_money); kpiHTML += createKpiCard('अॅप्रायझल स्टेटस', `${bm.appr_appr} मंजूर / ${bm.appr_rej} रद्द`, icon_check); kpiHTML += createKpiCard('गुंतवणूक', formatCurrency(bm.inv), icon_money); break;
-        case 'TA': const ta = staffReports.reduce((a,r) => { a.yes += (r.ta_coll_match==='होय'?1:0); a.no += (r.ta_coll_match==='नाही'?1:0); a.analysis += parseInt(r.ta_analysis_reports || 0); a.fin_upd += (r.ta_finance_update === 'होय' ? 1 : 0); a.spmb_upd += (r.ta_spmb_update === 'होय' ? 1 : 0); a.rec_track += (r.ta_recovery_tracker === 'होय' ? 1 : 0); return a; }, {yes:0, no:0, analysis:0, fin_upd:0, spmb_upd:0, rec_track:0}); metrics = {...metrics, ...ta}; kpiHTML += createKpiCard('अॅनालिसिस रिपोर्ट्स', ta.analysis, icon_doc); kpiHTML += createKpiCard('कलेक्शन मॅच (होय)', `${ta.yes} दिवस`, icon_check, 'var(--positive-color)'); kpiHTML += createKpiCard('कलेक्शन मॅच (नाही)', `${ta.no} दिवस`, icon_check, ta.no > 0 ? 'var(--negative-color)' : 'var(--positive-color)'); kpiHTML += createKpiCard('रिकव्हरी ट्रॅकर', `${ta.rec_track} वेळा पाठवले`, icon_send); break;
+        case 'TA': const ta = staffReports.reduce((a,r) => { a.yes += ((r.ta_coll_match || '').trim().toLowerCase() === 'होय' ? 1 : 0); a.no += ((r.ta_coll_match || '').trim().toLowerCase() === 'नाही' ? 1 : 0); a.analysis += parseInt(r.ta_analysis_reports || 0); a.rec_track += ((r.ta_recovery_tracker || '').trim().toLowerCase() === 'होय' ? 1 : 0); return a; }, {yes:0, no:0, analysis:0, rec_track:0}); metrics = {...metrics, ...ta}; kpiHTML += createKpiCard('अॅनालिसिस रिपोर्ट्स', ta.analysis, icon_doc); kpiHTML += createKpiCard('कलेक्शन मॅच (होय)', `${ta.yes} दिवस`, icon_check, 'var(--positive-color)'); kpiHTML += createKpiCard('कलेक्शन मॅच (नाही)', `${ta.no} दिवस`, icon_check, ta.no > 0 ? 'var(--negative-color)' : 'var(--positive-color)'); kpiHTML += createKpiCard('रिकव्हरी ट्रॅकर', `${ta.rec_track} वेळा पाठवले`, icon_send); break;
     }
     
     const opinionHTML = `<div class="opinion-card"><h4><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>स्वयंचलित मत</h4><p>${createPerformanceSummary(role, metrics)}</p></div>`;
@@ -316,8 +320,8 @@ function generateCalendar() {
     if (!start || !end) return;
 
     const staffReportsAll = appState.allReports.filter(r => { const d = parseSheetDate(r.date); return r.name === staffName && d && d >= start && d <= end; });
-    const reportedDates = new Set(staffReportsAll.filter(r => r.leave !== 'होय').map(r => r.date));
-    const leaveDates = new Set(staffReportsAll.filter(r => r.leave === 'होय').map(r => r.date));
+    const reportedDates = new Set(staffReportsAll.filter(r => (r.leave || '').trim().toLowerCase() !== 'होय').map(r => r.date));
+    const leaveDates = new Set(staffReportsAll.filter(r => (r.leave || '').trim().toLowerCase() === 'होय').map(r => r.date));
     
     let calendarHTML = `<div class="calendar-grid">`;
     const daysOfWeek = ['रवि', 'सोम', 'मंगळ', 'बुध', 'गुरु', 'शुक्र', 'शनि'];
@@ -343,7 +347,7 @@ function generateCalendar() {
 }
 
 function showReportDetails(staffName, date) {
-    const report = appState.allReports.find(r => r.name === staffName && r.date === date && r.leave !== 'होय');
+    const report = appState.allReports.find(r => r.name === staffName && r.date === date && (r.leave || '').trim().toLowerCase() !== 'होय');
     if (!report) return;
 
     const modalBody = document.getElementById('modal-body');
@@ -363,10 +367,10 @@ function closeModal() { document.getElementById('reportModal').style.display = '
 function createKpiCard(title, value, iconSvg, color = 'var(--primary-color)') { return `<div class="kpi-card"><div class="icon" style="background-color: ${color.replace(')', ', 0.1)')}; color: ${color};">${iconSvg}</div><div><div class="value">${value}</div><div class="title">${title}</div></div></div>`; }
 function getValidatedDates(startId, endId) { const s=document.getElementById(startId).value, e=document.getElementById(endId).value; if(!s||!e){alert("कृपया 'पासून' आणि 'पर्यंत' दोन्ही तारखा निवडा.");return{}} const st=new Date(s), en=new Date(e); st.setHours(0,0,0,0); en.setHours(23,59,59,999); if(st>en){alert("सुरुवातची तारीख शेवटच्या तारखेपेक्षा जास्त असू शकत नाही.");return{}} return{start:st,end:en}; }
 function parseSheetDate(d) { if (!d) return null; const p = d.split('/'); if (p.length !== 3) return null; return new Date(p[2], p[1] - 1, p[0]); }
-function formatCurrency(n) { return new Intl.NumberFormat('mr-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n || 0); }
+function formatCurrency(n) { return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n || 0); }
 function getTotalDaysInRange(s, e) { let c = 0; const d = new Date(s.getTime()); while (d <= e) { c++; d.setDate(d.getDate() + 1); } return c; }
 function getPerformanceColor(r, i=false) { if(r>=90)return i?'var(--positive-color)':'text-positive'; if(r>=70)return i?'var(--neutral-color)':'text-neutral'; return i?'var(--negative-color)':'text-negative'; }
-function createPerformanceSummary(role, m) { if (m.totalReports === 0) return "निवडलेल्या कालावधीत या कर्मचाऱ्याने कोणताही कामाचा अहवाल दाखल केलेला नाही."; let s = []; if(m.submissionRate>=90)s.push("अहवाल दाखल करण्यात अत्यंत नियमित आहेत."); else if(m.submissionRate>=70)s.push("अहवाल दाखल करण्यात नियमित आहेत."); else s.push("अहवाल दाखल करण्यात अनियमितता दिसून येते."); switch(role) { case 'CA': if(m.reg_amt+m.od_amt>0)s.push(`त्यांचे एकूण कलेक्शन ${formatCurrency(m.reg_amt+m.od_amt)} समाधानकारक दिसते.`); if(m.forms > 0) s.push(`${m.forms} फॉर्म्स यशस्वीरित्या भरले आहेत.`); break; case 'FX': if(m.appr>0)s.push(`त्यांनी ${m.appr} गटांचे अॅप्रोयझल पूर्ण केले आहे.`); if(m.help > 0) s.push("ते रिकव्हरीमध्ये सक्रियपणे मदत करत आहेत."); break; case 'BM': if(m.disb_amt>0)s.push(`त्यांनी ${formatCurrency(m.disb_amt)} रकमेचे यशस्वीरित्या वाटप केले आहे.`); if(m.appr_appr > 0) s.push(`${m.appr_appr} अॅप्रायझल मंजूर केले आहेत.`); if(m.inv > 0) s.push("गुंतवणूक मिळवण्यातही त्यांचे योगदान आहे."); break; case 'TA': const mismatch=m.no>0?(m.no/m.totalReports)*100:0; if(mismatch===0 && m.totalReports > 0)s.push("त्यांच्या कामात अचूकता आहे."); else if (mismatch > 0) s.push("कलेक्शन मॅच न होण्यावर लक्ष देण्याची गरज आहे."); if(m.rec_track > 0) s.push("ते नियमितपणे रिकव्हरी ट्रॅकर पाठवत आहेत."); break; } if(m.submissionRate > 80 && s.length > 1) s.push("एकूणच, त्यांची कामगिरी चांगली आणि सातत्यपूर्ण दिसते."); return s.join(' '); }
+function createPerformanceSummary(role, m) { if (m.totalReports === 0) return "निवडलेल्या कालावधीत या कर्मचाऱ्याने कोणताही कामाचा अहवाल दाखल केलेला नाही."; let s = []; if(m.submissionRate>=90)s.push("अहवाल दाखल करण्यात अत्यंत नियमित आहेत."); else if(m.submissionRate>=70)s.push("अहवाल दाखल करण्यात नियमित आहेत."); else s.push("अहवाल दाखल करण्यात अनियमितता दिसून येते."); switch(role) { case 'CA': if(m.coll>0)s.push(`त्यांचे एकूण कलेक्शन ${formatCurrency(m.coll)} समाधानकारक दिसते.`); if(m.forms > 0) s.push(`${m.forms} फॉर्म्स यशस्वीरित्या भरले आहेत.`); break; case 'FX': if(m.appr>0)s.push(`त्यांनी ${m.appr} गटांचे अॅप्रोयझल पूर्ण केले आहे.`); if(m.help > 0) s.push("ते रिकव्हरीमध्ये सक्रियपणे मदत करत आहेत."); break; case 'BM': if(m.disb_amt>0)s.push(`त्यांनी ${formatCurrency(m.disb_amt)} रकमेचे यशस्वीरित्या वाटप केले आहे.`); if(m.appr_appr > 0) s.push(`${m.appr_appr} अॅप्रायझल मंजूर केले आहेत.`); if(m.inv > 0) s.push("गुंतवणूक मिळवण्यातही त्यांचे योगदान आहे."); break; case 'TA': const mismatch=m.no > 0 ? (m.no / (m.yes + m.no)) * 100 : 0; if(mismatch === 0 && m.totalReports > 0)s.push("त्यांच्या कामात अचूकता आहे."); else if (mismatch > 0) s.push("कलेक्शन मॅच न होण्यावर लक्ष देण्याची गरज आहे."); if(m.rec_track > 0) s.push("ते नियमितपणे रिकव्हरी ट्रॅकर पाठवत आहेत."); break; } if(m.submissionRate > 80 && s.length > 1) s.push("एकूणच, त्यांची कामगिरी चांगली आणि सातत्यपूर्ण दिसते."); return s.join(' '); }
 </script>
 </body>
 </html>
