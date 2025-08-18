@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>कर्मचारी कामगिरी अहवाल</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
     :root {
@@ -29,25 +29,25 @@
     input:focus, select:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2); }
     button { background-color: var(--primary-color); color: white; border: none; font-weight: 600; cursor: pointer; }
     button:hover { background-color: var(--header-bg); transform: translateY(-2px); }
-    
-    /* Table Styles */
     #report-output { margin-top: 30px; overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; white-space: nowrap; }
     th, td { padding: 14px 18px; text-align: left; font-size: 14px; border-bottom: 1px solid var(--border-color); }
     th { background: #f8f9fa; font-weight: 600; color: var(--text-light); }
     tbody tr:nth-child(even) { background-color: #fafcff; }
     tbody tr:hover { background-color: var(--highlight-bg); }
+    .text-positive { color: var(--positive-color); font-weight: 600; }
+    .text-negative { color: var(--negative-color); font-weight: 600; }
+    .text-neutral { color: var(--neutral-color); font-weight: 600; }
     
-    /* Calendar & Report Styles */
+    /* NEW CALENDAR STYLES */
     #calendar-container { margin-top: 30px; }
     .date-grid { display: flex; flex-wrap: wrap; gap: 10px; }
-    .date-box { border-radius: 8px; text-align: center; padding: 12px; font-weight: 600; border: 1px solid var(--border-color); flex: 1 0 120px; }
+    .date-box { border-radius: 8px; text-align: center; padding: 12px; font-weight: 600; border: 1px solid var(--border-color); flex: 1 0 120px; /* Flex properties for responsive boxes */ }
     .date-box .day-of-week { font-size: 12px; color: var(--text-light); font-weight: 500; }
     .date-box .date-number { font-size: 16px; display: block; margin-top: 4px; }
     .reported { background-color: #e6f9f0; color: var(--positive-color); border-color: #a3e9c1; cursor: pointer; transition: transform 0.2s; }
     .reported:hover { transform: scale(1.05); box-shadow: var(--shadow); }
     .missed { background-color: #fff0f0; color: var(--negative-color); border-color: #f5b7b1; }
-    .on-leave { background-color: #fef9e7; color: var(--neutral-color); border-color: #fbeea4; cursor: pointer; }
 
     /* Modal Styles */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: none; justify-content: center; align-items: center; }
@@ -76,332 +76,4 @@
     <div id="content" style="display: none;">
         <!-- Collective Report Card -->
         <div class="card">
-            <h3>सामूहिक कामगिरी अहवाल</h3>
-            <div class="filters-grid">
-                <div class="filter-group"><label for="startDate">पासून:</label><input type="date" id="startDate"></div>
-                <div class="filter-group"><label for="endDate">पर्यंत:</label><input type="date" id="endDate"></div>
-                <div class="filter-group"><label for="branchFilter">युनिट / शाखा:</label><select id="branchFilter"><option value="ALL">सर्व शाखा</option></select></div>
-                <div class="filter-group"><label for="roleFilter">स्टाफचा प्रकार:</label><select id="roleFilter"><option value="CA">CA (क्रेडिट)</option><option value="FX">FX (फील्ड)</option><option value="BM">BM (मॅनेजर)</option><option value="TA">TA (अकाऊंटंट)</option></select></div>
-                <button onclick="generateCollectiveReport()">अहवाल तयार करा</button>
-            </div>
-            <div id="report-output"></div>
-        </div>
-
-        <!-- Individual Analysis Card -->
-        <div class="card">
-            <h3>वैयक्तिक कामगिरी विश्लेषण</h3>
-            <div class="individual-filters">
-                <div class="filter-group"><label for="staffNameFilter">कर्मचारी निवडा:</label><select id="staffNameFilter"><option value="">-- कर्मचारी निवडा --</option></select></div>
-                <button onclick="generateIndividualAnalysis()">विश्लेषण करा</button>
-            </div>
-            <div id="individual-analysis-result"></div>
-        </div>
-        
-        <!-- Calendar Card -->
-        <div class="card">
-            <h3>वैयक्तिक अहवाल कॅलेंडर</h3>
-            <div class="calendar-filters">
-                <div class="filter-group"><label for="staffNameCalendarFilter">कर्मचारी निवडा:</label><select id="staffNameCalendarFilter"><option value="">-- कर्मचारी निवडा --</option></select></div>
-                <div class="filter-group"><label for="calendarStartDate">पासून:</label><input type="date" id="calendarStartDate"></div>
-                <div class="filter-group"><label for="calendarEndDate">पर्यंत:</label><input type="date" id="calendarEndDate"></div>
-                <button onclick="generateCalendar()">कॅलेंडर तयार करा</button>
-            </div>
-            <div id="calendar-container"></div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal -->
-<div id="reportModal" class="modal-overlay" onclick="closeModal()">
-    <div class="modal-content" onclick="event.stopPropagation();">
-        <button class="modal-close" onclick="closeModal()">&times;</button>
-        <div id="modal-body"></div>
-    </div>
-</div>
-
-<script>
-const API_KEY = "AIzaSyCib9D8dkRRV7MyGDfTcCqaubl19RnCdhQ";
-const SHEET_ID = "1or7yTCZLhu1qdTijEBC--9lHsigVb3yy1nY-qByHIGY";
-const STAFF_SHEET = "StaffList";
-const REPORTS_SHEET = "Reports";
-const appState = { allStaff: [], allReports: [], dataLoaded: false };
-const reportHeaders = [
-    "Timestamp", "तारीख", "नाव", "शाखा", "रजेवर?", "पद", "भेटीचे ठिकाण (CA)", "नियमित कलेक्शन रक्कम (CA)",
-    "नियमित कलेक्शन सदस्य (CA)", "OD/पास्ट ड्यु रक्कम (CA)", "OD/पास्ट ड्यु सदस्य (CA)", "एकूण बैठका (CA)", "नवीन सदस्य निवड (CA)",
-    "भरलेले फॉर्म (CA)", "अॅप्रोयझल संख्या (FX)", "इतर काम (FX)", "रिकव्हरी मदत (FX)", "पास्ट ड्यु खाती (FX)",
-    "पास्ट ड्यु रक्कम (FX)", "इतर माहिती (FX)", "वाटप सदस्य (BM)", "वाटप रक्कम (BM)", "सेव्हिंग कलेक्शन (BM)",
-    "नियमित कलेक्शन (BM)", "OD/पास्ट ड्यु कलेक्शन (BM)", "एकूण कलेक्शन (BM)", "इतर कलेक्शन (BM)", "खर्च (BM)",
-    "बँक डिपॉझिट (BM)", "गुंतवणूक (BM)", "अॅनालिसिस रिपोर्ट्स (TA)", "कलेक्शन मॅच? (TA)", "शेरा (TA)",
-    "फायनान्स सिस्टीम अपडेट? (TA)", "SPMB अपडेट? (TA)"
-];
-
-window.onload = async function() {
-    try {
-        const [staffRes, reportRes] = await Promise.all([
-            fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${STAFF_SHEET}?key=${API_KEY}`),
-            fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${REPORTS_SHEET}?key=${API_KEY}`)
-        ]);
-        if (!staffRes.ok || !reportRes.ok) throw new Error(`API call failed. Please check sheet sharing settings and API key.`);
-        
-        const staffData = await staffRes.json();
-        const reportData = await reportRes.json();
-        
-        appState.allStaff = staffData.values ? staffData.values.slice(1).filter(s => s[0] && s[0].trim() !== '') : [];
-        appState.allReports = reportData.values ? reportData.values.slice(1).map(createReportObject).filter(r => r.name) : [];
-        
-        populateFilters();
-        appState.dataLoaded = true;
-        document.getElementById('loader').style.display = 'none';
-        document.getElementById('content').style.display = 'block';
-
-        const today = new Date();
-        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-        document.getElementById('startDate').valueAsDate = firstDay;
-        document.getElementById('endDate').valueAsDate = today;
-        document.getElementById('calendarStartDate').valueAsDate = firstDay;
-        document.getElementById('calendarEndDate').valueAsDate = today;
-
-    } catch (error) {
-        console.error("Error loading data:", error);
-        document.getElementById('loader').innerHTML = `<p style="color:red; text-align:center;">डेटा लोड करण्यात अयशस्वी: ${error.message}<br>तुमच्या गूगल शीटची 'Share' सेटिंग 'Anyone with the link' आहे का, हे तपासा.</p>`;
-    }
-};
-
-function populateFilters() {
-    const branches = [...new Set(appState.allStaff.map(row => row[1]))].filter(Boolean).sort();
-    const branchFilter = document.getElementById('branchFilter');
-    branches.forEach(branch => { branchFilter.innerHTML += `<option value="${(branch || '').toUpperCase()}">${branch}</option>`; });
-
-    const staffByBranch = appState.allStaff.reduce((acc, staff) => {
-        const branch = staff[1] || 'Uncategorized';
-        if (!acc[branch]) acc[branch] = [];
-        acc[branch].push(staff[0]);
-        return acc;
-    }, {});
-
-    const staffNameFilter = document.getElementById('staffNameFilter');
-    const staffNameCalendarFilter = document.getElementById('staffNameCalendarFilter');
-    staffNameFilter.innerHTML = `<option value="">-- कर्मचारी निवडा --</option>`;
-    staffNameCalendarFilter.innerHTML = `<option value="">-- कर्मचारी निवडा --</option>`;
-
-    for (const branch of Object.keys(staffByBranch).sort()) {
-        const optgroup = document.createElement('optgroup');
-        optgroup.label = branch;
-        staffByBranch[branch].sort().forEach(name => {
-            const option = document.createElement('option');
-            option.value = name;
-            option.textContent = name;
-            optgroup.appendChild(option);
-        });
-        staffNameFilter.appendChild(optgroup.cloneNode(true));
-        staffNameCalendarFilter.appendChild(optgroup);
-    }
-}
-
-function createReportObject(r){
-    // This object maps the array `r` to a structured object, making data access easier and more reliable.
-    return {
-        fullData: r, // Keep the original row for modal display
-        date: (r[1] || "").trim(),
-        name: (r[2] || "").trim(),
-        branch: (r[3] || "").trim(),
-        leave: (r[4] || "").trim(), // Correctly trims spaces around 'होय'
-        role: (r[5] || "").trim(),
-        // CA Fields
-        ca_reg_amt: r[7], ca_reg_members: r[8], ca_odpast_amt: r[9], ca_odpast_members: r[10],
-        ca_meeting_count: r[11], ca_member_selection: r[12], ca_forms_filled: r[13],
-        // FX Fields
-        fx_appraisal_count: r[14], fx_recovery_help: r[16], fx_pastdue_count: r[17], fx_pastdue_amt: r[18],
-        // BM Fields
-        bm_disburse_members: r[20], bm_disburse_amt: r[21], bm_coll_total: r[25], bm_investment_amt: r[29],
-        // TA Fields
-        ta_analysis_reports: r[30], ta_coll_match: r[31], ta_finance_update: r[33], ta_spmb_update: r[34]
-    };
-}
-
-// *** NEW: Configuration object for role-specific tasks ***
-const roleSpecifics = {
-    'CA': {
-        headers: ['नियमित कलेक्शन (रु.)', 'नियमित सदस्य', 'OD/पास्ट ड्यु (रु.)', 'OD/पास्ट ड्यु सदस्य', 'एकूण बैठका', 'नवीन सदस्य', 'भरलेले फॉर्म'],
-        dataKeys: ['ca_reg_amt', 'ca_reg_members', 'ca_odpast_amt', 'ca_odpast_members', 'ca_meeting_count', 'ca_member_selection', 'ca_forms_filled']
-    },
-    'FX': {
-        headers: ['अॅप्रोयझल संख्या', 'पास्ट ड्यु खाती', 'पास्ट ड्यु रक्कम (रु.)', 'रिकव्हरी मदत'],
-        dataKeys: ['fx_appraisal_count', 'fx_pastdue_count', 'fx_pastdue_amt', 'fx_recovery_help']
-    },
-    'BM': {
-        headers: ['वाटप सदस्य', 'एकूण वाटप (रु.)', 'एकूण कलेक्शन (रु.)', 'गुंतवणूक (रु.)'],
-        dataKeys: ['bm_disburse_members', 'bm_disburse_amt', 'bm_coll_total', 'bm_investment_amt']
-    },
-    'TA': {
-        headers: ['अॅनालिसिस रिपोर्ट्स', 'कलेक्शन मॅच', 'फायनान्स अपडेट', 'SPMB अपडेट'],
-        dataKeys: ['ta_analysis_reports', 'ta_coll_match', 'ta_finance_update', 'ta_spmb_update']
-    }
-};
-
-// *** MAJORLY UPDATED FUNCTION ***
-function generateCollectiveReport() {
-    if (!appState.dataLoaded) return;
-    const { start, end } = getValidatedDates('startDate', 'endDate');
-    if (!start || !end) return;
-
-    const selectedBranch = document.getElementById('branchFilter').value;
-    const selectedRole = document.getElementById('roleFilter').value;
-    const outputDiv = document.getElementById('report-output');
-    
-    const roleConfig = roleSpecifics[selectedRole];
-    if (!roleConfig) {
-        outputDiv.innerHTML = `<p>या भूमिकेसाठी रिपोर्ट कॉन्फिगर केलेला नाही.</p>`;
-        return;
-    }
-
-    const filteredStaff = appState.allStaff.filter(s => (selectedBranch === "ALL" || ((s[1] || '').toUpperCase() === selectedBranch)) && (s[2] && s[2].toUpperCase() === selectedRole));
-    if (filteredStaff.length === 0) {
-        outputDiv.innerHTML = `<p style="text-align:center; padding: 20px;">या निकषांमध्ये कोणताही कर्मचारी सापडला नाही.</p>`;
-        return;
-    }
-    
-    const reportsInDateRange = appState.allReports.filter(r => { const d = parseSheetDate(r.date); return d && d >= start && d <= end; });
-    
-    let tableHTML = `<h4>${selectedRole} - कामगिरी अहवाल (${start.toLocaleDateString('en-IN')} ते ${end.toLocaleDateString('en-IN')})</h4>
-                     <table style="width:100%; border-collapse: collapse;">
-                        <thead>
-                            <tr>
-                                <th>कर्मचारी</th>
-                                <th>${roleConfig.headers.join('</th><th>')}</th>
-                            </tr>
-                        </thead>
-                        <tbody>`;
-
-    filteredStaff.forEach(staff => {
-        const staffName = staff[0];
-        const workReports = reportsInDateRange.filter(r => r.name === staffName && r.leave !== 'होय');
-
-        // Aggregate data for the current employee
-        const aggregatedData = {};
-        roleConfig.dataKeys.forEach(key => {
-            aggregatedData[key] = workReports.reduce((sum, report) => {
-                const value = report[key];
-                // Handle special string cases like 'होय'/'नाही' or help status
-                if (typeof value === 'string' && isNaN(parseFloat(value))) {
-                     if(value.toLowerCase().includes('होय') || (key === 'fx_recovery_help' && value !== 'काही नाही')) {
-                        return sum + 1;
-                     }
-                     return sum;
-                }
-                return sum + (parseFloat(value) || 0);
-            }, 0);
-        });
-
-        tableHTML += `<tr style="border-bottom: 1px solid #e0e0e0;"><td>${staffName}</td>`;
-        roleConfig.dataKeys.forEach(key => {
-            const value = aggregatedData[key];
-            let formattedValue = formatNumber(value); // Default to simple number format
-            if (key.includes('_amt') || key.includes('_total') || key.includes('_inv')) {
-                formattedValue = formatCurrency(value);
-            } else if (key === 'ta_coll_match') {
-                // Special handling for Yes/No counts
-                const totalReports = workReports.filter(r => r[key]).length;
-                const yesCount = value;
-                const noCount = totalReports - yesCount;
-                formattedValue = `${yesCount} (होय) / ${noCount} (नाही)`;
-            }
-            tableHTML += `<td>${formattedValue}</td>`;
-        });
-        tableHTML += `</tr>`;
-    });
-
-    outputDiv.innerHTML = tableHTML + '</tbody></table>';
-}
-
-function generateIndividualAnalysis() {
-    // This function can be kept simple for now or expanded later
-    // The main focus was the collective report
-    document.getElementById('individual-analysis-result').innerHTML = '<p style="text-align:center; padding:20px;">वैयक्तिक विश्लेषण लवकरच येत आहे.</p>';
-}
-
-function generateCalendar() {
-    const staffName = document.getElementById('staffNameCalendarFilter').value;
-    const container = document.getElementById('calendar-container');
-    if (!staffName) { container.innerHTML = `<p style="text-align:center; padding:20px; color:orange;">कृपया कॅलेंडर पाहण्यासाठी एका कर्मचाऱ्याचे नाव निवडा.</p>`; return; }
-
-    const { start, end } = getValidatedDates('calendarStartDate', 'calendarEndDate');
-    if (!start || !end) return;
-
-    const staffReports = appState.allReports.filter(r => r.name === staffName);
-    const reportMap = new Map();
-    staffReports.forEach(r => reportMap.set(r.date, r));
-    
-    let calendarHTML = `<div class="date-grid">`;
-    let currentDate = new Date(start);
-    const daysOfWeekMR = ['रवि', 'सोम', 'मंगळ', 'बुध', 'गुरु', 'शुक्र', 'शनि'];
-
-    while (currentDate <= end) {
-        const dateString = `${String(currentDate.getDate()).padStart(2, '0')}/${String(currentDate.getMonth() + 1).padStart(2, '0')}/${currentDate.getFullYear()}`;
-        const dayOfWeek = daysOfWeekMR[currentDate.getDay()];
-        let dayClass = 'missed';
-        let isClickable = false;
-
-        if (reportMap.has(dateString)) {
-            const report = reportMap.get(dateString);
-            if (report.leave === 'होय') {
-                dayClass = 'on-leave';
-            } else {
-                dayClass = 'reported';
-            }
-            isClickable = true;
-        }
-
-        calendarHTML += `<div class="date-box ${dayClass}" ${isClickable ? `data-date="${dateString}"` : ''}>
-                <div class="day-of-week">${dayOfWeek}</div>
-                <div class="date-number">${dateString}</div>
-            </div>`;
-        
-        currentDate.setDate(currentDate.getDate() + 1);
-    }
-    calendarHTML += `</div>`;
-    container.innerHTML = calendarHTML;
-
-    container.querySelectorAll('.reported, .on-leave').forEach(day => {
-        day.addEventListener('click', () => showReportDetails(staffName, day.dataset.date));
-    });
-}
-
-function showReportDetails(staffName, date) {
-    const report = appState.allReports.find(r => r.name === staffName && r.date === date);
-    if (!report) return;
-
-    const modalBody = document.getElementById('modal-body');
-    let detailsHTML = `<h4>${staffName} - ${date} रोजीचा अहवाल</h4>`;
-
-    if (report.leave === 'होय') {
-        detailsHTML += `<p>या दिवशी कर्मचारी <strong>रजेवर</strong> होते.</p>`;
-    } else {
-        detailsHTML += `<ul class="report-details-list">`;
-        report.fullData.forEach((value, index) => {
-            if (value && value.toString().trim() !== "") {
-                const header = reportHeaders[index];
-                detailsHTML += `<li><strong>${header}:</strong> <span>${value}</span></li>`;
-            }
-        });
-        detailsHTML += '</ul>';
-    }
-    
-    modalBody.innerHTML = detailsHTML;
-    document.getElementById('reportModal').style.display = 'flex';
-}
-
-function closeModal() {
-    document.getElementById('reportModal').style.display = 'none';
-}
-
-// Helper functions
-function getValidatedDates(startId, endId) { const s=document.getElementById(startId).value, e=document.getElementById(endId).value; if(!s||!e){alert("कृपया 'पासून' आणि 'पर्यंत' दोन्ही तारखा निवडा.");return{}} const st=new Date(s), en=new Date(e); st.setHours(0,0,0,0); en.setHours(23,59,59,999); if(st>en){alert("सुरुवातची तारीख शेवटच्या तारखेपेक्षा जास्त असू शकत नाही.");return{}} return{start:st,end:en}; }
-function parseSheetDate(d) { if (!d) return null; const p = d.split('/'); return new Date(p[2], p[1] - 1, p[0]); }
-// *** UPDATED: Functions to format numbers in English digits ***
-function formatCurrency(n) { return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(n || 0); }
-function formatNumber(n) { return new Intl.NumberFormat('en-IN').format(n || 0); }
-function getTotalDaysInRange(s, e) { return Math.round((e - s) / (1000 * 60 * 60 * 24)) + 1; }
-</script>
-</body>
-</html>
+            <h3><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></
