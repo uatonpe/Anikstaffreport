@@ -73,10 +73,11 @@
     .report-details-list strong { color: var(--text-light); flex-basis: 40%; }
     .report-details-list span { color: var(--text-dark); font-weight: 500; flex-basis: 55%; text-align: right; }
     
-    /* NEW STYLES for Weekly Report */
+    /* NEW/UPDATED STYLES for Weekly Report */
     .status-p { color: var(--positive-color); font-weight: 700; text-align: center; }
     .status-a { color: var(--negative-color); font-weight: 700; text-align: center; }
     .status-l { color: var(--neutral-color); font-weight: 700; text-align: center; }
+    .clickable-cell { cursor: pointer; } /* Added for clickable 'P' */
     .weekly-report-summary { font-size: 16px; font-weight: 600; background-color: var(--highlight-bg); padding: 15px; border-radius: 8px; margin-bottom: 20px; }
 
     @media (max-width: 768px) { .filters-grid, .individual-filters, .calendar-filters, .weekly-filters { grid-template-columns: 1fr; } header { font-size: 20px; } .card { padding: 20px; } .calendar-legend { justify-content: center; } }
@@ -93,7 +94,7 @@
     </div>
 
     <div id="content" style="display: none;">
-        <!-- === NEW SECTION: WEEKLY REPORT === -->
+        <!-- === WEEKLY REPORT SECTION === -->
         <div class="card">
             <h3><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg>युनिटवाईज आठवडी अहवाल</h3>
             <div class="weekly-filters">
@@ -103,7 +104,7 @@
             </div>
             <div id="weekly-report-output"></div>
         </div>
-        <!-- === END OF NEW SECTION === -->
+        <!-- === END OF WEEKLY REPORT SECTION === -->
 
         <div class="card">
             <h3><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>सामूहिक कामगिरी अहवाल</h3>
@@ -188,7 +189,10 @@ window.onload = async function() {
         document.getElementById('endDate').valueAsDate = today;
         document.getElementById('calendarStartDate').valueAsDate = firstDay;
         document.getElementById('calendarEndDate').valueAsDate = today;
-        document.getElementById('startDateWeekly').valueAsDate = new Date(today.setDate(today.getDate() - 7));
+        
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(today.getDate() - 7);
+        document.getElementById('startDateWeekly').valueAsDate = sevenDaysAgo;
 
 
     } catch (error) {
@@ -200,7 +204,7 @@ window.onload = async function() {
 function populateFilters() {
     const branches = [...new Set(appState.allStaff.map(row => row[1]))].filter(Boolean).sort();
     const branchFilter = document.getElementById('branchFilter');
-    const branchFilterWeekly = document.getElementById('branchFilterWeekly'); // New Filter
+    const branchFilterWeekly = document.getElementById('branchFilterWeekly');
     
     branches.forEach(branch => { 
         branchFilter.innerHTML += `<option value="${branch.toUpperCase()}">${branch}</option>`; 
@@ -236,10 +240,9 @@ function populateFilters() {
 function createReportObject(r){
     const obj = { fullData: r };
     reportHeaders.forEach((header, index) => {
-        const key = header.toLowerCase().replace(/[^a-z0-9]/g, '_'); // Creates a more robust key
+        const key = header.toLowerCase().replace(/[^a-z0-9]/g, '_');
         obj[key] = r[index] || "";
     });
-    // For easier access to common fields
     obj.date = r[1]; obj.name = r[2]; obj.branch = r[3]; obj.leave = r[4]; obj.role = r[5];
     obj.ca_reg_amt=r[7]; obj.ca_odpast_amt=r[9]; obj.ca_meeting_count=r[11]; obj.ca_member_selection=r[12]; obj.ca_forms_filled=r[13];
     obj.fx_appraisal_count=r[14]; obj.fx_recovery_help=r[16]; obj.fx_pastdue_count=r[17]; obj.fx_pastdue_amt=r[18];
@@ -248,7 +251,7 @@ function createReportObject(r){
     return obj;
 }
 
-// === NEW FUNCTION for WEEKLY REPORT ===
+// === UPDATED FUNCTION for WEEKLY REPORT ===
 function generateWeeklyReport() {
     if (!appState.dataLoaded) return;
     const outputDiv = document.getElementById('weekly-report-output');
@@ -286,9 +289,8 @@ function generateWeeklyReport() {
         return d && d >= startDate && d <= endDate;
     });
 
-    let totalUnitReports = 0;
-    const totalPossibleDays = staffInBranch.length * 8;
-
+    let totalUnitDaysAccountedFor = 0;
+    
     let tableHTML = '<table><thead><tr><th>कर्मचारी</th>';
     dateRange.forEach(date => {
         tableHTML += `<th>${date.getDate()}/${date.getMonth()+1}</th>`;
@@ -297,7 +299,7 @@ function generateWeeklyReport() {
 
     staffInBranch.forEach(staff => {
         const staffName = staff[0];
-        let personalReportCount = 0;
+        let personalDaysAccountedFor = 0;
         tableHTML += `<tr><td>${staffName}</td>`;
 
         dateRange.forEach(date => {
@@ -307,24 +309,27 @@ function generateWeeklyReport() {
             if (report) {
                 if (report.leave === 'होय') {
                     tableHTML += `<td class="status-l">L</td>`; // Leave
+                    personalDaysAccountedFor++; // UPDATE: Count Leave for percentage
                 } else {
-                    tableHTML += `<td class="status-p">P</td>`; // Present
-                    personalReportCount++;
+                     // UPDATE: Make 'P' clickable and pass staffName and dateString
+                    tableHTML += `<td class="status-p clickable-cell" onclick="showReportDetails('${staffName}', '${dateString}')">P</td>`; // Present
+                    personalDaysAccountedFor++;
                 }
             } else {
                 tableHTML += `<td class="status-a">A</td>`; // Absent
             }
         });
         
-        totalUnitReports += personalReportCount;
-        const personalPercentage = (personalReportCount / 8) * 100;
+        totalUnitDaysAccountedFor += personalDaysAccountedFor;
+        const personalPercentage = (personalDaysAccountedFor / 8) * 100;
         tableHTML += `<td style="text-align: center; font-weight: 600;">${personalPercentage.toFixed(0)}%</td>`;
         tableHTML += `</tr>`;
     });
 
     tableHTML += '</tbody></table>';
     
-    const unitPercentage = totalPossibleDays > 0 ? (totalUnitReports / totalPossibleDays) * 100 : 0;
+    const totalPossibleDays = staffInBranch.length * 8;
+    const unitPercentage = totalPossibleDays > 0 ? (totalUnitDaysAccountedFor / totalPossibleDays) * 100 : 0;
     const summaryHTML = `
         <div class="weekly-report-summary">
             युनिटचे नांव: <strong>${selectedBranch}</strong> | एकूण रिपोर्टिंगचे प्रमाण: <strong>${unitPercentage.toFixed(0)}%</strong>
@@ -332,8 +337,6 @@ function generateWeeklyReport() {
 
     outputDiv.innerHTML = summaryHTML + tableHTML;
 }
-// === END OF NEW FUNCTION ===
-
 
 function generateCollectiveReport() {
     if (!appState.dataLoaded) return;
