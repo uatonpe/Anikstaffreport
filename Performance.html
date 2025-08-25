@@ -19,17 +19,18 @@
     .main-container { padding: 25px; max-width: 1600px; margin: 0 auto; }
     .card { background: var(--card-bg); padding: 30px; border-radius: 16px; box-shadow: var(--shadow); margin-bottom: 25px; border-top: 4px solid var(--primary-color); }
     .card h3 { margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; font-size: 20px; color: var(--header-bg); }
-    .filters-grid, .individual-filters, .calendar-filters { display: grid; gap: 20px; align-items: flex-end; }
+    .filters-grid, .individual-filters, .calendar-filters, .weekly-filters { display: grid; gap: 20px; align-items: flex-end; }
     .filters-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
     .individual-filters { grid-template-columns: 2fr 1fr; }
     .calendar-filters { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    .weekly-filters { grid-template-columns: 2fr 1fr 1fr; }
     .filter-group { display: flex; flex-direction: column; gap: 8px; }
     label { font-weight: 600; font-size: 14px; color: var(--text-light); }
     input[type="date"], select, button { border: 1px solid var(--border-color); padding: 12px 15px; border-radius: 8px; font-family: 'Inter', 'Noto Sans Devanagari', sans-serif; font-size: 15px; width: 100%; box-sizing: border-box; transition: all 0.2s ease; }
     input:focus, select:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2); }
     button { background-color: var(--primary-color); color: white; border: none; font-weight: 600; cursor: pointer; }
     button:hover { background-color: var(--header-bg); transform: translateY(-2px); }
-    #report-output { margin-top: 30px; overflow-x: auto; }
+    #report-output, #weekly-report-output { margin-top: 30px; overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; white-space: nowrap; }
     th, td { padding: 14px 18px; text-align: left; font-size: 14px; border-bottom: 1px solid var(--border-color); }
     th { background: #f8f9fa; font-weight: 600; color: var(--text-light); }
@@ -72,7 +73,13 @@
     .report-details-list strong { color: var(--text-light); flex-basis: 40%; }
     .report-details-list span { color: var(--text-dark); font-weight: 500; flex-basis: 55%; text-align: right; }
     
-    @media (max-width: 768px) { .filters-grid, .individual-filters, .calendar-filters { grid-template-columns: 1fr; } header { font-size: 20px; } .card { padding: 20px; } .calendar-legend { justify-content: center; } }
+    /* NEW STYLES for Weekly Report */
+    .status-p { color: var(--positive-color); font-weight: 700; text-align: center; }
+    .status-a { color: var(--negative-color); font-weight: 700; text-align: center; }
+    .status-l { color: var(--neutral-color); font-weight: 700; text-align: center; }
+    .weekly-report-summary { font-size: 16px; font-weight: 600; background-color: var(--highlight-bg); padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+
+    @media (max-width: 768px) { .filters-grid, .individual-filters, .calendar-filters, .weekly-filters { grid-template-columns: 1fr; } header { font-size: 20px; } .card { padding: 20px; } .calendar-legend { justify-content: center; } }
 </style>
 </head>
 <body>
@@ -86,6 +93,18 @@
     </div>
 
     <div id="content" style="display: none;">
+        <!-- === NEW SECTION: WEEKLY REPORT === -->
+        <div class="card">
+            <h3><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg>युनिटवाईज आठवडी अहवाल</h3>
+            <div class="weekly-filters">
+                <div class="filter-group"><label for="branchFilterWeekly">युनिट / शाखा:</label><select id="branchFilterWeekly"><option value="">-- युनिट निवडा --</option></select></div>
+                <div class="filter-group"><label for="startDateWeekly">सुरुवातीची तारीख (पुढील 8 दिवस):</label><input type="date" id="startDateWeekly"></div>
+                <button onclick="generateWeeklyReport()">अहवाल तयार करा</button>
+            </div>
+            <div id="weekly-report-output"></div>
+        </div>
+        <!-- === END OF NEW SECTION === -->
+
         <div class="card">
             <h3><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>सामूहिक कामगिरी अहवाल</h3>
             <div class="filters-grid">
@@ -169,6 +188,8 @@ window.onload = async function() {
         document.getElementById('endDate').valueAsDate = today;
         document.getElementById('calendarStartDate').valueAsDate = firstDay;
         document.getElementById('calendarEndDate').valueAsDate = today;
+        document.getElementById('startDateWeekly').valueAsDate = new Date(today.setDate(today.getDate() - 7));
+
 
     } catch (error) {
         console.error("Error loading data:", error);
@@ -179,7 +200,12 @@ window.onload = async function() {
 function populateFilters() {
     const branches = [...new Set(appState.allStaff.map(row => row[1]))].filter(Boolean).sort();
     const branchFilter = document.getElementById('branchFilter');
-    branches.forEach(branch => { branchFilter.innerHTML += `<option value="${branch.toUpperCase()}">${branch}</option>`; });
+    const branchFilterWeekly = document.getElementById('branchFilterWeekly'); // New Filter
+    
+    branches.forEach(branch => { 
+        branchFilter.innerHTML += `<option value="${branch.toUpperCase()}">${branch}</option>`; 
+        branchFilterWeekly.innerHTML += `<option value="${branch.toUpperCase()}">${branch}</option>`;
+    });
 
     const staffByBranch = appState.allStaff.reduce((acc, staff) => {
         const branch = staff[1] || 'Uncategorized';
@@ -221,6 +247,93 @@ function createReportObject(r){
     obj.ta_analysis_reports=r[30]; obj.ta_coll_match=r[31]; obj.ta_finance_update=r[33]; obj.ta_spmb_update=r[34];
     return obj;
 }
+
+// === NEW FUNCTION for WEEKLY REPORT ===
+function generateWeeklyReport() {
+    if (!appState.dataLoaded) return;
+    const outputDiv = document.getElementById('weekly-report-output');
+
+    const selectedBranch = document.getElementById('branchFilterWeekly').value;
+    if (!selectedBranch) {
+        outputDiv.innerHTML = `<p style="text-align:center; padding: 20px; color:orange;">कृपया अहवाल तयार करण्यासाठी युनिट निवडा.</p>`;
+        return;
+    }
+    const startDateValue = document.getElementById('startDateWeekly').value;
+    if (!startDateValue) {
+        outputDiv.innerHTML = `<p style="text-align:center; padding: 20px; color:orange;">कृपया सुरुवातीची तारीख निवडा.</p>`;
+        return;
+    }
+
+    const startDate = new Date(startDateValue);
+    startDate.setHours(0, 0, 0, 0);
+
+    const dateRange = [];
+    for (let i = 0; i < 8; i++) {
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + i);
+        dateRange.push(date);
+    }
+    const endDate = dateRange[dateRange.length - 1];
+    
+    const staffInBranch = appState.allStaff.filter(s => s[1] && s[1].toUpperCase() === selectedBranch).sort((a,b) => a[0].localeCompare(b[0]));
+    if (staffInBranch.length === 0) {
+        outputDiv.innerHTML = `<p style="text-align:center; padding: 20px;">या युनिटमध्ये कोणताही कर्मचारी सापडला नाही.</p>`;
+        return;
+    }
+
+    const reportsInRange = appState.allReports.filter(r => {
+        const d = parseSheetDate(r.date);
+        return d && d >= startDate && d <= endDate;
+    });
+
+    let totalUnitReports = 0;
+    const totalPossibleDays = staffInBranch.length * 8;
+
+    let tableHTML = '<table><thead><tr><th>कर्मचारी</th>';
+    dateRange.forEach(date => {
+        tableHTML += `<th>${date.getDate()}/${date.getMonth()+1}</th>`;
+    });
+    tableHTML += '<th>रिपोर्टिंग %</th></tr></thead><tbody>';
+
+    staffInBranch.forEach(staff => {
+        const staffName = staff[0];
+        let personalReportCount = 0;
+        tableHTML += `<tr><td>${staffName}</td>`;
+
+        dateRange.forEach(date => {
+            const dateString = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+            const report = reportsInRange.find(r => r.name === staffName && r.date === dateString);
+            
+            if (report) {
+                if (report.leave === 'होय') {
+                    tableHTML += `<td class="status-l">L</td>`; // Leave
+                } else {
+                    tableHTML += `<td class="status-p">P</td>`; // Present
+                    personalReportCount++;
+                }
+            } else {
+                tableHTML += `<td class="status-a">A</td>`; // Absent
+            }
+        });
+        
+        totalUnitReports += personalReportCount;
+        const personalPercentage = (personalReportCount / 8) * 100;
+        tableHTML += `<td style="text-align: center; font-weight: 600;">${personalPercentage.toFixed(0)}%</td>`;
+        tableHTML += `</tr>`;
+    });
+
+    tableHTML += '</tbody></table>';
+    
+    const unitPercentage = totalPossibleDays > 0 ? (totalUnitReports / totalPossibleDays) * 100 : 0;
+    const summaryHTML = `
+        <div class="weekly-report-summary">
+            युनिटचे नांव: <strong>${selectedBranch}</strong> | एकूण रिपोर्टिंगचे प्रमाण: <strong>${unitPercentage.toFixed(0)}%</strong>
+        </div>`;
+
+    outputDiv.innerHTML = summaryHTML + tableHTML;
+}
+// === END OF NEW FUNCTION ===
+
 
 function generateCollectiveReport() {
     if (!appState.dataLoaded) return;
@@ -317,7 +430,6 @@ function generateCalendar() {
     const { start, end } = getValidatedDates('calendarStartDate', 'calendarEndDate');
     if (!start || !end) return;
 
-    // Get all reports for the staff member in the given period
     const staffReportsAll = appState.allReports.filter(r => {
         const d = parseSheetDate(r.date);
         return r.name === staffName && d && d >= start && d <= end;
@@ -331,7 +443,7 @@ function generateCalendar() {
     daysOfWeek.forEach(day => { calendarHTML += `<div class="calendar-day day-header">${day}</div>`; });
     
     let currentDate = new Date(start);
-    const startDayOfWeek = currentDate.getDay(); // 0 for Sunday
+    const startDayOfWeek = currentDate.getDay();
     for (let i = 0; i < startDayOfWeek; i++) {
         calendarHTML += `<div class="calendar-day empty"></div>`;
     }
