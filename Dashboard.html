@@ -197,9 +197,7 @@ function processData() {
 
     appState.viewableReports.forEach(reportObject => {
         const role = reportObject.role?.toUpperCase();
-        if (role && ROLES.includes(role)) {
-            roleMetrics[role].submitted++;
-        }
+        if (role && ROLES.includes(role)) { roleMetrics[role].submitted++; }
     });
     
     updateKPIs(metrics);
@@ -252,51 +250,20 @@ function drawPieChart(submitted, pending) {
     });
 }
 
-// ▼▼▼ सर्वात महत्त्वाचा आणि दुरुस्त केलेला भाग - १ ▼▼▼
 function createReportObject(row) {
-    // नवीन 37-कॉलम रचनेनुसार डेटा मॅपिंग
+    // नवीन 39-रकाना रचनेनुसार डेटा मॅपिंग
     return {
-        date: row[1],
-        name: row[2],
-        branch: row[3],
-        leave: row[4],
-        role: row[5],
-        // CA Fields (index 6 ते 13)
-        ca_reg_count: row[6],
-        ca_reg_amt: row[7],
-        ca_odpast_count: row[8],
-        ca_odpast_amt: row[9],
-        ca_meeting_village: row[10],
-        ca_meeting_count: row[11],
-        ca_member_selection: row[12],
-        ca_forms_filled: row[13],
-        // FX Fields (index 14 ते 18)
-        fx_appraisal_count: row[14],
-        fx_appraisal_villages: row[15],
-        fx_recovery_help: row[16],
-        fx_pastdue_count: row[17],
-        fx_pastdue_amt: row[18],
-        // BM Fields (index 19 ते 29)
-        bm_disburse_village: row[19],
-        bm_disburse_members: row[20],
-        bm_disburse_amt: row[21],
-        bm_coll_regular: row[22],
-        bm_coll_pastdue: row[23],
-        bm_coll_od: row[24],
-        bm_coll_total: row[25],
-        bm_appr_approved: row[26],
-        bm_appr_rejected: row[27],
-        bm_reject_reason: row[28],
-        bm_investment_amt: row[29],
-        // TA Fields (index 30 ते 35)
-        ta_analysis_reports: row[30],
-        ta_coll_match: row[31],
-        ta_match_reason: row[32],
-        ta_finance_update: row[33],
-        ta_spmb_update: row[34],
-        ta_recovery_tracker: row[35],
-        // General Notes (index 36)
-        notes: row[36]
+        date: row[1], name: row[2], branch: row[3], leave: row[4], role: row[5],
+        ca_reg_count: row[6], ca_reg_amt: row[7], ca_odpast_count: row[8], ca_odpast_amt: row[9],
+        ca_meeting_village: row[10], ca_meeting_count: row[11], ca_member_selection: row[12], ca_forms_filled: row[13],
+        fx_appraisal_count: row[14], fx_appraisal_villages: row[15], fx_recovery_help: row[16],
+        fx_pastdue_count: row[17], fx_pastdue_amt: row[18], fx_auto_emi_filled: row[19],
+        bm_disburse_village: row[20], bm_disburse_members: row[21], bm_disburse_amt: row[22],
+        bm_coll_regular: row[23], bm_coll_pastdue: row[24], bm_coll_od: row[25], bm_coll_total: row[26],
+        bm_appr_approved: row[27], bm_appr_rejected: row[28], bm_reject_reason: row[29], bm_investment_amt: row[30],
+        ta_analysis_reports: row[31], ta_coll_match: row[32], ta_match_reason: row[33],
+        ta_finance_update: row[34], ta_spmb_update: row[35], ta_recovery_tracker: row[36], ta_auto_emi_activated: row[37],
+        notes: row[38]
     };
 }
 
@@ -309,27 +276,17 @@ function showRoleDetails(role) {
     const reportsForThisRole = appState.viewableReports.filter(obj => obj.role === role);
     const submittedNamesInRole = new Set(reportsForThisRole.map(r => r.name));
     const pendingList = staffInRole.filter(s => !submittedNamesInRole.has(s[0]));
-
     const modal = document.getElementById('roleDetailsModal');
     document.getElementById('roleModalTitle').innerText = `${document.getElementById(`kpiLabel${role}`).innerText} - अहवाल स्थिती (${appState.currentBranch === 'ALL' ? 'सर्व शाखा' : appState.currentBranch})`;
-    
     document.getElementById('roleSubmittedList').innerHTML = reportsForThisRole.length > 0 
-        ? reportsForThisRole.map(s => {
-            const originalIndex = findReportIndexByName(s.name);
-            return `<li><span>${s.name}</span><span class="clickable" onclick="viewReport(${originalIndex})">वाचा</span></li>`
-          }).join('') 
+        ? reportsForThisRole.map(s => { const originalIndex = findReportIndexByName(s.name); return `<li><span>${s.name}</span><span class="clickable" onclick="viewReport(${originalIndex})">वाचा</span></li>` }).join('') 
         : `<li style="color:#777;">कोणीही अहवाल सबमिट केलेला नाही.</li>`;
-
     document.getElementById('rolePendingList').innerHTML = pendingList.length > 0 ? pendingList.map(p => `<li>${p[0]}</li>`).join('') : `<li style="color:var(--submitted-color);">सर्व अहवाल सबमिट झाले आहेत.</li>`;
     modal.style.display = 'block';
 }
 
-// ▼▼▼ सर्वात महत्त्वाचा आणि दुरुस्त केलेला भाग - २ ▼▼▼
 function viewReport(reportIndex) {
-    if (reportIndex < 0 || reportIndex >= appState.viewableReports.length) {
-        console.error("Invalid report index:", reportIndex);
-        return;
-    }
+    if (reportIndex < 0 || reportIndex >= appState.viewableReports.length) { console.error("Invalid report index:", reportIndex); return; }
     const data = appState.viewableReports[reportIndex];
     const modalContent = document.getElementById('modalReportContent');
     let html = `<p><strong>कर्मचारी:</strong> ${data.name || 'N/A'}</p><p><strong>शाखा:</strong> ${data.branch || 'N/A'}</p><hr>`;
@@ -352,6 +309,7 @@ function viewReport(reportIndex) {
                     <p><strong>अॅप्रोयझल:</strong> ${data.fx_appraisal_count || 0} गट (${data.fx_appraisal_villages || 'गाव नाही'})</p>
                     <p><strong>रिकवरी मध्ये मदत:</strong> ${data.fx_recovery_help || 'काही नाही'}</p>
                     <p><strong>पास्ट डयु कलेक्शन:</strong> ${data.fx_pastdue_count || 0} खाती, ${data.fx_pastdue_amt || 0} रु.</p>
+                    <p><strong>ऑटो EMI फॉर्म भरले:</strong> ${data.fx_auto_emi_filled || 0}</p>
                     <p><strong>विशेष नोंदी:</strong> ${data.notes || 'काही नाही'}</p>`;
                 break;
             case 'BM':
@@ -371,6 +329,7 @@ function viewReport(reportIndex) {
                     <p><strong>फायनान्स सिस्टीम अपडेट:</strong> ${data.ta_finance_update ? new Date(data.ta_finance_update).toLocaleDateString('mr-IN') : 'N/A'}</p>
                     <p><strong>SPMB टि सिस्टीम अपडेट:</strong> ${data.ta_spmb_update ? new Date(data.ta_spmb_update).toLocaleDateString('mr-IN') : 'N/A'}</p>
                     <p><strong>रिकव्हरी ट्रॅकर पाठवले:</strong> ${data.ta_recovery_tracker || 'N/A'}</p>
+                    <p><strong>ऑटो EMI फॉर्म लागु केले:</strong> ${data.ta_auto_emi_activated || 0}</p>
                     <p><strong>विशेष नोंदी:</strong> ${data.notes || 'काही नाही'}</p>`;
                 break;
             default:
@@ -385,22 +344,26 @@ function searchHistory() {
     const name = document.getElementById('searchName').value.trim().toLowerCase();
     const startInput = document.getElementById('startDate').value;
     const endInput = document.getElementById('endDate').value;
-    const start = startInput ? new Date(startInput) : null;
-    if (start) start.setHours(0, 0, 0, 0);
-    const end = endInput ? new Date(endInput) : null;
-    if (end) end.setHours(23, 59, 59, 999);
+    if (!startInput || !endInput) { alert("कृपया 'पासून' आणि 'पर्यंत' दोन्ही तारखा निवडा."); return; }
+    const start = new Date(startInput); start.setHours(0, 0, 0, 0);
+    const end = new Date(endInput); end.setHours(23, 59, 59, 999);
+    
+    // Search directly in allReports instead of filtering first
     const results = appState.allReports.filter(r => {
         const dateParts = r[1].split('/');
         const reportDate = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
         const staffName = r[2] ? r[2].toLowerCase() : '';
-        return staffName.includes(name) && (!start || reportDate >= start) && (!end || reportDate <= end);
+        return staffName.includes(name) && reportDate >= start && reportDate <= end;
     });
-    appState.viewableReports = results.map(r => createReportObject(r));
+
+    const reportObjects = results.map(r => createReportObject(r));
+    appState.viewableReports = reportObjects; // Temporarily store for viewing
+    
     const tableBody = document.querySelector('#historyTable tbody');
     if (results.length === 0) {
         tableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#777;">या निकषात कोणताही अहवाल सापडला नाही.</td></tr>`;
     } else {
-        tableBody.innerHTML = appState.viewableReports.map((r, index) => `<tr><td>${r.date}</td><td>${r.name}</td><td><span class="clickable" onclick="viewReport(${index})">वाचा</span></td></tr>`).join('');
+        tableBody.innerHTML = reportObjects.map((r, index) => `<tr><td>${r.date}</td><td>${r.name}</td><td><span class="clickable" onclick="viewReport(${index})">वाचा</span></td></tr>`).join('');
     }
 }
 
