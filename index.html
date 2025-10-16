@@ -55,6 +55,10 @@
             <div class="form-group"><label>आजचे अॅ्प्रोयझल</label><div class="input-group"><div><input type="number" id="fx_appraisal_count" placeholder="गटांची संख्या"></div><div><input type="text" id="fx_appraisal_villages" placeholder="कुठल्या गावांमध्ये"></div></div></div>
             <div class="form-group"><label for="fx_recovery_help">रिकवरी मध्ये मदत (काय स्वरूपाची)</label><textarea id="fx_recovery_help" rows="2"></textarea></div>
             <div class="form-group"><label>आजचे पास्ट डयु कलेक्शन</label><div class="input-group"><div><input type="number" id="fx_pastdue_count" placeholder="खाते संख्या"></div><div><input type="number" id="fx_pastdue_amt" placeholder="रक्कम"></div></div></div>
+            
+            <!-- ▼▼▼ नवा प्रश्न (FX) ▼▼▼ -->
+            <div class="form-group"><label for="fx_auto_emi_filled">आज किती सदस्यांचे अॅटो ई एम आय फॉर्म भरून घेतले?</label><input type="number" id="fx_auto_emi_filled"></div>
+            
             <div class="form-group"><label for="fx_notes">आजच्या इतर विशेष नोंदी</label><textarea id="fx_notes" rows="3"></textarea></div>
         </div>
 
@@ -75,6 +79,10 @@
             <div class="form-group"><label>आजचे कलेक्शन मॅच झाले का?</label><select id="ta_coll_match"><option value="">-- निवडा --</option><option value="होय">होय</option><option value="नाही">नाही</option></select><textarea id="ta_match_reason" placeholder="नाही, तर का?" rows="2" style="display:none; margin-top:10px;"></textarea></div>
             <div class="form-group"><label>सिस्टीम अपडेट तारीख</label><div class="input-group"><div><label for="ta_finance_update">फायनान्स सिस्टीम</label><input type="date" id="ta_finance_update"></div><div><label for="ta_spmb_update">SPMB टि सिस्टीम</label><input type="date" id="ta_spmb_update"></div></div></div>
             <div class="form-group"><label>आजचे रिकव्हरी ट्रॅकर पाठवले काय?</label><select id="ta_recovery_tracker"><option value="">-- निवडा --</option><option value="होय">होय</option><option value="नाही">नाही</option></select></div>
+            
+            <!-- ▼▼▼ नवा प्रश्न (TA) ▼▼▼ -->
+            <div class="form-group"><label for="ta_auto_emi_activated">आज किती सदस्यांचे अॅटो ई एम आय फॉर्म लागु करून दिले?</label><input type="number" id="ta_auto_emi_activated"></div>
+
             <div class="form-group"><label for="ta_notes">आजच्या इतर विशेष नोंदी</label><textarea id="ta_notes" rows="3"></textarea></div>
         </div>
     </div>
@@ -88,13 +96,13 @@
     // ▼▼▼▼▼ कॉन्फिगरेशन व्हेरिएबल्स ▼▼▼▼▼
     const API_KEY = "AIzaSyCib9D8dkRRV7MyGDfTcCqaubl19RnCdhQ"; // तुमची API की
     const SHEET_ID = "1or7yTCZLhu1qdTijEBC--9lHsigVb3yy1nY-qByHIGY"; // तुमचा शीट आयडी
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzbGXkE59O5Rf8VUzFFunbXavr2rRQMWNYExZazIHB6hA0aHNsGJqWIWwCgFk4AoXio/exec"; // तुमची Web App URL
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwU9xpUzALdQOY_mbqUzF-Aq79fBjY9iysZ-QPYLAfYTsWiB_Gx8WacLnBvOkWvedxw/exec"; // तुमची Web App URL
     const STAFF_SHEET = "StaffList";
-    const REPORTS_SHEET = "Reports"; // नवीन व्हेरिएबल
+    const REPORTS_SHEET = "Reports";
     
     // Global variables
     let staffList = [];
-    let existingReports = []; // नवीन व्हेरिएबल: [ [date1, name1], [date2, name2] ]
+    let existingReports = [];
     let currentUserRole = '';
 
     // Element references
@@ -112,24 +120,16 @@
     // --- INITIAL DATA LOADING ---
     async function loadInitialData() {
         const staffUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${STAFF_SHEET}?key=${API_KEY}`;
-        const reportsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${REPORTS_SHEET}!B:C?key=${API_KEY}`; // फक्त तारीख आणि नाव लोड करा
+        const reportsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${REPORTS_SHEET}!B:C?key=${API_KEY}`;
 
         try {
-            const [staffResponse, reportsResponse] = await Promise.all([
-                fetch(staffUrl),
-                fetch(reportsUrl)
-            ]);
-
+            const [staffResponse, reportsResponse] = await Promise.all([ fetch(staffUrl), fetch(reportsUrl) ]);
             if (!staffResponse.ok) throw new Error(`Staff list API call failed: Status ${staffResponse.status}.`);
             if (!reportsResponse.ok) throw new Error(`Reports list API call failed: Status ${reportsResponse.status}.`);
-
             const staffData = await staffResponse.json();
             const reportsData = await reportsResponse.json();
-
             staffList = staffData.values ? staffData.values.slice(1) : [];
-            existingReports = reportsData.values ? reportsData.values.slice(1) : []; 
-
-            // Populate Branches
+            existingReports = reportsData.values ? reportsData.values.slice(1) : [];
             const branches = [...new Set(staffList.map(row => row[1]))].filter(Boolean);
             branchSelect.innerHTML = '<option value="">-- शाखा निवडा --</option>';
             branches.forEach(branch => {
@@ -139,11 +139,8 @@
                 branchSelect.appendChild(option);
             });
             branchSelect.disabled = false;
-
-            // Set default date and validate it
             reportDateInput.valueAsDate = new Date();
             validateDate();
-
         } catch (error) {
             console.error("Error loading initial data:", error);
             alert("डेटा लोड करण्यात अयशस्वी! कृपया तुमचे इंटरनेट कनेक्शन, API Key आणि शीटच्या परवानग्या तपासा.");
@@ -156,23 +153,17 @@
         currentUserRole = role ? role.toUpperCase() : '';
         document.querySelectorAll('.role-form').forEach(form => form.style.display = 'none');
         const formToShow = document.getElementById(`form-${currentUserRole}`);
-        if (formToShow) {
-            formToShow.style.display = 'block';
-        }
+        if (formToShow) { formToShow.style.display = 'block'; }
     }
     
     // --- DATE VALIDATION LOGIC ---
     function validateDate() {
         const selectedDate = new Date(reportDateInput.value);
         const today = new Date();
-        
-        // वेळेचा भाग काढून टाकण्यासाठी तारखा रीसेट करा
         selectedDate.setHours(0, 0, 0, 0);
         today.setHours(0, 0, 0, 0);
-
         const threeDaysAgo = new Date(today);
         threeDaysAgo.setDate(today.getDate() - 3);
-
         if (selectedDate < threeDaysAgo) {
             alert("तुमचे रिपोर्ट ३ दिवसांपेक्षा जास्त प्र​लंबित आहेत, त्यामुळे तुम्हांला ते अपलोड करता येणार नाही.");
             submitBtn.disabled = true;
@@ -188,34 +179,21 @@
         const branch = branchSelect.value;
         const name = employeeSelect.value;
         const leave = leaveSelect.value;
-        
-        if (!branch || !name || !reportDateInput.value) {
-            alert("⚠️ कृपया शाखा, नाव आणि दिनांक निवडा.");
-            return;
-        }
-        
-        // 1. तारीख मर्यादा पुन्हा तपासा
+        if (!branch || !name || !reportDateInput.value) { alert("⚠️ कृपया शाखा, नाव आणि दिनांक निवडा."); return; }
         if (!validateDate()) return;
-        
         const formattedDate = new Date(reportDateInput.value).toLocaleDateString('en-GB', { timeZone: 'Asia/Kolkata' });
-
-        // 2. डुप्लिकेट रिपोर्ट तपासा
         const isDuplicate = existingReports.some(report => report[0] === formattedDate && report[1] === name);
-        if (isDuplicate) {
-            alert("या तारखेचा अहवाल तुम्ही आधीच सबमिट केला आहे.");
-            return;
-        }
+        if (isDuplicate) { alert("या तारखेचा अहवाल तुम्ही आधीच सबमिट केला आहे."); return; }
 
-        // --- Data collection (हा भाग तसाच राहील) ---
         let reportData = {};
         if (leave === "होय") {
             reportData = { role: currentUserRole, notes: "रजा" };
         } else {
             switch (currentUserRole) {
                 case 'CA': reportData = { role: 'CA', ca_reg_count: document.getElementById('ca_reg_count').value, ca_reg_amt: document.getElementById('ca_reg_amt').value, ca_odpast_count: document.getElementById('ca_odpast_count').value, ca_odpast_amt: document.getElementById('ca_odpast_amt').value, ca_meeting_village: document.getElementById('ca_meeting_village').value, ca_meeting_count: document.getElementById('ca_meeting_count').value, ca_member_selection: document.getElementById('ca_member_selection').value, ca_forms_filled: document.getElementById('ca_forms_filled').value, notes: document.getElementById('ca_notes').value }; break;
-                case 'FX': reportData = { role: 'FX', fx_appraisal_count: document.getElementById('fx_appraisal_count').value, fx_appraisal_villages: document.getElementById('fx_appraisal_villages').value, fx_recovery_help: document.getElementById('fx_recovery_help').value, fx_pastdue_count: document.getElementById('fx_pastdue_count').value, fx_pastdue_amt: document.getElementById('fx_pastdue_amt').value, notes: document.getElementById('fx_notes').value }; break;
+                case 'FX': reportData = { role: 'FX', fx_appraisal_count: document.getElementById('fx_appraisal_count').value, fx_appraisal_villages: document.getElementById('fx_appraisal_villages').value, fx_recovery_help: document.getElementById('fx_recovery_help').value, fx_pastdue_count: document.getElementById('fx_pastdue_count').value, fx_pastdue_amt: document.getElementById('fx_pastdue_amt').value, fx_auto_emi_filled: document.getElementById('fx_auto_emi_filled').value, notes: document.getElementById('fx_notes').value }; break;
                 case 'BM': reportData = { role: 'BM', bm_disburse_village: document.getElementById('bm_disburse_village').value, bm_disburse_members: document.getElementById('bm_disburse_members').value, bm_disburse_amt: document.getElementById('bm_disburse_amt').value, bm_coll_regular: document.getElementById('bm_coll_regular').value, bm_coll_pastdue: document.getElementById('bm_coll_pastdue').value, bm_coll_od: document.getElementById('bm_coll_od').value, bm_coll_total: document.getElementById('bm_coll_total').value, bm_appr_approved: document.getElementById('bm_appr_approved').value, bm_appr_rejected: document.getElementById('bm_appr_rejected').value, bm_reject_reason: document.getElementById('bm_reject_reason').value, bm_investment_amt: document.getElementById('bm_investment_amt').value, notes: document.getElementById('bm_notes').value }; break;
-                case 'TA': reportData = { role: 'TA', ta_analysis_reports: document.getElementById('ta_analysis_reports').value, ta_coll_match: document.getElementById('ta_coll_match').value, ta_match_reason: document.getElementById('ta_match_reason').value, ta_finance_update: document.getElementById('ta_finance_update').value, ta_spmb_update: document.getElementById('ta_spmb_update').value, ta_recovery_tracker: document.getElementById('ta_recovery_tracker').value, notes: document.getElementById('ta_notes').value }; break;
+                case 'TA': reportData = { role: 'TA', ta_analysis_reports: document.getElementById('ta_analysis_reports').value, ta_coll_match: document.getElementById('ta_coll_match').value, ta_match_reason: document.getElementById('ta_match_reason').value, ta_finance_update: document.getElementById('ta_finance_update').value, ta_spmb_update: document.getElementById('ta_spmb_update').value, ta_recovery_tracker: document.getElementById('ta_recovery_tracker').value, ta_auto_emi_activated: document.getElementById('ta_auto_emi_activated').value, notes: document.getElementById('ta_notes').value }; break;
                 default: reportData = { role: currentUserRole || 'Other', notes: "Not Applicable" };
             }
         }
@@ -230,16 +208,12 @@
             const response = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify({ date: formattedDate, name, branch, leave, report: JSON.stringify(reportData) }) });
             const result = await response.json();
             if (result.status !== "success") throw new Error(result.message);
-
             const reportDateForMessage = new Date(reportDateInput.value).toLocaleDateString('mr-IN', { day: '2-digit', month: 'long', year: 'numeric' });
             document.querySelector('.success-message').innerHTML = `<strong>${name}</strong>, दिनांक ${reportDateForMessage} रोजीचा आपला अहवाल यशस्वीरित्या नोंदविला गेला आहे.`;
             loaderContainer.style.display = 'none';
             successMessageContainer.style.display = 'block';
             closeModalBtn.style.display = 'inline-block';
-            
-            // नवीन रिपोर्ट यशस्वीरित्या सबमिट झाल्यावर, त्याला existingReports मध्ये जोडा
             existingReports.push([formattedDate, name]);
-
         } catch (error) {
             alert("❌ अहवाल सबमिट करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा. Error: " + error.message);
             resetFormState(false);
@@ -271,34 +245,22 @@
                 employeeSelect.appendChild(option);
             });
             employeeSelect.disabled = false;
-        } else {
-            employeeSelect.disabled = true;
-        }
+        } else { employeeSelect.disabled = true; }
         showRoleForm('');
     });
-    
     employeeSelect.addEventListener('change', (e) => {
-        const selectedName = e.target.value;
-        const staffMember = staffList.find(s => s[0] === selectedName);
-        const role = staffMember ? staffMember[2] : '';
-        showRoleForm(role);
+        const staffMember = staffList.find(s => s[0] === e.target.value);
+        showRoleForm(staffMember ? staffMember[2] : '');
     });
-    
     leaveSelect.addEventListener('change', () => {
         roleFormsContainer.style.display = leaveSelect.value === 'होय' ? 'none' : 'block';
     });
-
     document.getElementById('ta_coll_match').addEventListener('change', (e) => {
         document.getElementById('ta_match_reason').style.display = e.target.value === 'नाही' ? 'block' : 'none';
     });
-    
-    // नवीन इव्हेंट लिसनर
     reportDateInput.addEventListener('change', validateDate);
-    
     closeModalBtn.addEventListener('click', () => { resetFormState(true); });
-    
-    // Initial load
     document.addEventListener('DOMContentLoaded', loadInitialData);
 </script>
-</body>
+</body> 
 </html>
