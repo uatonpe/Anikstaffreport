@@ -12,6 +12,7 @@
     :root {
         --primary-bg: #f0f2f5; --card-bg: #ffffff; --header-bg-start: #1B4F72; --header-bg-end: #5DADE2; --primary-text: #34495E; --secondary-text: #7F8C8D; --accent-color: #5DADE2; --submitted-color: #2ECC71; --pending-color: #F39C12; --border-color: #e5e7eb; --shadow-light: rgba(0,0,0,0.05); --shadow-medium: rgba(0,0,0,0.1);
         --role-ca-color: #3498DB; --role-fx-color: #9B59B6; --role-bm-color: #E74C3C; --role-ta-color: #16A085;
+        --consent-color: #1ABC9C; --performance-color: #8E44AD;
     }
     body { font-family: 'Inter', 'Noto Sans Devanagari', sans-serif; background: var(--primary-bg); margin: 0; padding: 0; color: var(--primary-text); }
     header { background: linear-gradient(90deg, var(--header-bg-start), var(--header-bg-end)); padding: 20px 30px; color: white; text-align: center; font-size: 26px; font-weight: 700; letter-spacing: 1px; box-shadow: 0 4px 12px var(--shadow-medium); position: sticky; top: 0; z-index: 100; }
@@ -38,6 +39,8 @@
     #totalStaff { border-color: var(--primary-text); } #totalStaff .kpi-icon { background-color: #e8f0fe; }
     #submittedReports { border-color: var(--submitted-color); } #submittedReports .kpi-icon { background-color: #e6f9f0; }
     #pendingReports { border-color: var(--pending-color); } #pendingReports .kpi-icon { background-color: #fff8e1; }
+    #consentForms { border-color: var(--consent-color); } #consentForms .kpi-icon { background-color: rgba(26, 188, 156, 0.1); }
+    #reportingPerformance { border-color: var(--performance-color); } #reportingPerformance .kpi-icon { background-color: rgba(142, 68, 173, 0.1); }
     .role-kpi { border-left-width: 5px; } .role-kpi .kpi-value { font-size: 26px; }
     #kpiCA { border-color: var(--role-ca-color); } #kpiCA .kpi-icon { background-color: rgba(52, 152, 219, 0.1); }
     #kpiFX { border-color: var(--role-fx-color); } #kpiFX .kpi-icon { background-color: rgba(155, 89, 182, 0.1); }
@@ -66,6 +69,10 @@
     .role-list-container h4 { margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; font-size: 16px; }
     .role-list-container ul { list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto; }
     .role-list-container li { padding: 8px 5px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+    .progress-bar-container { width: 100%; background-color: #e0e0e0; border-radius: 4px; overflow: hidden; }
+    .progress-bar { height: 18px; line-height: 18px; text-align: right; padding-right: 5px; color: white; font-size: 12px; font-weight: bold; border-radius: 4px; background-color: var(--submitted-color); transition: width 0.5s ease-in-out; }
+    .progress-bar.medium { background-color: var(--pending-color); }
+    .progress-bar.low { background-color: var(--role-bm-color); }
     @media (max-width: 600px) { .role-details-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -85,6 +92,8 @@
         <div class="kpi" id="totalStaff"><div class="kpi-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="var(--primary-text)" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div><div class="kpi-content"><div class="kpi-value" id="kpiTotal">0</div><div class="kpi-label">एकूण कर्मचारी</div></div></div>
         <div class="kpi" id="submittedReports" onclick="highlightList('submitted')"><div class="kpi-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="var(--submitted-color)" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><div class="kpi-content"><div class="kpi-value" id="kpiSubmitted">0</div><div class="kpi-label">सबमिट अहवाल</div></div></div>
         <div class="kpi" id="pendingReports" onclick="highlightList('pending')"><div class="kpi-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="var(--pending-color)" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div><div class="kpi-content"><div class="kpi-value" id="kpiPending">0</div><div class="kpi-label">प्रलंबित अहवाल</div></div></div>
+        <div class="kpi" id="consentForms" onclick="showConsentDetails()"><div class="kpi-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="var(--consent-color)"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 14h-2v2h-2v-2H8v-2h4V8h2v6h2v2zm-3-7V3.5L18.5 9H13z"/></svg></div><div class="kpi-content"><div class="kpi-value" id="kpiValueConsent">0</div><div class="kpi-label">संमती फॉर्म</div></div></div>
+        <div class="kpi" id="reportingPerformance" onclick="showPerformanceDetails()"><div class="kpi-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="var(--performance-color)"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6h-6z"/></svg></div><div class="kpi-content"><div class="kpi-value" id="kpiValuePerformance">0%</div><div class="kpi-label">सरासरी रिपोर्टिंग</div></div></div>
     </div>
     <div class="card" style="margin-top: 20px;">
         <h3>भूमिका-निहाय कामगिरी (Role-wise Performance)</h3>
@@ -119,6 +128,10 @@
 <div id="reportModal" class="modal"><div class="modal-content"><span class="close" onclick="document.getElementById('reportModal').style.display='none'">&times;</span><h3>अहवाल तपशील</h3><div id="modalReportContent"></div></div></div>
 <div id="roleDetailsModal" class="modal"><div class="modal-content" style="max-width: 700px;"><span class="close" onclick="document.getElementById('roleDetailsModal').style.display='none'">&times;</span><h3 id="roleModalTitle">भूमिका तपशील</h3><div class="role-details-grid"><div class="role-list-container"><h4>✅ सबमिट केलेले</h4><ul id="roleSubmittedList"></ul></div><div class="role-list-container"><h4>❌ प्रलंबित</h4><ul id="rolePendingList"></ul></div></div></div></div>
 
+<div id="consentModal" class="modal"><div class="modal-content"><span class="close" onclick="document.getElementById('consentModal').style.display='none'">&times;</span><h3>संमती फॉर्म अहवाल</h3><div id="consentModalContent"></div></div></div>
+<div id="performanceModal" class="modal"><div class="modal-content" style="max-width: 800px;"><span class="close" onclick="document.getElementById('performanceModal').style.display='none'">&times;</span><h3 id="performanceModalTitle">मासिक रिपोर्टिंग कामगिरी</h3><div id="performanceModalContent"></div></div></div>
+
+
 <script>
 // --- CONFIGURATION ---
 const API_KEY = "AIzaSyCib9D8dkRRV7MyGDfTcCqaubl19RnCdhQ";
@@ -129,7 +142,7 @@ const ROLES = ['CA', 'FX', 'BM', 'TA'];
 
 google.charts.load('current', {'packages':['corechart']});
 
-const appState = { allStaff: [], allReports: [], currentBranch: "ALL", dataLoaded: false, viewableReports: [] };
+const appState = { allStaff: [], allReports: [], currentBranch: "ALL", dataLoaded: false, viewableReports: [], monthlyPerformance: [] };
 document.getElementById('dashboardDate').valueAsDate = new Date();
 
 function changeBranch(branch, element) {
@@ -175,6 +188,19 @@ async function loadDashboard() {
     }
 }
 
+function getBusinessDays(startDate, endDate) {
+    let count = 0;
+    const curDate = new Date(startDate.getTime());
+    while (curDate <= endDate) {
+        const dayOfWeek = curDate.getDay();
+        if (dayOfWeek !== 0) { // Exclude Sundays
+            count++;
+        }
+        curDate.setDate(curDate.getDate() + 1);
+    }
+    return count > 0 ? count : 1; // Avoid division by zero
+}
+
 function processData() {
     if (!appState.dataLoaded) return;
     const date = new Date(document.getElementById('dashboardDate').value).toLocaleDateString('en-GB', { timeZone: 'Asia/Kolkata' });
@@ -200,12 +226,54 @@ function processData() {
         if (role && ROLES.includes(role)) { roleMetrics[role].submitted++; }
     });
     
+    // Calculate and update Consent Form KPI
+    const totalConsentForms = appState.viewableReports.reduce((sum, report) => sum + (parseInt(report.fx_auto_emi_filled) || 0), 0);
+    document.getElementById('kpiValueConsent').innerText = totalConsentForms;
+
+    // Calculate monthly performance
+    calculateMonthlyPerformance(filteredStaff);
+
     updateKPIs(metrics);
     updateRoleKPIs(roleMetrics);
     drawPieChart(metrics.submitted, metrics.pending);
     populateLists(appState.viewableReports, pendingStaff);
     generateInsights(date);
 }
+
+function calculateMonthlyPerformance(filteredStaff) {
+    const selectedDate = new Date(document.getElementById('dashboardDate').value);
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth();
+    const startDateOfMonth = new Date(year, month, 1);
+    const businessDaysSoFar = getBusinessDays(startDateOfMonth, selectedDate);
+    
+    const monthlyReports = appState.allReports.filter(r => {
+        const dateParts = r[1].split('/'); // DD/MM/YYYY
+        if (dateParts.length !== 3) return false;
+        const reportDate = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+        return reportDate >= startDateOfMonth && reportDate <= selectedDate;
+    });
+    
+    const submissionCounts = {};
+    monthlyReports.forEach(r => {
+        const staffName = r[2];
+        if(staffName) submissionCounts[staffName] = (submissionCounts[staffName] || 0) + 1;
+    });
+
+    appState.monthlyPerformance = filteredStaff.map(staff => {
+        const name = staff[0];
+        const branch = staff[1];
+        const submissions = submissionCounts[name] || 0;
+        const percentage = Math.min(100, (submissions / businessDaysSoFar) * 100);
+        return { name, branch, submissions, totalDays: businessDaysSoFar, percentage };
+    });
+
+    const totalPercentage = appState.monthlyPerformance.reduce((sum, p) => sum + p.percentage, 0);
+    const avgPercentage = filteredStaff.length > 0 ? (totalPercentage / filteredStaff.length) : 0;
+    
+    document.getElementById('kpiValuePerformance').innerText = `${avgPercentage.toFixed(0)}%`;
+}
+
 
 function updateKPIs(metrics) {
     document.getElementById('kpiTotal').innerText = metrics.total;
@@ -251,7 +319,6 @@ function drawPieChart(submitted, pending) {
 }
 
 function createReportObject(row) {
-    // नवीन 39-रकाना रचनेनुसार डेटा मॅपिंग
     return {
         date: row[1], name: row[2], branch: row[3], leave: row[4], role: row[5],
         ca_reg_count: row[6], ca_reg_amt: row[7], ca_odpast_count: row[8], ca_odpast_amt: row[9],
@@ -296,41 +363,16 @@ function viewReport(reportIndex) {
     } else {
         switch(data.role) {
             case 'CA':
-                html = `<h4>CA - क्रेडिट असिस्टंट अहवाल</h4>
-                    <p><strong>रेग्युलर कलेक्शन:</strong> ${data.ca_reg_count || 0} खाती, ${data.ca_reg_amt || 0} रु.</p>
-                    <p><strong>ओडी/पास्टडयु कलेक्शन:</strong> ${data.ca_odpast_count || 0} खाती, ${data.ca_odpast_amt || 0} रु.</p>
-                    <p><strong>गट बैठका:</strong> ${data.ca_meeting_count || 0} (${data.ca_meeting_village || 'गाव नाही'})</p>
-                    <p><strong>सदस्य निवड:</strong> ${data.ca_member_selection || 0}</p>
-                    <p><strong>गट फॉर्म भरले:</strong> ${data.ca_forms_filled || 0}</p>
-                    <p><strong>विशेष नोंदी:</strong> ${data.notes || 'काही नाही'}</p>`;
+                html = `<h4>CA - क्रेडिट असिस्टंट अहवाल</h4><p><strong>रेग्युलर कलेक्शन:</strong> ${data.ca_reg_count || 0} खाती, ${data.ca_reg_amt || 0} रु.</p><p><strong>ओडी/पास्टडयु कलेक्शन:</strong> ${data.ca_odpast_count || 0} खाती, ${data.ca_odpast_amt || 0} रु.</p><p><strong>गट बैठका:</strong> ${data.ca_meeting_count || 0} (${data.ca_meeting_village || 'गाव नाही'})</p><p><strong>सदस्य निवड:</strong> ${data.ca_member_selection || 0}</p><p><strong>गट फॉर्म भरले:</strong> ${data.ca_forms_filled || 0}</p><p><strong>विशेष नोंदी:</strong> ${data.notes || 'काही नाही'}</p>`;
                 break;
             case 'FX':
-                html = `<h4>FX - फील्ड एक्झिक्युटिव्ह अहवाल</h4>
-                    <p><strong>अॅप्रोयझल:</strong> ${data.fx_appraisal_count || 0} गट (${data.fx_appraisal_villages || 'गाव नाही'})</p>
-                    <p><strong>रिकवरी मध्ये मदत:</strong> ${data.fx_recovery_help || 'काही नाही'}</p>
-                    <p><strong>पास्ट डयु कलेक्शन:</strong> ${data.fx_pastdue_count || 0} खाती, ${data.fx_pastdue_amt || 0} रु.</p>
-                    <p><strong>ऑटो EMI फॉर्म भरले:</strong> ${data.fx_auto_emi_filled || 0}</p>
-                    <p><strong>विशेष नोंदी:</strong> ${data.notes || 'काही नाही'}</p>`;
+                html = `<h4>FX - फील्ड एक्झिक्युटिव्ह अहवाल</h4><p><strong>अॅप्रोयझल:</strong> ${data.fx_appraisal_count || 0} गट (${data.fx_appraisal_villages || 'गाव नाही'})</p><p><strong>रिकवरी मध्ये मदत:</strong> ${data.fx_recovery_help || 'काही नाही'}</p><p><strong>पास्ट डयु कलेक्शन:</strong> ${data.fx_pastdue_count || 0} खाती, ${data.fx_pastdue_amt || 0} रु.</p><p><strong>ऑटो EMI फॉर्म भरले:</strong> ${data.fx_auto_emi_filled || 0}</p><p><strong>विशेष नोंदी:</strong> ${data.notes || 'काही नाही'}</p>`;
                 break;
             case 'BM':
-                 html = `<h4>BM - शाखा व्यवस्थापक अहवाल</h4>
-                    <p><strong>लोन वाटप:</strong> ${data.bm_disburse_members || 0} मेंबर (${data.bm_disburse_village || 'गाव नाही'}), ${data.bm_disburse_amt || 0} रु.</p>
-                    <p><strong>एकुण कलेक्शन:</strong> रेग्युलर: ${data.bm_coll_regular || 0} | पास्ट डयु: ${data.bm_coll_pastdue || 0} | ओडी: ${data.bm_coll_od || 0} | <strong>एकूण: ${data.bm_coll_total || 0} रु.</strong></p>
-                    <p><strong>अॅप्रायझल स्टेटस:</strong> ${data.bm_appr_approved || 0} मंजुर, ${data.bm_appr_rejected || 0} रद्द</p>
-                    <p><strong>रद्द करण्याची कारणे:</strong> ${data.bm_reject_reason || 'काही नाही'}</p>
-                    <p><strong>गुंतवणूक:</strong> ${data.bm_investment_amt || 0} रु.</p>
-                    <p><strong>विशेष नोंदी:</strong> ${data.notes || 'काही नाही'}</p>`;
+                 html = `<h4>BM - शाखा व्यवस्थापक अहवाल</h4><p><strong>लोन वाटप:</strong> ${data.bm_disburse_members || 0} मेंबर (${data.bm_disburse_village || 'गाव नाही'}), ${data.bm_disburse_amt || 0} रु.</p><p><strong>एकुण कलेक्शन:</strong> रेग्युलर: ${data.bm_coll_regular || 0} | पास्ट डयु: ${data.bm_coll_pastdue || 0} | ओडी: ${data.bm_coll_od || 0} | <strong>एकूण: ${data.bm_coll_total || 0} रु.</strong></p><p><strong>अॅप्रायझल स्टेटस:</strong> ${data.bm_appr_approved || 0} मंजुर, ${data.bm_appr_rejected || 0} रद्द</p><p><strong>रद्द करण्याची कारणे:</strong> ${data.bm_reject_reason || 'काही नाही'}</p><p><strong>गुंतवणूक:</strong> ${data.bm_investment_amt || 0} रु.</p><p><strong>विशेष नोंदी:</strong> ${data.notes || 'काही नाही'}</p>`;
                 break;
             case 'TA':
-                 html = `<h4>TA - युनिट अकाऊंटंट अहवाल</h4>
-                    <p><strong>अॅनालिसीस रिर्पाट:</strong> ${data.ta_analysis_reports || 0}</p>
-                    <p><strong>कलेक्शन मॅच:</strong> ${data.ta_coll_match || 'N/A'}</p>
-                    <p><strong>मॅच न होण्याचे कारण:</strong> ${data.ta_match_reason || 'लागू नाही'}</p>
-                    <p><strong>फायनान्स सिस्टीम अपडेट:</strong> ${data.ta_finance_update ? new Date(data.ta_finance_update).toLocaleDateString('mr-IN') : 'N/A'}</p>
-                    <p><strong>SPMB टि सिस्टीम अपडेट:</strong> ${data.ta_spmb_update ? new Date(data.ta_spmb_update).toLocaleDateString('mr-IN') : 'N/A'}</p>
-                    <p><strong>रिकव्हरी ट्रॅकर पाठवले:</strong> ${data.ta_recovery_tracker || 'N/A'}</p>
-                    <p><strong>ऑटो EMI फॉर्म लागु केले:</strong> ${data.ta_auto_emi_activated || 0}</p>
-                    <p><strong>विशेष नोंदी:</strong> ${data.notes || 'काही नाही'}</p>`;
+                 html = `<h4>TA - युनिट अकाऊंटंट अहवाल</h4><p><strong>अॅनालिसीस रिर्पाट:</strong> ${data.ta_analysis_reports || 0}</p><p><strong>कलेक्शन मॅच:</strong> ${data.ta_coll_match || 'N/A'}</p><p><strong>मॅच न होण्याचे कारण:</strong> ${data.ta_match_reason || 'लागू नाही'}</p><p><strong>फायनान्स सिस्टीम अपडेट:</strong> ${data.ta_finance_update ? new Date(data.ta_finance_update).toLocaleDateString('mr-IN') : 'N/A'}</p><p><strong>SPMB टि सिस्टीम अपडेट:</strong> ${data.ta_spmb_update ? new Date(data.ta_spmb_update).toLocaleDateString('mr-IN') : 'N/A'}</p><p><strong>रिकव्हरी ट्रॅकर पाठवले:</strong> ${data.ta_recovery_tracker || 'N/A'}</p><p><strong>ऑटो EMI फॉर्म लागु केले:</strong> ${data.ta_auto_emi_activated || 0}</p><p><strong>विशेष नोंदी:</strong> ${data.notes || 'काही नाही'}</p>`;
                 break;
             default:
                 html = `<h4>${data.role || 'इतर'} अहवाल</h4><p><strong>नोंदी:</strong> ${data.notes || 'काही नाही'}</p>`;
@@ -338,6 +380,53 @@ function viewReport(reportIndex) {
     }
     modalContent.innerHTML = html;
     document.getElementById('reportModal').style.display = 'block';
+}
+
+function showConsentDetails() {
+    const modal = document.getElementById('consentModal');
+    const content = document.getElementById('consentModalContent');
+    const consentGivers = appState.viewableReports.filter(r => r.fx_auto_emi_filled && parseInt(r.fx_auto_emi_filled) > 0);
+    if (consentGivers.length === 0) {
+        content.innerHTML = `<p style="text-align:center; color:#777;">आज कोणतेही संमती फॉर्म सबमिट केलेले नाहीत.</p>`;
+    } else {
+        let tableHTML = '<table><thead><tr><th>कर्मचारी</th><th>फॉर्म संख्या</th></tr></thead><tbody>';
+        consentGivers.forEach(r => { tableHTML += `<tr><td>${r.name}</td><td>${r.fx_auto_emi_filled}</td></tr>`; });
+        tableHTML += '</tbody></table>';
+        content.innerHTML = tableHTML;
+    }
+    modal.style.display = 'block';
+}
+
+function showPerformanceDetails() {
+    const modal = document.getElementById('performanceModal');
+    const content = document.getElementById('performanceModalContent');
+    const title = document.getElementById('performanceModalTitle');
+    const selectedDate = new Date(document.getElementById('dashboardDate').value);
+    const monthName = selectedDate.toLocaleString('mr-IN', { month: 'long' });
+    title.innerText = `${monthName} महिन्यासाठी रिपोर्टिंग कामगिरी (${appState.currentBranch === 'ALL' ? 'सर्व शाखा' : appState.currentBranch})`;
+
+    if (!appState.monthlyPerformance || appState.monthlyPerformance.length === 0) {
+        content.innerHTML = `<p style="text-align:center; color:#777;">कामगिरी डेटा उपलब्ध नाही.</p>`;
+        modal.style.display = 'block';
+        return;
+    }
+    const sortedPerformance = [...appState.monthlyPerformance].sort((a, b) => b.percentage - a.percentage);
+    let tableHTML = `<p style="text-align:center; font-size:14px; color:var(--secondary-text);">
+        ${selectedDate.toLocaleDateString('mr-IN')} पर्यंत ${sortedPerformance[0]?.totalDays || 0} कामकाजाच्या दिवसांवर आधारित.</p>
+        <table><thead><tr><th>रँक</th><th>कर्मचारी</th><th>शाखा</th><th style="width: 40%;">कामगिरी (${sortedPerformance[0]?.totalDays || 0} दिवसांपैकी)</th></tr></thead><tbody>`;
+
+    sortedPerformance.forEach((p, index) => {
+        let barClass = 'progress-bar';
+        if (p.percentage < 75) barClass += ' medium';
+        if (p.percentage < 50) barClass += ' low';
+        tableHTML += `<tr><td>${index + 1}</td><td>${p.name}</td><td>${p.branch}</td><td>
+            <div class="progress-bar-container">
+                <div class="${barClass}" style="width: ${p.percentage.toFixed(1)}%;">
+                   ${p.submissions} (${p.percentage.toFixed(0)}%)</div></div></td></tr>`;
+    });
+    tableHTML += '</tbody></table>';
+    content.innerHTML = tableHTML;
+    modal.style.display = 'block';
 }
 
 function searchHistory() {
@@ -348,16 +437,16 @@ function searchHistory() {
     const start = new Date(startInput); start.setHours(0, 0, 0, 0);
     const end = new Date(endInput); end.setHours(23, 59, 59, 999);
     
-    // Search directly in allReports instead of filtering first
     const results = appState.allReports.filter(r => {
         const dateParts = r[1].split('/');
+        if (dateParts.length !== 3) return false;
         const reportDate = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
         const staffName = r[2] ? r[2].toLowerCase() : '';
         return staffName.includes(name) && reportDate >= start && reportDate <= end;
     });
 
     const reportObjects = results.map(r => createReportObject(r));
-    appState.viewableReports = reportObjects; // Temporarily store for viewing
+    appState.viewableReports = reportObjects; 
     
     const tableBody = document.querySelector('#historyTable tbody');
     if (results.length === 0) {
