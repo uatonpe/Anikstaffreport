@@ -69,10 +69,6 @@
     .role-list-container h4 { margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; font-size: 16px; }
     .role-list-container ul { list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto; }
     .role-list-container li { padding: 8px 5px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
-    .progress-bar-container { width: 100%; background-color: #e0e0e0; border-radius: 4px; overflow: hidden; }
-    .progress-bar { height: 18px; line-height: 18px; text-align: right; padding-right: 5px; color: white; font-size: 12px; font-weight: bold; border-radius: 4px; background-color: var(--submitted-color); transition: width 0.5s ease-in-out; }
-    .progress-bar.medium { background-color: var(--pending-color); }
-    .progress-bar.low { background-color: var(--role-bm-color); }
     @media (max-width: 600px) { .role-details-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -93,7 +89,7 @@
         <div class="kpi" id="submittedReports" onclick="highlightList('submitted')"><div class="kpi-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="var(--submitted-color)" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg></div><div class="kpi-content"><div class="kpi-value" id="kpiSubmitted">0</div><div class="kpi-label">सबमिट अहवाल</div></div></div>
         <div class="kpi" id="pendingReports" onclick="highlightList('pending')"><div class="kpi-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="var(--pending-color)" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div><div class="kpi-content"><div class="kpi-value" id="kpiPending">0</div><div class="kpi-label">प्रलंबित अहवाल</div></div></div>
         <div class="kpi" id="consentForms" onclick="showConsentDetails()"><div class="kpi-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="var(--consent-color)"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 14h-2v2h-2v-2H8v-2h4V8h2v6h2v2zm-3-7V3.5L18.5 9H13z"/></svg></div><div class="kpi-content"><div class="kpi-value" id="kpiValueConsent">0</div><div class="kpi-label">संमती फॉर्म</div></div></div>
-        <div class="kpi" id="reportingPerformance" onclick="showPerformanceDetails()"><div class="kpi-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="var(--performance-color)"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6h-6z"/></svg></div><div class="kpi-content"><div class="kpi-value" id="kpiValuePerformance">0%</div><div class="kpi-label">सरासरी रिपोर्टिंग</div></div></div>
+        <div class="kpi" id="reportingPerformance" onclick="showTodaysReportingDetails()"><div class="kpi-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="var(--performance-color)"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6h-6z"/></svg></div><div class="kpi-content"><div class="kpi-value" id="kpiValuePerformance">0%</div><div class="kpi-label">आजची रिपोर्टिंग</div></div></div>
     </div>
     <div class="card" style="margin-top: 20px;">
         <h3>भूमिका-निहाय कामगिरी (Role-wise Performance)</h3>
@@ -125,11 +121,13 @@
         <table id="historyTable"><thead><tr><th>दिनांक</th><th>कर्मचारी</th><th>अहवाल</th></tr></thead><tbody></tbody></table>
     </div>
 </div>
+
+<!-- Modals -->
 <div id="reportModal" class="modal"><div class="modal-content"><span class="close" onclick="document.getElementById('reportModal').style.display='none'">&times;</span><h3>अहवाल तपशील</h3><div id="modalReportContent"></div></div></div>
 <div id="roleDetailsModal" class="modal"><div class="modal-content" style="max-width: 700px;"><span class="close" onclick="document.getElementById('roleDetailsModal').style.display='none'">&times;</span><h3 id="roleModalTitle">भूमिका तपशील</h3><div class="role-details-grid"><div class="role-list-container"><h4>✅ सबमिट केलेले</h4><ul id="roleSubmittedList"></ul></div><div class="role-list-container"><h4>❌ प्रलंबित</h4><ul id="rolePendingList"></ul></div></div></div></div>
-
 <div id="consentModal" class="modal"><div class="modal-content"><span class="close" onclick="document.getElementById('consentModal').style.display='none'">&times;</span><h3>संमती फॉर्म अहवाल</h3><div id="consentModalContent"></div></div></div>
-<div id="performanceModal" class="modal"><div class="modal-content" style="max-width: 800px;"><span class="close" onclick="document.getElementById('performanceModal').style.display='none'">&times;</span><h3 id="performanceModalTitle">मासिक रिपोर्टिंग कामगिरी</h3><div id="performanceModalContent"></div></div></div>
+<!-- New Modal for Today's Reporting Status -->
+<div id="todaysReportingModal" class="modal"><div class="modal-content" style="max-width: 700px;"><span class="close" onclick="document.getElementById('todaysReportingModal').style.display='none'">&times;</span><h3 id="todaysReportingModalTitle">आजची रिपोर्टिंग स्थिती</h3><div class="role-details-grid"><div class="role-list-container"><h4>✅ सबमिट केलेले</h4><ul id="todaysSubmittedList"></ul></div><div class="role-list-container"><h4>❌ प्रलंबित</h4><ul id="todaysPendingList"></ul></div></div></div></div>
 
 
 <script>
@@ -142,7 +140,7 @@ const ROLES = ['CA', 'FX', 'BM', 'TA'];
 
 google.charts.load('current', {'packages':['corechart']});
 
-const appState = { allStaff: [], allReports: [], currentBranch: "ALL", dataLoaded: false, viewableReports: [], monthlyPerformance: [] };
+const appState = { allStaff: [], allReports: [], currentBranch: "ALL", dataLoaded: false, viewableReports: [], currentPendingStaff: [] };
 document.getElementById('dashboardDate').valueAsDate = new Date();
 
 function changeBranch(branch, element) {
@@ -188,19 +186,6 @@ async function loadDashboard() {
     }
 }
 
-function getBusinessDays(startDate, endDate) {
-    let count = 0;
-    const curDate = new Date(startDate.getTime());
-    while (curDate <= endDate) {
-        const dayOfWeek = curDate.getDay();
-        if (dayOfWeek !== 0) { // Exclude Sundays
-            count++;
-        }
-        curDate.setDate(curDate.getDate() + 1);
-    }
-    return count > 0 ? count : 1; // Avoid division by zero
-}
-
 function processData() {
     if (!appState.dataLoaded) return;
     const date = new Date(document.getElementById('dashboardDate').value).toLocaleDateString('en-GB', { timeZone: 'Asia/Kolkata' });
@@ -210,9 +195,14 @@ function processData() {
     appState.viewableReports = submittedReportRows.map(r => createReportObject(r));
     const submittedNames = new Set(appState.viewableReports.map(r => r.name));
     const pendingStaff = filteredStaff.filter(s => !submittedNames.has(s[0]));
+    appState.currentPendingStaff = pendingStaff; // Store for the modal
     
     const metrics = { total: filteredStaff.length, submitted: appState.viewableReports.length, pending: pendingStaff.length };
     
+    // Calculate and update Today's Reporting KPI
+    const todaysPercentage = metrics.total > 0 ? (metrics.submitted / metrics.total) * 100 : 0;
+    document.getElementById('kpiValuePerformance').innerText = `${todaysPercentage.toFixed(0)}%`;
+
     const roleMetrics = {};
     ROLES.forEach(role => roleMetrics[role] = { total: 0, submitted: 0 });
 
@@ -226,12 +216,8 @@ function processData() {
         if (role && ROLES.includes(role)) { roleMetrics[role].submitted++; }
     });
     
-    // Calculate and update Consent Form KPI
     const totalConsentForms = appState.viewableReports.reduce((sum, report) => sum + (parseInt(report.fx_auto_emi_filled) || 0), 0);
     document.getElementById('kpiValueConsent').innerText = totalConsentForms;
-
-    // Calculate monthly performance
-    calculateMonthlyPerformance(filteredStaff);
 
     updateKPIs(metrics);
     updateRoleKPIs(roleMetrics);
@@ -239,41 +225,6 @@ function processData() {
     populateLists(appState.viewableReports, pendingStaff);
     generateInsights(date);
 }
-
-function calculateMonthlyPerformance(filteredStaff) {
-    const selectedDate = new Date(document.getElementById('dashboardDate').value);
-    const year = selectedDate.getFullYear();
-    const month = selectedDate.getMonth();
-    const startDateOfMonth = new Date(year, month, 1);
-    const businessDaysSoFar = getBusinessDays(startDateOfMonth, selectedDate);
-    
-    const monthlyReports = appState.allReports.filter(r => {
-        const dateParts = r[1].split('/'); // DD/MM/YYYY
-        if (dateParts.length !== 3) return false;
-        const reportDate = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
-        return reportDate >= startDateOfMonth && reportDate <= selectedDate;
-    });
-    
-    const submissionCounts = {};
-    monthlyReports.forEach(r => {
-        const staffName = r[2];
-        if(staffName) submissionCounts[staffName] = (submissionCounts[staffName] || 0) + 1;
-    });
-
-    appState.monthlyPerformance = filteredStaff.map(staff => {
-        const name = staff[0];
-        const branch = staff[1];
-        const submissions = submissionCounts[name] || 0;
-        const percentage = Math.min(100, (submissions / businessDaysSoFar) * 100);
-        return { name, branch, submissions, totalDays: businessDaysSoFar, percentage };
-    });
-
-    const totalPercentage = appState.monthlyPerformance.reduce((sum, p) => sum + p.percentage, 0);
-    const avgPercentage = filteredStaff.length > 0 ? (totalPercentage / filteredStaff.length) : 0;
-    
-    document.getElementById('kpiValuePerformance').innerText = `${avgPercentage.toFixed(0)}%`;
-}
-
 
 function updateKPIs(metrics) {
     document.getElementById('kpiTotal').innerText = metrics.total;
@@ -352,6 +303,25 @@ function showRoleDetails(role) {
     modal.style.display = 'block';
 }
 
+function showTodaysReportingDetails() {
+    const modal = document.getElementById('todaysReportingModal');
+    const title = document.getElementById('todaysReportingModalTitle');
+    const submittedListEl = document.getElementById('todaysSubmittedList');
+    const pendingListEl = document.getElementById('todaysPendingList');
+    
+    title.innerText = `आजची रिपोर्टिंग स्थिती (${appState.currentBranch === 'ALL' ? 'सर्व शाखा' : appState.currentBranch})`;
+
+    submittedListEl.innerHTML = appState.viewableReports.length > 0
+        ? appState.viewableReports.map((report, index) => `<li><span>${report.name}</span><span class="clickable" onclick="viewReport(${index})">वाचा</span></li>`).join('')
+        : `<li style="color:#777;">कोणीही अहवाल सबमिट केलेला नाही.</li>`;
+
+    pendingListEl.innerHTML = appState.currentPendingStaff.length > 0
+        ? appState.currentPendingStaff.map(staff => `<li>${staff[0]}</li>`).join('')
+        : `<li style="color:var(--submitted-color);">सर्व अहवाल सबमिट झाले आहेत.</li>`;
+        
+    modal.style.display = 'block';
+}
+
 function viewReport(reportIndex) {
     if (reportIndex < 0 || reportIndex >= appState.viewableReports.length) { console.error("Invalid report index:", reportIndex); return; }
     const data = appState.viewableReports[reportIndex];
@@ -394,38 +364,6 @@ function showConsentDetails() {
         tableHTML += '</tbody></table>';
         content.innerHTML = tableHTML;
     }
-    modal.style.display = 'block';
-}
-
-function showPerformanceDetails() {
-    const modal = document.getElementById('performanceModal');
-    const content = document.getElementById('performanceModalContent');
-    const title = document.getElementById('performanceModalTitle');
-    const selectedDate = new Date(document.getElementById('dashboardDate').value);
-    const monthName = selectedDate.toLocaleString('mr-IN', { month: 'long' });
-    title.innerText = `${monthName} महिन्यासाठी रिपोर्टिंग कामगिरी (${appState.currentBranch === 'ALL' ? 'सर्व शाखा' : appState.currentBranch})`;
-
-    if (!appState.monthlyPerformance || appState.monthlyPerformance.length === 0) {
-        content.innerHTML = `<p style="text-align:center; color:#777;">कामगिरी डेटा उपलब्ध नाही.</p>`;
-        modal.style.display = 'block';
-        return;
-    }
-    const sortedPerformance = [...appState.monthlyPerformance].sort((a, b) => b.percentage - a.percentage);
-    let tableHTML = `<p style="text-align:center; font-size:14px; color:var(--secondary-text);">
-        ${selectedDate.toLocaleDateString('mr-IN')} पर्यंत ${sortedPerformance[0]?.totalDays || 0} कामकाजाच्या दिवसांवर आधारित.</p>
-        <table><thead><tr><th>रँक</th><th>कर्मचारी</th><th>शाखा</th><th style="width: 40%;">कामगिरी (${sortedPerformance[0]?.totalDays || 0} दिवसांपैकी)</th></tr></thead><tbody>`;
-
-    sortedPerformance.forEach((p, index) => {
-        let barClass = 'progress-bar';
-        if (p.percentage < 75) barClass += ' medium';
-        if (p.percentage < 50) barClass += ' low';
-        tableHTML += `<tr><td>${index + 1}</td><td>${p.name}</td><td>${p.branch}</td><td>
-            <div class="progress-bar-container">
-                <div class="${barClass}" style="width: ${p.percentage.toFixed(1)}%;">
-                   ${p.submissions} (${p.percentage.toFixed(0)}%)</div></div></td></tr>`;
-    });
-    tableHTML += '</tbody></table>';
-    content.innerHTML = tableHTML;
     modal.style.display = 'block';
 }
 
