@@ -1,266 +1,1077 @@
 <!DOCTYPE html>
 <html lang="mr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>दैनिक अहवाल प्रणाली</title>
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
-    :root { --primary-color: #273c75; --secondary-color: #44bd32; --secondary-hover: #2ecc71; --white-color: #ffffff; --text-color: #333; --border-color: #ddd; --shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
-    body { font-family: 'Poppins', Arial, sans-serif; background: linear-gradient(135deg, #e0eafc, #cfdef3); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; box-sizing: border-box; }
-    header { background: var(--primary-color); padding: 15px 20px; color: var(--white-color); text-align: center; font-size: 24px; font-weight: 600; border-radius: 12px; box-shadow: var(--shadow); width: 100%; max-width: 500px; margin-bottom: 20px; }
-    .card { background: var(--white-color); padding: 25px; border-radius: 15px; box-shadow: var(--shadow); width: 100%; max-width: 500px; box-sizing: border-box; }
-    .form-group { margin-bottom: 15px; }
-    label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-color); font-size: 15px; }
-    select, textarea, input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 14px; font-family: 'Poppins', sans-serif; box-sizing: border-box; }
-    select:focus, textarea:focus, input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(39, 60, 117, 0.1); }
-    .submit-btn { background: var(--secondary-color); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 18px; font-weight: 600; transition: background-color 0.3s; margin-top: 10px; }
-    .submit-btn:disabled { background-color: #95a5a6; cursor: not-allowed; }
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
-    .modal-content { background: white; padding: 30px; border-radius: 15px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.2); max-width: 90%; width: 400px; }
-    .loader { border: 8px solid #f3f3f3; border-radius: 50%; border-top: 8px solid var(--primary-color); width: 60px; height: 60px; animation: spin 1s linear infinite; margin: 0 auto 20px auto; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    #closeModalBtn { background: var(--primary-color); color: white; border: none; padding: 10px 25px; border-radius: 8px; cursor: pointer; font-size: 16px; margin-top: 20px; display: none; }
-    .role-form { border-top: 2px solid var(--primary-color); padding-top: 15px; margin-top: 15px; }
-    .input-group { display: flex; gap: 10px; margin-bottom: 10px; }
-    .input-group > div { flex: 1; }
-    h4 { color: var(--primary-color); margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Anik Financial Services | Professional Reporting System</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --anik-blue: #283a6d; 
+            --anik-navy: #1e293b;
+            --soft-bg: #f1f5f9; 
+            --success-green: #10b981;
+            --error-red: #ef4444;
+            --accent-blue: #3b82f6;
+        }
+
+        body { 
+            font-family: 'Mukta', sans-serif; 
+            background-color: var(--soft-bg); 
+            color: var(--anik-navy);
+            margin: 0;
+            padding-bottom: 120px; /* Space for sticky footer */
+            overflow-x: hidden;
+        }
+
+        /* 10. Sticky Header Branding */
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: white;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 650px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        /* 3. Visual Hierarchy: Card & Table Styles */
+        .pro-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--anik-blue);
+            display: flex;
+            align-items: center; gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        /* 1. Accordion for FX Sections */
+        .accordion-item {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .accordion-header {
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            background: #fff;
+            user-select: none;
+        }
+
+        .accordion-header.active {
+            background: #f8fafc;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .accordion-content {
+            display: none;
+            padding: 20px;
+        }
+
+        /* Table UI Improvements */
+        .table-wrap { 
+            overflow-x: auto; 
+            border-radius: 12px; 
+            border: 1px solid #e2e8f0; 
+            background: #fff;
+        }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+        th { background: #f8fafc; padding: 12px; color: #64748b; font-weight: 800; text-align: left; font-size: 0.75rem; text-transform: uppercase; }
+        td { padding: 10px; border-bottom: 1px solid #f1f5f9; }
+        
+        /* 3. Highlighting Amount Fields */
+        .amt-input { background-color: #f0f9ff !important; font-weight: 800 !important; color: var(--anik-blue); border-color: #bae6fd !important; }
+        .total-row { background: #f1f5f9; font-weight: 800; color: var(--anik-blue); }
+
+        /* Form Inputs */
+        .pro-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            background: #fff;
+        }
+
+        .pro-input:focus {
+            border-color: var(--anik-blue);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(40, 58, 109, 0.1);
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            margin-left: 4px;
+        }
+
+        /* 2. Sticky Action Bar */
+        .sticky-action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 16px 24px;
+            box-shadow: 0 -10px 25px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 200;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sticky-action-bar.visible { transform: translateY(0); }
+
+        /* 4. Leave Card Reassurance */
+        .leave-card {
+            background: #eff6ff;
+            border: 2px dashed #3b82f6;
+            border-radius: 24px;
+            padding: 40px 24px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* 5. Warning Card (Duplicate) */
+        .warning-card {
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            color: #be123c;
+            padding: 24px;
+            border-radius: 20px;
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .badge { padding: 4px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; }
+        .badge-ok { background: #dcfce7; color: #166534; }
+        .badge-fail { background: #fee2e2; color: #991b1b; }
+
+        #loader-overlay {
+            position: fixed; inset: 0; background: rgba(255,255,255,0.98);
+            display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10000;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .main-container { padding: 0 10px; }
+            .pro-card { padding: 16px; }
+        }
+    </style>
 </head>
 <body>
 
-<header>दैनिक अहवाल प्रणाली</header>
+    <!-- STICKY HEADER -->
+    <header class="sticky-header">
+        <img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" alt="Anik Logo" class="h-8 md:h-10 object-contain">
+        <div class="text-right">
+            <h1 class="text-sm font-black text-blue-900 leading-none">Reporting System</h1>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Anik Financial Services</p>
+        </div>
+    </header>
 
-<div class="card">
-    <div class="form-group"><label for="branchSelect">शाखा निवडा</label><select id="branchSelect" disabled><option>लोड होत आहे...</option></select></div>
-    <div class="form-group"><label for="employeeSelect">कर्मचारी नाव</label><select id="employeeSelect" disabled><option>आधी शाखा निवडा...</option></select></div>
-    <div class="form-group"><label for="reportDate">अहवाल दिनांक</label><input type="date" id="reportDate"></div>
-    <div class="form-group"><label for="leaveSelect">आज रजा होती का?</label><select id="leaveSelect"><option value="नाही">नाही</option><option value="होय">होय</option></select></div>
+    <!-- LOADER -->
+    <div id="loader-overlay">
+        <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-900 border-t-transparent mb-4"></div>
+        <p id="loaderText" class="font-black text-blue-900">प्रतिक्षा करा...</p>
+    </div>
 
-    <!-- Role-specific forms container -->
-    <div id="roleFormsContainer">
-        <!-- CA Form -->
-        <div id="form-CA" class="role-form" style="display:none;">
-            <h4>CA - क्रेडिट असिस्टंट अहवाल</h4>
-            <div class="form-group"><label>आजचे केलेले कलेक्शन रेग्युलर</label><div class="input-group"><div><input type="number" id="ca_reg_count" placeholder="खाते संख्या"></div><div><input type="number" id="ca_reg_amt" placeholder="रक्कम"></div></div></div>
-            <div class="form-group"><label>आजचे केलेले ओडी / पास्टडयु कलेक्शन</label><div class="input-group"><div><input type="number" id="ca_odpast_count" placeholder="खाते संख्या"></div><div><input type="number" id="ca_odpast_amt" placeholder="रक्कम"></div></div></div>
-            <div class="form-group"><label>आजच्या एकुण गट बैठकांची माहिती</label><div class="input-group"><div><input type="text" id="ca_meeting_village" placeholder="गावाचे नांव"></div><div><input type="number" id="ca_meeting_count" placeholder="बैठकांची संख्या"></div></div></div>
-            <div class="input-group"><div><input type="number" id="ca_member_selection" placeholder="किती सदस्यांची निवड"></div><div><input type="number" id="ca_forms_filled" placeholder="किती गट फॉर्म भरले"></div></div>
-            <div class="form-group"><label for="ca_notes">आजच्या इतर विशेष नोंदी</label><textarea id="ca_notes" rows="3"></textarea></div>
+    <!-- 7. SUCCESS SCREEN (WITH AUDIT DETAILS) -->
+    <div id="success-overlay" class="fixed inset-0 bg-white z-[10001] hidden flex-col items-center justify-center p-8 text-center">
+        <div class="w-24 h-24 bg-green-500 text-white rounded-full flex items-center justify-center text-5xl mb-6 shadow-2xl shadow-green-200">✓</div>
+        <h2 class="text-3xl font-black text-slate-800 mb-2">अहवाल जमा झाला!</h2>
+        <p class="text-slate-500 mb-8 font-medium">तुमची माहिती यशस्वीरित्या हेड ऑफिसला पाठवली आहे.</p>
+        
+        <div id="successDetails" class="bg-slate-50 p-6 rounded-3xl w-full max-w-sm mb-10 text-left space-y-3 border border-slate-100 shadow-inner">
+            <!-- Dynamic Data Injection -->
         </div>
 
-        <!-- FX Form -->
-        <div id="form-FX" class="role-form" style="display:none;">
-            <h4>FX - फील्ड एक्झिक्युटिव्ह अहवाल</h4>
-            <div class="form-group"><label>आजचे अॅ्प्रोयझल</label><div class="input-group"><div><input type="number" id="fx_appraisal_count" placeholder="गटांची संख्या"></div><div><input type="text" id="fx_appraisal_villages" placeholder="कुठल्या गावांमध्ये"></div></div></div>
-            <div class="form-group"><label for="fx_recovery_help">रिकवरी मध्ये मदत (काय स्वरूपाची)</label><textarea id="fx_recovery_help" rows="2"></textarea></div>
-            <div class="form-group"><label>आजचे पास्ट डयु कलेक्शन</label><div class="input-group"><div><input type="number" id="fx_pastdue_count" placeholder="खाते संख्या"></div><div><input type="number" id="fx_pastdue_amt" placeholder="रक्कम"></div></div></div>
+        <button onclick="location.reload()" class="w-full max-w-sm bg-blue-900 text-white py-5 rounded-2xl font-black text-xl shadow-xl shadow-blue-100 active:scale-95 transition-transform">परत जा (Home)</button>
+    </div>
+
+    <div class="main-container">
+        <!-- SELECTION BLOCK -->
+        <div class="bg-white p-6 rounded-[32px] shadow-sm border border-slate-200 mb-6 space-y-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="input-label">१. शाखा निवडा</label>
+                    <select id="unitSelect" class="pro-input" onchange="filterStaff()">
+                        <option value="">-- शाखा निवडा --</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="input-label">२. तुमचे नाव निवडा</label>
+                    <select id="empSelect" class="pro-input" onchange="checkStatusAndInit()">
+                        <option value="">आधी शाखा निवडा...</option>
+                    </select>
+                </div>
+            </div>
             
-            <!-- ▼▼▼ नवा प्रश्न (FX) ▼▼▼ -->
-            <div class="form-group"><label for="fx_auto_emi_filled">आज किती सदस्यांचे अॅटो ई एम आय फॉर्म भरून घेतले?</label><input type="number" id="fx_auto_emi_filled"></div>
-            
-            <div class="form-group"><label for="fx_notes">आजच्या इतर विशेष नोंदी</label><textarea id="fx_notes" rows="3"></textarea></div>
+            <div class="grid grid-cols-2 gap-5">
+                <div>
+                    <label class="input-label">३. अहवाल दिनांक</label>
+                    <input type="date" id="reportDate" class="pro-input" onchange="checkStatusAndInit()">
+                    <p class="text-[10px] text-orange-600 font-bold mt-2 ml-1">● मागील २ दिवसांचे अहवाल भरता येतील.</p>
+                </div>
+                <div>
+                    <label class="input-label text-blue-600">४. आज रजा होती का?</label>
+                    <select id="leaveSelect" class="pro-input bg-blue-50 border-blue-200" onchange="handleLeave()">
+                        <option value="नाही">नाही (Working Today)</option>
+                        <option value="हो">हो (On Leave)</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
-        <!-- BM Form -->
-        <div id="form-BM" class="role-form" style="display:none;">
-            <h4>BM - शाखा व्यवस्थापक अहवाल</h4>
-            <div class="form-group"><label>आजचे एकुण लोन वाटप</label><div class="input-group"><div><input type="text" id="bm_disburse_village" placeholder="गावाचे नांव"></div><div><input type="number" id="bm_disburse_members" placeholder="मेंबरची संख्या"></div></div><input type="number" id="bm_disburse_amt" placeholder="एकूण वाटप रक्कम"></div>
-            <div class="form-group"><label>आजचे एकुण युनिटचे कलेक्शन</label><div class="input-group"><div><input type="number" id="bm_coll_regular" placeholder="रेग्युलर"></div><div><input type="number" id="bm_coll_pastdue" placeholder="पास्ट डयु"></div></div><div class="input-group"><div><input type="number" id="bm_coll_od" placeholder="ओडी"></div><div><input type="number" id="bm_coll_total" placeholder="एकूण"></div></div></div>
-            <div class="form-group"><label>आजचे अॅप्रायझल स्टेटस</label><div class="input-group"><div><input type="number" id="bm_appr_approved" placeholder="मंजुर केले"></div><div><input type="number" id="bm_appr_rejected" placeholder="रद्द केले"></div></div><textarea id="bm_reject_reason" placeholder="रद्द करण्याची कारणे..." rows="2"></textarea></div>
-            <div class="form-group"><label for="bm_investment_amt">आपल्या प्रयत्नातुन आलेली गुंतवणूक (रक्कम)</label><input type="number" id="bm_investment_amt"></div>
-            <div class="form-group"><label for="bm_notes">आजच्या इतर विशेष नोंदी</label><textarea id="bm_notes" rows="3"></textarea></div>
+        <!-- 5. DUPLICATE MESSAGE (INLINE) -->
+        <div id="duplicateMsg" class="warning-card">
+            <div class="text-4xl mb-3">⚠️</div>
+            <h3 class="text-xl font-black">अहवाल आधीच जमा आहे!</h3>
+            <p class="text-sm font-medium opacity-80 mt-1">निवडलेल्या तारखेचा अहवाल सिस्टीममध्ये आधीच उपलब्ध आहे. कृपया दुसरी तारीख निवडा.</p>
         </div>
 
-        <!-- TA Form -->
-        <div id="form-TA" class="role-form" style="display:none;">
-            <h4>TA - युनिट अकाऊंटंट अहवाल</h4>
-            <div class="form-group"><label for="ta_analysis_reports">आज किती अॅनालिसीस रिर्पाट काढले?</label><input type="number" id="ta_analysis_reports"></div>
-            <div class="form-group"><label>आजचे कलेक्शन मॅच झाले का?</label><select id="ta_coll_match"><option value="">-- निवडा --</option><option value="होय">होय</option><option value="नाही">नाही</option></select><textarea id="ta_match_reason" placeholder="नाही, तर का?" rows="2" style="display:none; margin-top:10px;"></textarea></div>
-            <div class="form-group"><label>सिस्टीम अपडेट तारीख</label><div class="input-group"><div><label for="ta_finance_update">फायनान्स सिस्टीम</label><input type="date" id="ta_finance_update"></div><div><label for="ta_spmb_update">SPMB टि सिस्टीम</label><input type="date" id="ta_spmb_update"></div></div></div>
-            <div class="form-group"><label>आजचे रिकव्हरी ट्रॅकर पाठवले काय?</label><select id="ta_recovery_tracker"><option value="">-- निवडा --</option><option value="होय">होय</option><option value="नाही">नाही</option></select></div>
-            
-            <!-- ▼▼▼ नवा प्रश्न (TA) ▼▼▼ -->
-            <div class="form-group"><label for="ta_auto_emi_activated">आज किती सदस्यांचे अॅटो ई एम आय फॉर्म लागु करून दिले?</label><input type="number" id="ta_auto_emi_activated"></div>
+        <!-- 4. LEAVE REASSURANCE -->
+        <div id="leaveConfirmation" class="hidden">
+            <div class="leave-card">
+                <div class="text-5xl mb-4">🏠</div>
+                <h3 class="text-2xl font-black text-blue-900">आज रजा (On Leave)</h3>
+                <p class="text-slate-600 font-bold mt-2 mb-8 px-4">आज तुम्ही रजेवर असल्यामुळे कोणतीही माहिती भरण्याची गरज नाही. फक्त खालील बटण दाबून नोंद पूर्ण करा.</p>
+                <div class="inline-block px-6 py-2 bg-white rounded-full border border-blue-100 text-blue-800 font-black text-sm uppercase tracking-tighter shadow-sm">
+                    Press Submit to Confirm Leave
+                </div>
+            </div>
+        </div>
 
-            <div class="form-group"><label for="ta_notes">आजच्या इतर विशेष नोंदी</label><textarea id="ta_notes" rows="3"></textarea></div>
+        <!-- MAIN FORM SECTIONS -->
+        <form id="masterForm" class="hidden">
+            
+            <!-- BRANCH MANAGER (BM) SECTION -->
+            <div id="role-BM" class="role-section hidden">
+                <div class="flex items-center gap-2 mb-5 ml-1">
+                    <span class="h-3 w-3 bg-blue-600 rounded-full"></span>
+                    <h2 class="font-black text-slate-800 uppercase tracking-widest text-sm">Branch Manager Daily Reporting</h2>
+                </div>
+
+                <div class="pro-card">
+                    <h3 class="section-title">आपल्या शाखेची एकूण रिकव्हरी स्थिती (आजची रेग्युरल व ओडी दोन्हीं मिळुन) </h3>
+                    <div class="grid grid-cols-2 gap-5">
+                        <div><label class="input-label">खाते</label><input type="number" data-label="BM_Acc" class="pro-input dyn-bm" placeholder="0"></div>
+                        <div><label class="input-label">रक्कम (₹)</label><input type="number" data-label="BM_Amt" class="pro-input dyn-bm amt-input" placeholder="₹"></div>
+                        <div><label class="input-label">त्यापैकी कॅश कलेक्शन</label><input type="number" data-label="BM_Cash" class="pro-input dyn-bm" placeholder="0"></div>
+                        <div><label class="input-label">त्यापैकी डिजीटल कलेक्शन </label><input type="number" data-label="BM_Digi" class="pro-input dyn-bm" placeholder="0"></div>
+                    </div>
+                </div>
+
+                <div class="pro-card">
+                    <h3 class="section-title">ओडी स्थिती (Aging Report)</h3>
+                    <div class="space-y-4">
+                        <div class="flex gap-3 items-center">
+                            <span class="w-32 text-xs font-black text-slate-500">1-30 दिवस:</span>
+                            <input type="number" data-label="BM_OD1_C" placeholder="AC" class="pro-input dyn-bm">
+                            <input type="number" data-label="BM_OD1_A" placeholder="₹" class="pro-input dyn-bm amt-input">
+                        </div>
+                        <div class="flex gap-3 items-center">
+                            <span class="w-32 text-xs font-black text-slate-500">31-90 दिवस:</span>
+                            <input type="number" data-label="BM_OD2_C" placeholder="AC" class="pro-input dyn-bm">
+                            <input type="number" data-label="BM_OD2_A" placeholder="₹" class="pro-input dyn-bm amt-input">
+                        </div>
+                        <div class="flex gap-3 items-center">
+                            <span class="w-32 text-xs font-black text-slate-500">91+ दिवस:</span>
+                            <input type="number" data-label="BM_OD3_C" placeholder="AC" class="pro-input dyn-bm">
+                            <input type="number" data-label="BM_OD3_A" placeholder="₹" class="pro-input dyn-bm amt-input">
+                        </div>
+                    </div>
+                </div>
+
+               <div class="pro-card">
+                    <h3 class="section-title">आजचे वाटप </h3>
+                    <div class="space-y-4">
+                        <div class="flex gap-3 items-center">
+                            <span class="w-32 text-xs font-black text-slate-500">ग्राहक संख्या </span>
+                            <input type="number" data-label="Disbursment_Customers" placeholder="No of Customers" class="pro-input dyn-bm">
+                        </div>
+                        <div class="flex gap-3 items-center">
+                            <span class="w-32 text-xs font-black text-slate-500">रक्कम</span>
+                            <input type="number" data-label="Disbursment_Amount" placeholder="AC" class="pro-input dyn-bm">
+                        </div>
+                        <div class="flex gap-3 items-center">
+                            <span class="w-32 text-xs font-black text-slate-500">त्यापैकी AutoPay कनेक्शन पुर्ण संख्या </span>
+                            <input type="number" data-label="Connet_To_Autopay" placeholder="Auto Pay No" class="pro-input dyn-bm">
+                        </div>
+                    </div>
+                </div>
+
+            <div class="pro-card">
+                    <h3 class="section-title">आजचे अॅप्रायझल स्टेटस </h3>
+                    <div class="space-y-4">
+                        <div class="flex gap-3 items-center">
+                            <span class="w-32 text-xs font-black text-slate-500"> एकुण अॅप्रायझल  </span>
+                            <input type="number" data-label="Total_Apprisal_Today" placeholder="No of Apprisal" class="pro-input dyn-bm">
+                        </div>
+                        <div class="flex gap-3 items-center">
+                            <span class="w-32 text-xs font-black text-slate-500">त्यापैकी मंजुर </span>
+                            <input type="number" data-label="Apprisal_Sanction" placeholder="Sanction" class="pro-input dyn-bm">
+                        </div>
+                        <div class="flex gap-3 items-center">
+                            <span class="w-32 text-xs font-black text-slate-500">नामंजुर </span>
+                            <input type="number" data-label="Apprisal_Reject" placeholder="Rejected" class="pro-input dyn-bm">
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="pro-card">
+                    <h3 class="section-title">बैठका / व्हीजीट व कॅश शिल्लक तपशील</h3>
+                    <div class="space-y-5">
+                        <div>
+                            <label class="input-label">आजच्या बैठकांची / व्हीजीट संख्या</label>
+                            <input type="number" data-label="BM_Meet_Cnt" class="pro-input dyn-bm" placeholder="0">
+                        </div>
+                        <div>
+                            <label class="input-label">बैठकीतील / व्हीजीट महत्वाचे मुद्दे</label>
+                            <textarea data-label="BM_Meet_Notes" class="pro-input h-28 dyn-bm" placeholder="येथे सविस्तर लिहा..."></textarea>
+                        </div>
+                        <div>
+                            <label class="input-label">आपल्या अंतर्गत ​सी ऐं कडे Cash शिल्लक असण्याचे मुख्य कारण</label>
+                            <textarea data-label="BM_Note_On_Cash_With_CA_Why" class="pro-input h-28 dyn-bm" placeholder="जर शिल्लक असेल तर कारण लिहा..."></textarea>
+                        </div>
+                        <div>
+                            <label class="input-label">विशेष नोंदी</label>
+                            <textarea data-label="BM_IMP_NOTE_Customer_Staff" class="pro-input h-28 dyn-bm" placeholder="आजच्या विशेष नोंदी (ग्राहकांच्या किंवा स्टाफ विषयक तक्रारी असल्यास येथे नमूद करा)..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+  
+
+<!-- Cluster Assistant (CA) SECTION START -->
+
+            <div id="role-CA" class="role-section hidden">
+                <div class="flex items-center gap-2 mb-5 ml-1">
+                    <span class="h-3 w-3 bg-blue-600 rounded-full"></span>
+                    <h2 class="font-black text-slate-800 uppercase tracking-widest text-sm">CA Daily Reporting</h2>
+                </div>
+
+                <div class="pro-card">
+                    <h3 class="section-title">वसुली अहवाल (Recovery Report)</h3>
+                    <div class="space-y-5">
+                        <div class="p-5 bg-blue-50 rounded-3xl border border-blue-100">
+                            <label class="block font-black text-blue-900 mb-3 uppercase text-[10px] tracking-widest">● रेग्युलर कलेक्शन</label>
+                            <div class="flex gap-4">
+                                <input type="number" data-label="CA_Reg_C" placeholder="ग्राहक" class="pro-input dyn-ca">
+                                <input type="number" data-label="CA_Reg_A" placeholder="रक्कम ₹" class="pro-input dyn-ca amt-input">
+                            </div>
+                        </div>
+                        <div class="p-5 bg-orange-50 rounded-3xl border border-orange-100">
+                            <label class="block font-black text-orange-900 mb-3 uppercase text-[10px] tracking-widest">● ओडी कलेक्शन</label>
+                            <div class="flex gap-4">
+                                <input type="number" data-label="CA_OD_C" placeholder="ग्राहक" class="pro-input dyn-ca">
+                                <input type="number" data-label="CA_OD_A" placeholder="रक्कम ₹" class="pro-input dyn-ca amt-input">
+                            </div>
+                        </div>
+                        <div class="p-5 bg-red-50 rounded-3xl border border-red-100">
+                            <label class="block font-black text-red-900 mb-3 uppercase text-[10px] tracking-widest">● पास्ट ड्यु (Past Due)</label>
+                            <div class="flex gap-4">
+                                <input type="number" data-label="CA_Past_C" placeholder="ग्राहक" class="pro-input dyn-ca">
+                                <input type="number" data-label="CA_Past_A" placeholder="रक्कम ₹" class="pro-input dyn-ca amt-input">
+                            </div>
+                        </div>
+                        <div class="p-5 bg-red-50 rounded-3xl border border-red-100">
+                            <label class="block font-black text-red-900 mb-3 uppercase text-[10px] tracking-widest">● हातावरील शिल्लक & कारण </label>
+                            <div class="flex gap-4">
+                                <input type="number" data-label="CA_Hand_Cash_Amt" placeholder="आजची हातावरील शिल्लक " class="pro-input dyn-ca">
+                                <input type="text" data-label="CA_Hand_Cash_Reason" placeholder="हातावर रक्कम असण्याची कारण काय " class="pro-input dyn-ca">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pro-card">
+                    <h3 class="section-title">फील्ड वर्क तपशील</h3>
+                    <div class="space-y-5">
+                        <div class="grid grid-cols-2 gap-5">
+                            <div><label class="input-label">बैठक संख्या</label><input type="number" data-label="CA_Meet" class="pro-input dyn-ca" placeholder="0"></div>
+                            <div><label class="input-label">गावाचे नाव</label><input type="text" data-label="CA_Vill" class="pro-input dyn-ca" placeholder="नांव..."></div>
+                            <div><label class="input-label">किती ग्राहकांचे ​के वाय सी आज घेतले </label><input type="number" data-label="KYC_Collected" class="pro-input dyn-ca" placeholder="के वाय सी No..."></div>
+                            <div><label class="input-label">किती ग्राहकांचे फॉर्म पुर्ण केले</label><input type="number" data-label="Forms_Filled" class="pro-input dyn-ca" placeholder="फॉर्म पुर्ण ..."></div>
+                            <div><label class="input-label">किती ग्राहाकांचे फॉर्म भरणे बाकी आहे </label><input type="number" data-label="Forms_Pending" class="pro-input dyn-ca" placeholder="फॉर्म पुर्ण ..."></div>
+                            <div><label class="input-label">अॅटो पे कनेक्शनचे किती फॉर्म आज भरले  </label><input type="number" data-label="Auto_Pay_Done" class="pro-input dyn-ca" placeholder="फॉर्म पुर्ण ..."></div>
+                        </div>
+                        <div>
+                            <label class="input-label">आजच्या कामातील अडचणी ग्राहकांच्या काही समस्या होत्या का असतील तर त्या कळवा किंवा वरिष्ठांविषयी काही अडचण आहे काय ते कळवा </label>
+                            <textarea data-label="CA_Issues" class="pro-input h-32 dyn-ca" placeholder="कामात आलेल्या समस्या येथे स्पष्ट करा..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+<!-- Unit Accountant (TA) SECTION START -->
+
+<div id="role-TA" class="role-section hidden">
+    <div class="flex items-center gap-2 mb-5 ml-1">
+        <span class="h-3 w-3 bg-green-600 rounded-full"></span>
+        <h2 class="font-black text-slate-800 uppercase tracking-widest text-sm">
+            TA – युनिट अकाऊंटंट अहवाल
+        </h2>
+    </div>
+
+    <div class="pro-card">
+        <h3 class="section-title">दैनिक अकाऊंटिंग व कंट्रोल अहवाल</h3>
+
+        <div class="space-y-5">
+
+            <!-- Analysis Report -->
+            <div class="p-5 bg-green-50 rounded-3xl border border-green-100">
+                <label class="block font-black text-green-900 mb-3 uppercase text-[10px] tracking-widest">
+                    ● अॅनालिसीस रिपोर्ट
+                </label>
+                <input type="number"
+                       data-label="TA_Analysis_Report_Count"
+                       placeholder="आज किती अॅनालिसीस रिपोर्ट काढले?"
+                       class="pro-input dyn-ta">
+            </div>
+
+            <!-- Collection Match -->
+            <div class="p-5 bg-blue-50 rounded-3xl border border-blue-100">
+                <label class="block font-black text-blue-900 mb-3 uppercase text-[10px] tracking-widest">
+                    ● आजचे कलेक्शन मॅच
+                </label>
+                <select data-label="TA_Collection_Matched" class="pro-input dyn-ta">
+                    <option value="">-- निवडा --</option>
+                    <option value="Yes">होय</option>
+                    <option value="No">नाही</option>
+                </select>
+            </div>
+
+            <!-- Cash Control -->
+            <div class="p-5 bg-red-50 rounded-3xl border border-red-100">
+                <label class="block font-black text-red-900 mb-4 uppercase text-[10px] tracking-widest">
+                    ● कॅश कंट्रोल
+                </label>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="number"
+                           data-label="TA_Cash_In_Hand"
+                           placeholder="आजची Cash In Hand ₹"
+                           class="pro-input dyn-ta amt-input">
+
+                    <select data-label="TA_Bank_Deposit_Done" class="pro-input dyn-ta">
+                        <option value="">बँकेत डिपॉझिट झाले का?</option>
+                        <option value="Yes">होय</option>
+                        <option value="No">नाही</option>
+                    </select>
+                </div>
+
+                <input type="text"
+                       data-label="TA_Deposit_Reason"
+                       placeholder="डिपॉझिट नसेल तर कारण"
+                       class="pro-input dyn-ta mt-3">
+            </div>
+
+            <!-- System Update Dates -->
+            <div class="p-5 bg-orange-50 rounded-3xl border border-orange-100">
+                <label class="block font-black text-orange-900 mb-4 uppercase text-[10px] tracking-widest">
+                    ● सिस्टीम अपडेट तारीख
+                </label>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="input-label">Finance System</label>
+                        <input type="date"
+                               data-label="TA_Finance_System_Date"
+                               class="pro-input dyn-ta">
+                    </div>
+
+                    <div>
+                        <label class="input-label">SPMBT_System</label>
+                        <input type="date"
+                               data-label="TA_SPMB_System_Date"
+                               class="pro-input dyn-ta">
+                    </div>
+                </div>
+            </div>
+
+            <!-- CA Report Verification -->
+            <div class="p-5 bg-indigo-50 rounded-3xl border border-indigo-100">
+                <label class="block font-black text-indigo-900 mb-3 uppercase text-[10px] tracking-widest">
+                    ● CA रिपोर्ट व्हेरिफिकेशन
+                </label>
+
+                <select data-label="TA_All_CA_Report_Received" class="pro-input dyn-ta mb-3">
+                    <option value="">सर्व CA रिपोर्ट वेळेत आले का?</option>
+                    <option value="Yes">होय</option>
+                    <option value="No">नाही</option>
+                </select>
+
+                <input type="text"
+                       data-label="TA_CA_Pending_Names"
+                       placeholder="Pending / चुकीचे CA नावे"
+                       class="pro-input dyn-ta">
+            </div>
+
+            <!-- OD / Past Due -->
+            <div class="p-5 bg-pink-50 rounded-3xl border border-pink-100">
+                <label class="block font-black text-pink-900 mb-3 uppercase text-[10px] tracking-widest">
+                    ● आज झालेले New Loan Disbursement सर्व सिस्टीमला घेतले काय 
+                </label>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <select data-label="TA_New_OD_Today" class="pro-input dyn-ta">
+                        <option value="">आज  झालेले New Loan Disbursement सर्व सिस्टीमला घेतल?</option>
+                        <option value="Yes">होय</option>
+                        <option value="No">नाही</option>
+                    </select>
+
+                    <input type="रक्कम Loan Disbursement"
+                           data-label="TA_Loan_Dis"
+                           placeholder="Amount ₹"
+                           class="pro-input dyn-ta amt-input">
+                </div>
+            </div>
+
+            <!-- Auto EMI -->
+            <div class="p-5 bg-teal-50 rounded-3xl border border-teal-100">
+                <label class="block font-black text-teal-900 mb-3 uppercase text-[10px] tracking-widest">
+                    ● Auto EMI कंट्रोल
+                </label>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="number"
+                           data-label="TA_Auto_EMI_Activated"
+                           placeholder="आज किती Auto EMI लागू?"
+                           class="pro-input dyn-ta">
+
+                    <input type="number"
+                           data-label="TA_Auto_EMI_Failed"
+                           placeholder="आज किती Auto EMI Fail?"
+                           class="pro-input dyn-ta">
+                </div>
+            </div>
+
+            <!-- Recovery Tracker -->
+            <div class="p-5 bg-purple-50 rounded-3xl border border-purple-100">
+                <label class="block font-black text-purple-900 mb-3 uppercase text-[10px] tracking-widest">
+                    ● रिकव्हरी ट्रॅकर
+                </label>
+                <select data-label="TA_Recovery_Tracker_Sent" class="pro-input dyn-ta">
+                    <option value="">आज रिकव्हरी ट्रॅकर पाठवला का?</option>
+                    <option value="Yes">होय</option>
+                    <option value="No">नाही</option>
+                </select>
+            </div>
+
+            <!-- Special Notes -->
+            <div>
+                <label class="input-label">आजच्या इतर विशेष नोंदी</label>
+                <textarea data-label="TA_Special_Notes"
+                          class="pro-input h-32 dyn-ta"
+                          placeholder="Audit, HO सूचना, किंवा महत्वाच्या नोंदी येथे लिहा..."></textarea>
+            </div>
+
+            <!-- Declaration -->
+            <div class="p-5 bg-slate-50 rounded-3xl border border-slate-200">
+                <label class="block font-black text-slate-900 mb-3 uppercase text-[10px] tracking-widest">
+                    ● TA डिक्लेरेशन
+                </label>
+                <select data-label="TA_Declaration" class="pro-input dyn-ta">
+                    <option value="">आजचा सर्व डेटा बरोबर आहे का?</option>
+                    <option value="Yes">होय</option>
+                    <option value="No">नाही</option>
+                </select>
+            </div>
+
         </div>
     </div>
-    <button class="submit-btn" onclick="submitReport()">सबमिट करा</button>
 </div>
 
-<!-- Modal -->
-<div id="statusModal" class="modal-overlay"><div class="modal-content"><div id="loaderContainer"><div class="loader"></div><p>डेटा अपलोड होत आहे...</p></div><div id="successMessageContainer" style="display: none;"><div class="success-message"></div><button id="closeModalBtn">ठीक आहे</button></div></div></div>
+<!-- Unit Accountant (TA) SECTION END -->
 
-<script>
-    // ▼▼▼▼▼ कॉन्फिगरेशन व्हेरिएबल्स ▼▼▼▼▼
-    const API_KEY = "AIzaSyCib9D8dkRRV7MyGDfTcCqaubl19RnCdhQ"; // तुमची API की
-    const SHEET_ID = "1or7yTCZLhu1qdTijEBC--9lHsigVb3yy1nY-qByHIGY"; // तुमचा शीट आयडी
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwU9xpUzALdQOY_mbqUzF-Aq79fBjY9iysZ-QPYLAfYTsWiB_Gx8WacLnBvOkWvedxw/exec"; // तुमची Web App URL
-    const STAFF_SHEET = "StaffList";
-    const REPORTS_SHEET = "Reports";
-    
-    // Global variables
-    let staffList = [];
-    let existingReports = [];
-    let currentUserRole = '';
 
-    // Element references
-    const statusModal = document.getElementById('statusModal');
-    const loaderContainer = document.getElementById('loaderContainer');
-    const successMessageContainer = document.getElementById('successMessageContainer');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const submitBtn = document.querySelector('.submit-btn');
-    const roleFormsContainer = document.getElementById('roleFormsContainer');
-    const leaveSelect = document.getElementById('leaveSelect');
-    const branchSelect = document.getElementById('branchSelect');
-    const employeeSelect = document.getElementById('employeeSelect');
-    const reportDateInput = document.getElementById('reportDate');
-    
-    // --- INITIAL DATA LOADING ---
-    async function loadInitialData() {
-        const staffUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${STAFF_SHEET}?key=${API_KEY}`;
-        const reportsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${REPORTS_SHEET}!B:C?key=${API_KEY}`;
 
-        try {
-            const [staffResponse, reportsResponse] = await Promise.all([ fetch(staffUrl), fetch(reportsUrl) ]);
-            if (!staffResponse.ok) throw new Error(`Staff list API call failed: Status ${staffResponse.status}.`);
-            if (!reportsResponse.ok) throw new Error(`Reports list API call failed: Status ${reportsResponse.status}.`);
-            const staffData = await staffResponse.json();
-            const reportsData = await reportsResponse.json();
-            staffList = staffData.values ? staffData.values.slice(1) : [];
-            existingReports = reportsData.values ? reportsData.values.slice(1) : [];
-            const branches = [...new Set(staffList.map(row => row[1]))].filter(Boolean);
-            branchSelect.innerHTML = '<option value="">-- शाखा निवडा --</option>';
-            branches.forEach(branch => {
-                const option = document.createElement('option');
-                option.value = branch;
-                option.textContent = branch;
-                branchSelect.appendChild(option);
-            });
-            branchSelect.disabled = false;
-            reportDateInput.valueAsDate = new Date();
-            validateDate();
-        } catch (error) {
-            console.error("Error loading initial data:", error);
-            alert("डेटा लोड करण्यात अयशस्वी! कृपया तुमचे इंटरनेट कनेक्शन, API Key आणि शीटच्या परवानग्या तपासा.");
-            branchSelect.innerHTML = '<option>एरर!</option>';
-        }
-    }
+            <!-- FIELD EXECUTIVE (FX) SECTION -->
+            <div id="role-FX" class="role-section hidden">
+                <div class="flex items-center gap-2 mb-5 ml-1">
+                    <span class="h-3 w-3 bg-blue-600 rounded-full"></span>
+                    <h2 class="font-black text-slate-800 uppercase tracking-widest text-sm">FX Daily Reporting</h2>
+                </div>
 
-    // --- FORM LOGIC ---
-    function showRoleForm(role) {
-        currentUserRole = role ? role.toUpperCase() : '';
-        document.querySelectorAll('.role-form').forEach(form => form.style.display = 'none');
-        const formToShow = document.getElementById(`form-${currentUserRole}`);
-        if (formToShow) { formToShow.style.display = 'block'; }
-    }
-    
-    // --- DATE VALIDATION LOGIC ---
-    function validateDate() {
-        const selectedDate = new Date(reportDateInput.value);
-        const today = new Date();
-        selectedDate.setHours(0, 0, 0, 0);
-        today.setHours(0, 0, 0, 0);
-        const threeDaysAgo = new Date(today);
-        threeDaysAgo.setDate(today.getDate() - 3);
-        if (selectedDate < threeDaysAgo) {
-            alert("तुमचे रिपोर्ट ३ दिवसांपेक्षा जास्त प्र​लंबित आहेत, त्यामुळे तुम्हांला ते अपलोड करता येणार नाही.");
-            submitBtn.disabled = true;
-            return false;
-        } else {
-            submitBtn.disabled = false;
-            return true;
-        }
-    }
+                <!-- Point 1 Accordion -->
+                <div class="accordion-item shadow-sm">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="bg-blue-900 text-white w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black">1</span>
+                            <span class="font-bold text-slate-700">आजची रिकव्हरी (Reg + OD)</span>
+                        </div>
+                        <span class="arrow transition-transform text-xs text-slate-400">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="table-wrap">
+                            <table id="table1">
+                                <thead><tr><th>CA Name</th><th class="w-20">Ac</th><th class="w-32">Amt (₹)</th></tr></thead>
+                                <tbody id="fxT1"></tbody>
+                                <tfoot><tr class="total-row"><td>Total</td><td id="t1-ac">0</td><td id="t1-amt">0</td></tr></tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
-    // --- SUBMISSION LOGIC ---
-    async function submitReport() {
-        const branch = branchSelect.value;
-        const name = employeeSelect.value;
-        const leave = leaveSelect.value;
-        if (!branch || !name || !reportDateInput.value) { alert("⚠️ कृपया शाखा, नाव आणि दिनांक निवडा."); return; }
-        if (!validateDate()) return;
-        const formattedDate = new Date(reportDateInput.value).toLocaleDateString('en-GB', { timeZone: 'Asia/Kolkata' });
-        const isDuplicate = existingReports.some(report => report[0] === formattedDate && report[1] === name);
-        if (isDuplicate) { alert("या तारखेचा अहवाल तुम्ही आधीच सबमिट केला आहे."); return; }
+                <!-- Point 2 Accordion -->
+                <div class="accordion-item shadow-sm">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="bg-blue-900 text-white w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black">2</span>
+                            <span class="font-bold text-slate-700">कलेक्शन मोड (Cash & Digital)</span>
+                        </div>
+                        <span class="arrow transition-transform text-xs text-slate-400">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="table-wrap">
+                            <table id="table2">
+                                <thead><tr><th>CA Name</th><th>Cash</th><th>Digital</th><th>Total</th></tr></thead>
+                                <tbody id="fxT2"></tbody>
+                                <tfoot><tr class="total-row"><td>Total</td><td id="t2-cash">0</td><td id="t2-digi">0</td><td id="t2-total">0</td></tr></tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
-        let reportData = {};
-        if (leave === "होय") {
-            reportData = { role: currentUserRole, notes: "रजा" };
-        } else {
-            switch (currentUserRole) {
-                case 'CA': reportData = { role: 'CA', ca_reg_count: document.getElementById('ca_reg_count').value, ca_reg_amt: document.getElementById('ca_reg_amt').value, ca_odpast_count: document.getElementById('ca_odpast_count').value, ca_odpast_amt: document.getElementById('ca_odpast_amt').value, ca_meeting_village: document.getElementById('ca_meeting_village').value, ca_meeting_count: document.getElementById('ca_meeting_count').value, ca_member_selection: document.getElementById('ca_member_selection').value, ca_forms_filled: document.getElementById('ca_forms_filled').value, notes: document.getElementById('ca_notes').value }; break;
-                case 'FX': reportData = { role: 'FX', fx_appraisal_count: document.getElementById('fx_appraisal_count').value, fx_appraisal_villages: document.getElementById('fx_appraisal_villages').value, fx_recovery_help: document.getElementById('fx_recovery_help').value, fx_pastdue_count: document.getElementById('fx_pastdue_count').value, fx_pastdue_amt: document.getElementById('fx_pastdue_amt').value, fx_auto_emi_filled: document.getElementById('fx_auto_emi_filled').value, notes: document.getElementById('fx_notes').value }; break;
-                case 'BM': reportData = { role: 'BM', bm_disburse_village: document.getElementById('bm_disburse_village').value, bm_disburse_members: document.getElementById('bm_disburse_members').value, bm_disburse_amt: document.getElementById('bm_disburse_amt').value, bm_coll_regular: document.getElementById('bm_coll_regular').value, bm_coll_pastdue: document.getElementById('bm_coll_pastdue').value, bm_coll_od: document.getElementById('bm_coll_od').value, bm_coll_total: document.getElementById('bm_coll_total').value, bm_appr_approved: document.getElementById('bm_appr_approved').value, bm_appr_rejected: document.getElementById('bm_appr_rejected').value, bm_reject_reason: document.getElementById('bm_reject_reason').value, bm_investment_amt: document.getElementById('bm_investment_amt').value, notes: document.getElementById('bm_notes').value }; break;
-                case 'TA': reportData = { role: 'TA', ta_analysis_reports: document.getElementById('ta_analysis_reports').value, ta_coll_match: document.getElementById('ta_coll_match').value, ta_match_reason: document.getElementById('ta_match_reason').value, ta_finance_update: document.getElementById('ta_finance_update').value, ta_spmb_update: document.getElementById('ta_spmb_update').value, ta_recovery_tracker: document.getElementById('ta_recovery_tracker').value, ta_auto_emi_activated: document.getElementById('ta_auto_emi_activated').value, notes: document.getElementById('ta_notes').value }; break;
-                default: reportData = { role: currentUserRole || 'Other', notes: "Not Applicable" };
+                <!-- Point 3 Accordion -->
+                <div class="accordion-item shadow-sm">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="bg-blue-900 text-white w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black">3</span>
+                            <span class="font-bold text-slate-700">सी ऐ निहाय हातावर शिल्लक कॅश</span>
+                        </div>
+                        <span class="arrow transition-transform text-xs text-slate-400">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="table-wrap">
+                            <table>
+                                <thead><tr><th>CA Name</th><th class="w-28">Cash (₹)</th><th>Reason</th></tr></thead>
+                                <tbody id="fxT3"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Point 4 Accordion -->
+                <div class="accordion-item shadow-sm">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="bg-blue-900 text-white w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black">4</span>
+                            <span class="font-bold text-slate-700">सी ऐ निहाय ओडी अहवाल</span>
+                        </div>
+                        <span class="arrow transition-transform text-xs text-slate-400">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="table-wrap">
+                            <table>
+                                <thead><tr><th>CA Name</th><th class="w-20">Ac</th><th class="w-32">Amount</th></tr></thead>
+                                <tbody id="fxT4"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Point 5-9 Combined Accordion -->
+                <div class="accordion-item shadow-sm">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="bg-blue-900 text-white w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black">5</span>
+                            <span class="font-bold text-slate-700">इतर अहवाल व नोंदी</span>
+                        </div>
+                        <span class="arrow transition-transform text-xs text-slate-400">▼</span>
+                    </div>
+                    <div class="accordion-content space-y-6">
+                        <div class="p-4 bg-slate-50 rounded-2xl">
+                            <p class="font-black text-[10px] text-slate-500 mb-3 uppercase underline">५. आपल्या प्रयत्नांतून वसुली</p>
+                            <div class="grid grid-cols-2 gap-4">
+                                <input type="number" data-label="FX_P5_Acc" class="pro-input dyn-fx" placeholder="खाते">
+                                <input type="number" data-label="FX_P5_Amt" class="pro-input dyn-fx amt-input" placeholder="रक्कम ₹">
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-slate-50 rounded-2xl">
+                            <p class="font-black text-[10px] text-slate-500 mb-3 uppercase underline">६. लोन अॅप्रायझल अहवाल</p>
+                            <div class="grid grid-cols-2 gap-4 mb-3">
+                                <input type="number" data-label="FX_P6_Cnt" class="pro-input dyn-fx" placeholder="संख्या">
+                                <input type="number" data-label="FX_P6_Rej" class="pro-input dyn-fx" placeholder="रद्द">
+                                <input type="number" data-label="Apprisal_Dis_Done" class="pro-input dyn-fx" placeholder="जे अॅप्रायझर झालेले आहेत त्या पैकी वाटप किती ">
+                                <input type="number" data-label="Apprisal_Dis_Pending" class="pro-input dyn-fx" placeholder="जे अॅप्रायझर झालेले आहेत त्या पैकी वाटप बाकी किती  ">
+                            </div>
+                            <input type="text" data-label="FX_P6_Vill" class="pro-input dyn-fx" placeholder="आज ज्या गावात झाले त्यांची गावाची नावे">
+                        </div>
+
+                        <div class="p-4 bg-slate-50 rounded-2xl">
+                            <p class="font-black text-[10px] text-slate-500 mb-3 uppercase underline">७. सी ऐ निहाय ऑटोपे</p>
+                            <div class="table-wrap"><table><thead><tr><th>CA Name</th><th>Count</th></tr></thead><tbody id="fxT7"></tbody></table></div>
+                        </div>
+
+                        <div><label class="input-label">८. आजच्या महत्वाच्या नोंदी</label><textarea data-label="FX_P8_Notes" class="pro-input h-20 dyn-fx"></textarea></div>
+                        <div><label class="input-label">९. ग्राहकांच्या तक्रारी किंवा वरिष्ठ किंवा सी ऐ विषयी क्राही तक्रार आहे काय </label><textarea data-label="FX_P9_Complaints" class="pro-input h-20 dyn-fx"></textarea></div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- 2. STICKY ACTION BAR -->
+    <div id="stickyBar" class="sticky-action-bar">
+        <!-- 3. FX MATCH STATUS INDICATOR -->
+        <div id="fxStatusIndicator" class="hidden flex-1">
+            <div class="flex flex-col">
+                <span class="text-[9px] font-black text-slate-400 uppercase leading-none mb-1">Recovery Match</span>
+                <span id="matchBadge" class="badge badge-fail block text-center">Mismatch ❌</span>
+            </div>
+        </div>
+        
+        <button type="button" onclick="submitFinalData()" id="finalBtn" class="flex-[2] bg-emerald-600 text-white py-4 md:py-5 rounded-2xl font-black text-lg md:text-xl shadow-xl active:scale-95 transition-transform uppercase tracking-wider">
+            अहवाल जतन करा (Submit)
+        </button>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxrvpj1lV-6ulFBibnRpui38FCElGlacPetW_ToO3uU8LnqLIT5BhKmE3ijCgIsy_U/exec"; 
+        
+        let staffData = [];
+        let totalAmt1 = 0; 
+        let totalAmt2 = 0;
+        let isAlreadySubmitted = false;
+
+        // Init App
+        window.onload = async () => {
+            const dateInput = document.getElementById('reportDate');
+            const today = new Date();
+            const minDate = new Date();
+            minDate.setDate(today.getDate() - 2); 
+
+            dateInput.valueAsDate = today;
+            dateInput.min = minDate.toISOString().split('T')[0];
+            dateInput.max = today.toISOString().split('T')[0];
+
+            try {
+                const response = await fetch(SCRIPT_URL + "?action=getStaff");
+                staffData = await response.json();
+                const branches = [...new Set(staffData.map(s => s[2]))];
+                const unitDropdown = document.getElementById('unitSelect');
+                unitDropdown.innerHTML = '<option value="">-- शाखा निवडा --</option>' + 
+                    branches.map(b => `<option value="${b}">${b}</option>`).join('');
+            } catch (error) { console.error("API Load Failed"); }
+        };
+
+        // UI Logic: Accordion Toggle
+        function toggleAccordion(header) {
+            const content = header.nextElementSibling;
+            const arrow = header.querySelector('.arrow');
+            const isOpen = content.style.display === "block";
+            
+            // Close all
+            document.querySelectorAll('.accordion-content').forEach(c => c.style.display = "none");
+            document.querySelectorAll('.arrow').forEach(a => a.style.transform = "rotate(0deg)");
+            document.querySelectorAll('.accordion-header').forEach(h => h.classList.remove('active'));
+
+            // Open clicked
+            if (!isOpen) {
+                content.style.display = "block";
+                header.classList.add('active');
+                arrow.style.transform = "rotate(180deg)";
             }
         }
-        
-        submitBtn.disabled = true;
-        submitBtn.textContent = "सबमिट होत आहे...";
-        loaderContainer.style.display = 'block';
-        successMessageContainer.style.display = 'none';
-        statusModal.style.display = 'flex';
-        
-        try {
-            const response = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify({ date: formattedDate, name, branch, leave, report: JSON.stringify(reportData) }) });
-            const result = await response.json();
-            if (result.status !== "success") throw new Error(result.message);
-            const reportDateForMessage = new Date(reportDateInput.value).toLocaleDateString('mr-IN', { day: '2-digit', month: 'long', year: 'numeric' });
-            document.querySelector('.success-message').innerHTML = `<strong>${name}</strong>, दिनांक ${reportDateForMessage} रोजीचा आपला अहवाल यशस्वीरित्या नोंदविला गेला आहे.`;
-            loaderContainer.style.display = 'none';
-            successMessageContainer.style.display = 'block';
-            closeModalBtn.style.display = 'inline-block';
-            existingReports.push([formattedDate, name]);
-        } catch (error) {
-            alert("❌ अहवाल सबमिट करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा. Error: " + error.message);
-            resetFormState(false);
-        }
-    }
 
-    function resetFormState(clearAll = true) {
-        statusModal.style.display = 'none';
-        submitBtn.disabled = false;
-        submitBtn.textContent = "सबमिट करा";
-        if (clearAll) {
-            document.querySelectorAll('.role-form input, .role-form textarea, .role-form select').forEach(input => input.value = '');
-            leaveSelect.value = 'नाही';
-            roleFormsContainer.style.display = 'block';
-            document.getElementById('ta_match_reason').style.display = 'none';
+        function filterStaff() {
+            const branch = document.getElementById('unitSelect').value;
+            const staff = staffData.filter(s => s[2] === branch);
+            const select = document.getElementById('empSelect');
+            select.innerHTML = '<option value="">-- नाव निवडा --</option>' + 
+                staff.map(p => `<option value="${p[0]}" data-role="${p[1]}" data-cas="${p[3]}">${p[0]}</option>`).join('');
+            checkStatusAndInit();
         }
-    }
 
-    // --- EVENT LISTENERS & INITIAL LOAD ---
-    branchSelect.addEventListener('change', () => {
-        const selectedBranch = branchSelect.value;
-        employeeSelect.innerHTML = '<option value="">-- नाव निवडा --</option>';
-        if (selectedBranch) {
-            const employeesInBranch = staffList.filter(row => row[1] === selectedBranch);
-            employeesInBranch.forEach(emp => {
-                const option = document.createElement('option');
-                option.value = emp[0];
-                option.textContent = emp[0];
-                employeeSelect.appendChild(option);
+        async function checkStatusAndInit() {
+            const name = document.getElementById('empSelect').value;
+            const date = document.getElementById('reportDate').value;
+            if(!name || !date) return;
+
+            resetUI();
+            document.getElementById('loader-overlay').style.display = "flex";
+
+            try {
+                const res = await fetch(`${SCRIPT_URL}?action=checkStatus&name=${encodeURIComponent(name)}&date=${date}`);
+                const status = await res.json();
+                document.getElementById('loader-overlay').style.display = "none";
+
+                if(status.submitted) {
+                    isAlreadySubmitted = true;
+                    document.getElementById('duplicateMsg').style.display = "block";
+                    document.getElementById('stickyBar').classList.remove('visible');
+                } else {
+                    isAlreadySubmitted = false;
+                    handleLeave();
+                }
+            } catch(e) { document.getElementById('loader-overlay').style.display = "none"; }
+        }
+
+        function resetUI() {
+            document.getElementById('masterForm').classList.add('hidden');
+            document.getElementById('duplicateMsg').style.display = "none";
+            document.getElementById('leaveConfirmation').classList.add('hidden');
+            document.getElementById('stickyBar').classList.remove('visible');
+        }
+
+        function handleLeave() {
+            if(isAlreadySubmitted) return;
+            const isLeave = document.getElementById('leaveSelect').value === "हो";
+            const staff = document.getElementById('empSelect').selectedOptions[0];
+
+            if(!staff || !staff.value) return;
+
+            if(isLeave) {
+                document.getElementById('masterForm').classList.add('hidden');
+                document.getElementById('leaveConfirmation').classList.remove('hidden');
+                document.getElementById('stickyBar').classList.add('visible');
+                document.getElementById('fxStatusIndicator').classList.add('hidden');
+            } else {
+                document.getElementById('leaveConfirmation').classList.add('hidden');
+                showForm(staff);
+            }
+        }
+
+        function showForm(staffOpt) {
+            const role = staffOpt.getAttribute('data-role');
+            const cas = staffOpt.getAttribute('data-cas') ? staffOpt.getAttribute('data-cas').split(',') : [];
+
+            document.querySelectorAll('.role-section').forEach(s => s.classList.add('hidden'));
+            document.getElementById('masterForm').classList.remove('hidden');
+            document.getElementById('stickyBar').classList.add('visible');
+            document.getElementById('role-' + role).classList.remove('hidden');
+
+            if(role === 'FX') {
+                document.getElementById('fxStatusIndicator').classList.remove('hidden');
+                buildFXRows(cas);
+            } else {
+                document.getElementById('fxStatusIndicator').classList.add('hidden');
+            }
+        }
+
+        function buildFXRows(caList) {
+            const t1 = document.getElementById('fxT1'), t2 = document.getElementById('fxT2'), t3 = document.getElementById('fxT3'), t4 = document.getElementById('fxT4'), t7 = document.getElementById('fxT7');
+            t1.innerHTML = t2.innerHTML = t3.innerHTML = t4.innerHTML = t7.innerHTML = "";
+
+            caList.forEach(ca => {
+                const name = ca.trim();
+                t1.innerHTML += `<tr><td class="text-[10px] font-bold">${name}</td><td><input type="number" data-tag="Ac" class="pro-input h-8 p-1 text-center calc-fx-1"></td><td><input type="number" data-tag="Amt" class="pro-input h-8 p-1 text-center calc-fx-1 amt-input"></td></tr>`;
+                t2.innerHTML += `<tr><td class="text-[10px] font-bold">${name}</td><td><input type="number" data-tag="Cash" class="pro-input h-8 p-1 text-center calc-fx-2"></td><td><input type="number" data-tag="Digi" class="pro-input h-8 p-1 text-center calc-fx-2"></td><td><input type="number" readonly class="pro-input h-8 p-1 text-center bg-slate-50 font-bold"></td></tr>`;
+                t3.innerHTML += `<tr><td class="text-[10px] font-bold">${name}</td><td><input type="number" data-tag="H_Cash" class="pro-input h-8 p-1 text-center amt-input"></td><td><input type="text" data-tag="H_Why" class="pro-input h-8 p-1" placeholder="..."></td></tr>`;
+                t4.innerHTML += `<tr><td class="text-[10px] font-bold">${name}</td><td><input type="number" data-tag="OD_Ac" class="pro-input h-8 p-1 text-center"></td><td><input type="number" data-tag="OD_Amt" class="pro-input h-8 p-1 text-center amt-input"></td></tr>`;
+                t7.innerHTML += `<tr><td class="text-[10px] font-bold">${name}</td><td><input type="number" data-tag="Auto_Done" class="pro-input h-8 p-1 text-center"></td></tr>`;
             });
-            employeeSelect.disabled = false;
-        } else { employeeSelect.disabled = true; }
-        showRoleForm('');
-    });
-    employeeSelect.addEventListener('change', (e) => {
-        const staffMember = staffList.find(s => s[0] === e.target.value);
-        showRoleForm(staffMember ? staffMember[2] : '');
-    });
-    leaveSelect.addEventListener('change', () => {
-        roleFormsContainer.style.display = leaveSelect.value === 'होय' ? 'none' : 'block';
-    });
-    document.getElementById('ta_coll_match').addEventListener('change', (e) => {
-        document.getElementById('ta_match_reason').style.display = e.target.value === 'नाही' ? 'block' : 'none';
-    });
-    reportDateInput.addEventListener('change', validateDate);
-    closeModalBtn.addEventListener('click', () => { resetFormState(true); });
-    document.addEventListener('DOMContentLoaded', loadInitialData);
-</script>
-</body> 
+
+            document.querySelectorAll('.calc-fx-1').forEach(i => i.oninput = calcT1);
+            document.querySelectorAll('.calc-fx-2').forEach(i => i.oninput = calcT2);
+            document.querySelector('.accordion-header').click(); // Auto-open first
+        }
+
+        function calcT1() {
+            let ac = 0, amt = 0;
+            document.querySelectorAll('#fxT1 tr').forEach(r => {
+                ac += parseFloat(r.cells[1].querySelector('input').value) || 0;
+                amt += parseFloat(r.cells[2].querySelector('input').value) || 0;
+            });
+            document.getElementById('t1-ac').innerText = ac;
+            document.getElementById('t1-amt').innerText = amt;
+            totalAmt1 = amt; checkFXMatch();
+        }
+
+        function calcT2() {
+            let cash = 0, digi = 0, tot = 0;
+            document.querySelectorAll('#fxT2 tr').forEach(r => {
+                let cv = parseFloat(r.cells[1].querySelector('input').value) || 0;
+                let dv = parseFloat(r.cells[2].querySelector('input').value) || 0;
+                let rv = cv + dv;
+                r.cells[3].querySelector('input').value = rv;
+                cash += cv; digi += dv; tot += rv;
+            });
+            document.getElementById('t2-cash').innerText = cash;
+            document.getElementById('t2-digi').innerText = digi;
+            document.getElementById('t2-total').innerText = tot;
+            totalAmt2 = tot; checkFXMatch();
+        }
+
+        function checkFXMatch() {
+            const b = document.getElementById('matchBadge');
+            if(totalAmt1 > 0 && totalAmt1 === totalAmt2) {
+                b.innerText = "Match ✅"; b.className = "badge badge-ok block text-center";
+            } else {
+                b.innerText = "Mismatch ❌"; b.className = "badge badge-fail block text-center";
+            }
+        }
+
+        async function submitFinalData() {
+            if (isAlreadySubmitted) return;
+
+            const st = document.getElementById('empSelect').selectedOptions[0];
+            const name = st.value;
+            const date = document.getElementById('reportDate').value;
+            const leave = document.getElementById('leaveSelect').value;
+            const role = st.getAttribute('data-role');
+            const unit = document.getElementById('unitSelect').value;
+            const cas = st.getAttribute('data-cas') ? st.getAttribute('data-cas').split(',') : [];
+
+            // 1. Validation for FX (Only if working)
+            if (leave === "नाही" && role === 'FX' && totalAmt1 !== totalAmt2) {
+                alert("त्रुटी: पॉईंट १ (Total Recovery) आणि पॉईंट २ (Cash+Digital) मधील रकमा मॅच नाहीत!"); 
+                return;
+            }
+
+            if (!confirm("अहवाल जतन करायचा का?")) return;
+
+            document.getElementById('loader-overlay').style.display = "flex";
+            document.getElementById('finalBtn').disabled = true;
+
+            // 2. Prepare Payload
+            const payload = { 
+                report_date: date, 
+                staff_name: name, 
+                unit: unit, 
+                leave_status: leave, 
+                role: role, 
+                details: {} 
+            };
+
+            // 3. Logic for "ON LEAVE"
+            if (leave === "हो") {
+                if (role === 'FX') {
+                    payload.details.p1 = cas.map(c => ({ "CA_Name": c.trim(), "Ac": 0, "Amt": 0 }));
+                    payload.details.extra = { "FX_P8_Notes": "रजेवर (On Leave)" };
+                } else if (role === 'BM') {
+                    payload.details.fields = { "BM_Meet_Notes": "रजेवर (On Leave)" };
+                } else if (role === 'TA') {
+                    payload.details.fields = { "TA_Special_Notes": "रजेवर (On Leave)" };
+                } else {
+                    payload.details.fields = { "CA_Issues": "रजेवर (On Leave)" };
+                }
+            } 
+            // 4. Logic for "WORKING"
+            else {
+                if (role === 'FX') {
+                    payload.details.p1 = extractT('fxT1');
+                    payload.details.p2 = extractT('fxT2');
+                    payload.details.p3 = extractT('fxT3');
+                    payload.details.p4 = extractT('fxT4');
+                    payload.details.p7 = extractT('fxT7');
+                    payload.details.extra = extractF('.dyn-fx');
+                } else if (role === 'BM') {
+                    payload.details.fields = extractF('.dyn-bm');
+                } else if (role === 'TA') {
+                    payload.details.fields = extractF('.dyn-ta');
+                } else {
+                    payload.details.fields = extractF('.dyn-ca');
+                }
+            }
+
+            // 5. Submit Data
+            try {
+                fetch(SCRIPT_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    body: JSON.stringify(payload) 
+                });
+                
+                // Success timeout to allow Sheets processing
+                setTimeout(() => {
+                    document.getElementById('loader-overlay').style.display = "none";
+                    document.getElementById('successDetails').innerHTML = `
+                        <div class="flex justify-between border-b pb-2"><span class="text-slate-400">नाव:</span><span class="font-black">${name}</span></div>
+                        <div class="flex justify-between border-b pb-2"><span class="text-slate-400">शाखा:</span><span class="font-black">${unit}</span></div>
+                        <div class="flex justify-between border-b pb-2"><span class="text-slate-400">दिनांक:</span><span class="font-black">${date}</span></div>
+                        <div class="flex justify-between"><span class="text-slate-400">स्थिती:</span><span class="${leave === 'हो' ? 'text-red-600' : 'text-green-600'} font-black">${leave === 'हो' ? 'रजा (LEAVE)' : 'कामावर (WORKING)'}</span></div>
+                    `;
+                    document.getElementById('success-overlay').classList.remove('hidden');
+                    document.getElementById('success-overlay').classList.add('flex');
+                }, 3500);
+
+            } catch (e) {
+                alert("सिस्टम एरर! कृपया इंटरनेट कनेक्शन तपासा."); 
+                document.getElementById('loader-overlay').style.display = "none";
+                document.getElementById('finalBtn').disabled = false;
+            }
+        }
+
+        // Helper to extract table data (FX)
+        function extractT(id) {
+            return Array.from(document.querySelectorAll(`#${id} tr`)).map(r => {
+                let o = { "CA_Name": r.cells[0].innerText.trim() };
+                r.querySelectorAll('input').forEach(i => {
+                    const tag = i.getAttribute('data-tag');
+                    if(tag) o[tag] = i.value;
+                });
+                return o;
+            });
+        }
+
+        // Helper to extract individual fields (BM, TA, CA, FX-Extra)
+        function extractF(cls) {
+            let o = {};
+            document.querySelectorAll(cls).forEach(i => {
+                const label = i.getAttribute('data-label');
+                if(label) o[label] = i.value;
+            });
+            return o;
+        }
+    </script>
+</body>
 </html>
