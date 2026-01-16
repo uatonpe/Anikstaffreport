@@ -3,309 +3,492 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anik Finance Pro - Staff Performance Mirror (Full View)</title>
+    <title>Anik Finance Pro - Staff Performance Mirror | Professional Edition</title>
     
-    <!-- Google Fonts & Charts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- 
+        GOOGLE FONTS: 
+        1. Inter - For English numbers and UI 
+        2. Noto Sans Devanagari - For high-quality Marathi text rendering
+    -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- LIBRARIES -->
     <script src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
     <style>
+        /* 
+           ================================================================
+           1. CSS VARIABLES & THEMING
+           ================================================================
+        */
         :root {
             --primary: #0056b3;
+            --primary-dark: #003d80;
             --primary-light: #e0eeff;
             --success: #10b981;
+            --success-dark: #065f46;
             --danger: #ef4444;
+            --danger-dark: #b91c1c;
             --warning: #f59e0b;
+            --warning-dark: #a16207;
             --info: #3b82f6;
-            --dark: #1e293b;
-            --light: #f8fafc;
+            --dark: #0f172a;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
             --border: #e2e8f0;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            --ca-color: #6366f1;
-            --fx-color: #ec4899;
-            --bm-color: #f97316;
-            --ta-color: #14b8a6;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
+        }
+
+        /* 
+           ================================================================
+           2. GLOBAL STYLES
+           ================================================================
+        */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            outline: none;
         }
 
         body {
             font-family: 'Inter', 'Noto Sans Devanagari', sans-serif;
-            background-color: #f1f5f9;
+            background-color: var(--slate-100);
             color: var(--dark);
-            margin: 0;
+            line-height: 1.5;
             overflow-x: hidden;
+            transition: background 0.3s ease;
         }
 
-        /* Top Header Navigation */
+        /* 
+           ================================================================
+           3. HEADER & NAVIGATION
+           ================================================================
+        */
         header {
-            background: white;
-            padding: 1.2rem 2.5rem;
+            background: #ffffff;
+            padding: 1.25rem 3.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             position: sticky;
             top: 0;
             z-index: 1000;
+            border-bottom: 1px solid var(--slate-200);
         }
 
-        .logo-box img { height: 55px; }
-        .header-title h1 { 
-            margin: 0; 
-            font-size: 1.5rem; 
-            color: var(--primary); 
-            font-weight: 700;
-            letter-spacing: -0.5px;
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
-        .container { 
-            max-width: 100%; 
-            margin: 1.5rem auto; 
-            padding: 0 2rem; 
+        .logo-box img {
+            height: 60px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
         }
 
-        /* Filter Panel Styling */
+        .header-title h1 {
+            font-size: 1.75rem;
+            color: var(--primary);
+            font-weight: 900;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 1.25rem;
+        }
+
+        /* 
+           ================================================================
+           4. MAIN CONTAINER LAYOUT
+           ================================================================
+        */
+        .container {
+            max-width: 100%;
+            margin: 2rem auto;
+            padding: 0 3.5rem;
+        }
+
+        /* 
+           ================================================================
+           5. FILTER SECTION (GLASS PANEL)
+           ================================================================
+        */
         .glass-panel {
-            background: white;
-            padding: 1.8rem;
-            border-radius: 1.25rem;
-            box-shadow: var(--shadow);
-            margin-bottom: 2rem;
+            background: #ffffff;
+            padding: 2.5rem;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 2.5rem;
             border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
         }
 
         .filter-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
             align-items: flex-end;
         }
 
-        .input-group { display: flex; flex-direction: column; gap: 0.6rem; }
-        .input-group label { 
-            font-size: 0.8rem; 
-            font-weight: 700; 
-            text-transform: uppercase; 
-            color: #64748b;
-            letter-spacing: 0.5px;
-        }
-        .input-group input, .input-group select {
-            padding: 0.85rem;
-            border-radius: 0.6rem;
-            border: 1.5px solid var(--border);
-            font-size: 0.95rem;
-            outline: none;
-            transition: all 0.3s;
-            background-color: #fcfdfe;
-            color: var(--dark);
-        }
-        .input-group input:focus, .input-group select:focus { 
-            border-color: var(--primary); 
-            box-shadow: 0 0 0 4px var(--primary-light); 
-            background-color: white;
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
         }
 
-        /* Button Actions */
-        .btn-group {
+        .input-group label {
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--slate-500);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-group input, 
+        .input-group select {
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-md);
+            border: 2px solid var(--slate-200);
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--dark);
+            background-color: var(--slate-50);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-group input:focus, 
+        .input-group select:focus {
+            border-color: var(--primary);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.1);
+        }
+
+        /* 
+           ================================================================
+           6. BUTTON COMPONENTS
+           ================================================================
+        */
+        .btn-container {
             display: flex;
             gap: 1rem;
         }
-        .btn-refresh {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.85rem 1.8rem;
-            border-radius: 0.6rem;
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: var(--radius-md);
             font-weight: 700;
+            font-size: 1rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.6rem;
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px -1px rgba(0, 86, 179, 0.2);
-        }
-        .btn-refresh:hover { background: #004494; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 86, 179, 0.3); }
-        
-        .btn-excel {
-            background: #059669;
-            box-shadow: 0 4px 6px -1px rgba(5, 150, 105, 0.2);
-        }
-        .btn-excel:hover {
-            background: #047857;
-            box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.3);
+            gap: 0.75rem;
+            transition: all 0.4s ease;
+            border: none;
+            white-space: nowrap;
         }
 
-        /* KPI Dashboard Cards */
+        .btn-refresh {
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 86, 179, 0.2);
+        }
+
+        .btn-refresh:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 86, 179, 0.3);
+        }
+
+        .btn-excel {
+            background: var(--success);
+            color: #ffffff;
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-excel:hover {
+            background: var(--success-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-print {
+            background: var(--dark);
+            color: #ffffff;
+            box-shadow: 0 4px 6px rgba(15, 23, 42, 0.2);
+        }
+
+        .btn-print:hover {
+            background: #000000;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* 
+           ================================================================
+           7. KPI DASHBOARD CARDS
+           ================================================================
+        */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 1.8rem;
-            border-radius: 1.25rem;
-            display: flex;
-            align-items: center;
-            gap: 1.2rem;
-            border-bottom: 5px solid #ddd;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            transition: 0.3s;
-        }
-        .stat-card:hover { transform: translateY(-5px); }
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-        }
-        .stat-info h3 { margin: 0; font-size: 1.8rem; font-weight: 800; color: var(--dark); }
-        .stat-info p { margin: 0; font-size: 0.9rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
-
-        /* Main Full Width Table Content */
-        .full-content {
-            width: 100%;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
             margin-bottom: 3rem;
         }
 
-        .table-card {
-            background: white;
+        .stat-card {
+            background: #ffffff;
+            padding: 2.25rem;
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            border-bottom: 6px solid var(--slate-200);
+            box-shadow: var(--shadow-lg);
+            transition: all 0.4s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .stat-icon {
+            width: 70px;
+            height: 70px;
             border-radius: 1.25rem;
-            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            transition: 0.3s;
+        }
+
+        .stat-card:hover .stat-icon {
+            transform: rotate(-10deg) scale(1.1);
+        }
+
+        .stat-info h3 {
+            margin: 0;
+            font-size: 2.25rem;
+            font-weight: 900;
+            color: var(--dark);
+            line-height: 1;
+        }
+
+        .stat-info p {
+            margin: 0.5rem 0 0 0;
+            font-size: 1rem;
+            color: var(--slate-500);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* 
+           ================================================================
+           8. MAIN PERFORMANCE MATRIX TABLE
+           ================================================================
+        */
+        .full-content {
+            width: 100%;
+            margin-bottom: 5rem;
+        }
+
+        .table-card {
+            background: #ffffff;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
             overflow: hidden;
             border: 1px solid var(--border);
         }
-        
+
         .table-header {
-            padding: 1.8rem;
-            border-bottom: 1px solid var(--border);
+            padding: 2.25rem 3rem;
+            border-bottom: 2px solid var(--slate-100);
             display: flex;
             justify-content: space-between;
             align-items: center;
             background-color: #ffffff;
         }
-        .table-header h3 { 
-            font-size: 1.4rem; 
-            margin: 0; 
-            display: flex; 
-            align-items: center; 
-            gap: 0.8rem; 
+
+        .table-header h3 {
+            font-size: 1.6rem;
+            margin: 0;
+            font-weight: 800;
             color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
-        /* Large Matrix Grid Layout */
-        .table-wrapper { 
-            overflow-x: auto; 
-            width: 100%; 
-            max-height: 750px; 
+        .legend {
+            display: flex;
+            gap: 2rem;
+            background: var(--slate-50);
+            padding: 0.75rem 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid var(--slate-200);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            width: 100%;
+            max-height: 850px;
             position: relative;
         }
-        
-        table { 
-            width: 100%; 
-            border-collapse: separate; 
+
+        table {
+            width: 100%;
+            border-collapse: separate;
             border-spacing: 0;
-            text-align: center; 
+            table-layout: fixed;
         }
 
-        th, td { 
-            padding: 1.2rem 1rem; 
-            border-bottom: 1px solid #f1f5f9; 
-            border-right: 1px solid #f1f5f9;
-            font-size: 1rem; 
-            min-width: 80px;
+        th, td {
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid var(--slate-100);
+            border-right: 1px solid var(--slate-100);
+            text-align: center;
         }
 
-        th { 
-            background: #f8fafc; 
-            color: #475569; 
-            position: sticky; 
-            top: 0; 
-            z-index: 20; 
-            font-weight: 700;
-            text-transform: uppercase;
+        th {
+            background: var(--slate-50);
+            color: var(--slate-600);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            font-weight: 800;
             font-size: 0.85rem;
-            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--slate-200);
         }
 
-        /* Sticky Column for Staff Name - Width Increased */
         .sticky-col {
             position: sticky;
             left: 0;
-            background: white;
-            z-index: 30;
+            background: #ffffff;
+            z-index: 60;
             text-align: left;
-            min-width: 280px;
-            border-right: 3px solid var(--primary-light);
-            box-shadow: 4px 0 8px -2px rgba(0,0,0,0.05);
+            min-width: 320px;
+            width: 320px;
+            border-right: 4px solid var(--primary-light);
+            box-shadow: 8px 0 15px -5px rgba(0,0,0,0.08);
         }
-        
-        tr:hover td.sticky-col { background: #f1f7ff; }
-        tr:hover td { background-color: #f8fafc; }
 
-        /* Attendance Status Badges - Made Larger */
+        tr:hover td {
+            background-color: #f8fbff;
+        }
+
+        tr:hover td.sticky-col {
+            background-color: #f1f7ff;
+        }
+
+        /* 
+           ================================================================
+           9. ATTENDANCE BADGES & STAFF UI
+           ================================================================
+        */
         .badge {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-weight: 800;
-            font-size: 1.1rem;
+            font-weight: 900;
+            font-size: 1.25rem;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-        .badge-P { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
-        .badge-P:hover { background: #22c55e; color: white; transform: scale(1.1); }
-        
-        .badge-A { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
-        .badge-A:hover { background: #ef4444; color: white; transform: scale(1.1); }
-        
-        .badge-L { background: #fef9c3; color: #a16207; border: 1px solid #fef08a; }
-        .badge-L:hover { background: #facc15; color: white; transform: scale(1.1); }
 
-        .staff-info-box {
+        .badge-P { background: #dcfce7; color: var(--success-dark); border: 2px solid #bbf7d0; }
+        .badge-P:hover { background: var(--success); color: #ffffff; transform: scale(1.15) rotate(5deg); }
+
+        .badge-A { background: #fee2e2; color: var(--danger-dark); border: 2px solid #fecaca; }
+        .badge-A:hover { background: var(--danger); color: #ffffff; transform: scale(1.15) rotate(-5deg); }
+
+        .badge-L { background: #fef9c3; color: var(--warning-dark); border: 2px solid #fef08a; }
+        .badge-L:hover { background: var(--warning); color: #ffffff; transform: scale(1.15) rotate(5deg); }
+
+        .staff-info {
             display: flex;
             flex-direction: column;
-            gap: 4px;
-        }
-        .staff-main-name {
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--dark);
-        }
-        .staff-sub-detail {
-            font-size: 0.8rem;
-            color: #64748b;
-            font-weight: 500;
+            gap: 0.4rem;
         }
 
-        /* Role Tag UI */
-        .role-tag { 
-            font-size: 0.75rem; 
-            padding: 4px 10px; 
-            border-radius: 6px; 
-            font-weight: 800; 
-            margin-top: 6px; 
+        .staff-name {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--dark);
+            display: block;
+        }
+
+        .staff-branch {
+            font-size: 0.85rem;
+            color: var(--slate-500);
+            font-weight: 600;
+        }
+
+        .role-tag {
+            font-size: 0.75rem;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-weight: 900;
+            text-transform: uppercase;
             display: inline-block;
-            text-align: center;
+            margin-top: 0.5rem;
             width: fit-content;
         }
+
         .tag-CA { background: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; }
         .tag-FX { background: #fce7f3; color: #be185d; border: 1px solid #fbcfe8; }
         .tag-BM { background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
         .tag-TA { background: #ccfbf1; color: #0f766e; border: 1px solid #99f6e4; }
 
-        /* Report Modal Detail Styling */
+        /* 
+           ================================================================
+           10. MODAL & DETAILED REPORT UI
+           ================================================================
+        */
         .modal {
             display: none;
             position: fixed;
@@ -315,128 +498,264 @@
             width: 100%;
             height: 100%;
             background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(8px);
-            animation: fadeIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            backdrop-filter: blur(12px);
+            animation: modalFadeIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
+
         .modal-content {
-            background: white;
+            background: #ffffff;
             margin: 2% auto;
-            width: 85%;
-            max-width: 900px;
-            border-radius: 1.5rem;
+            width: 90%;
+            max-width: 1000px;
+            border-radius: var(--radius-xl);
             overflow: hidden;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
+
         .modal-header {
-            padding: 1.8rem 2.5rem;
+            padding: 2rem 3rem;
             background: var(--primary);
-            color: white;
+            color: #ffffff;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
+
         .modal-body {
-            padding: 2.5rem;
-            max-height: 75vh;
+            padding: 3rem;
+            max-height: 80vh;
             overflow-y: auto;
-            background-color: #f8fafc;
+            background-color: var(--slate-50);
         }
+
         .data-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.2rem;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
         }
+
         .data-item {
-            background: white;
-            padding: 1.2rem;
-            border-radius: 1rem;
-            border: 1px solid var(--border);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-        .data-label { 
-            font-size: 0.75rem; 
-            color: #94a3b8; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            margin-bottom: 0.5rem; 
-            letter-spacing: 0.5px;
-        }
-        .data-value { 
-            font-size: 1.1rem; 
-            font-weight: 600; 
-            color: var(--dark); 
+            background: #ffffff;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--slate-200);
+            box-shadow: var(--shadow-sm);
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .data-label {
+            font-size: 0.8rem;
+            color: var(--slate-400);
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 0.6rem;
+            letter-spacing: 1px;
+        }
 
-        /* Loader Overlay */
+        .data-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* 
+           ================================================================
+           11. LOADER OVERLAY
+           ================================================================
+        */
         #loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 9999;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
         }
+
         .spinner {
-            width: 60px; height: 60px; border: 6px solid #f3f3f3;
-            border-top: 6px solid var(--primary); border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            border: 8px solid var(--slate-100);
+            border-top: 8px solid var(--primary);
+            border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Print Settings */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 
+           ================================================================
+           12. SUPER MAST PRINT SETTINGS (A4 LANDSCAPE)
+           ================================================================
+        */
         @media print {
-            .glass-panel, header, .btn-group, .user-actions { display: none !important; }
-            .container { margin: 0; padding: 0; width: 100%; }
-            .table-card { box-shadow: none; border: 1px solid #000; }
-            th, td { border: 1px solid #ccc !important; font-size: 8pt; }
-            .sticky-col { position: relative !important; border-right: 1px solid #ccc !important; }
+            @page {
+                size: A4 landscape;
+                margin: 8mm;
+            }
+
+            body {
+                background: #ffffff !important;
+                zoom: 82%;
+            }
+
+            header, 
+            .glass-panel, 
+            .user-actions, 
+            .btn-container {
+                display: none !important;
+            }
+
+            .container {
+                padding: 0;
+                margin: 0;
+                width: 100%;
+            }
+
+            .table-card {
+                box-shadow: none !important;
+                border: 2px solid #000000 !important;
+                border-radius: 0 !important;
+            }
+
+            .table-header {
+                padding: 15px !important;
+                border-bottom: 2px solid #000 !important;
+            }
+
+            .table-header h3 {
+                font-size: 1.5rem !important;
+            }
+
+            /* Enable colors in PDF/Print */
+            .badge {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                border: 1px solid #ccc !important;
+                width: 38px !important;
+                height: 38px !important;
+                border-radius: 8px !important;
+            }
+
+            .badge-P { background-color: #dcfce7 !important; }
+            .badge-A { background-color: #fee2e2 !important; }
+            .badge-L { background-color: #fef9c3 !important; }
+
+            .role-tag {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                border: 1px solid #ddd !important;
+            }
+
+            .sticky-col {
+                position: static !important;
+                border-right: 2px solid #000 !important;
+                background: #ffffff !important;
+                box-shadow: none !important;
+                width: 250px !important;
+                min-width: 250px !important;
+            }
+
+            th, td {
+                padding: 8px !important;
+                border: 1px solid #000 !important;
+                font-size: 9pt !important;
+            }
+
+            th {
+                background-color: #f0f0f0 !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .table-wrapper {
+                overflow: visible !important;
+                max-height: none !important;
+            }
+
+            table {
+                width: 100% !important;
+                table-layout: auto !important;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+                margin-bottom: 20px !important;
+                gap: 10px !important;
+            }
+
+            .stat-card {
+                padding: 15px !important;
+                border: 1px solid #000 !important;
+            }
+
+            .stat-icon {
+                display: none !important;
+            }
+
+            .stat-info h3 {
+                font-size: 1.5rem !important;
+            }
         }
 
     </style>
 </head>
 <body>
 
-<!-- Data Loading Indicator -->
+<!-- FULL SCREEN LOADER -->
 <div id="loader">
     <div class="spinner"></div>
-    <p style="margin-top:20px; font-weight:700; color:var(--primary); font-size:1.2rem;">डेटा विश्लेषित होत आहे...</p>
-    <p style="color: #64748b;">कृपया काही क्षण प्रतीक्षा करा</p>
+    <p style="margin-top:25px; font-weight:900; color:var(--primary); font-size:1.5rem; letter-spacing:1px;">सिस्टम लोड होत आहे...</p>
+    <p style="color: var(--slate-500); margin-top:5px; font-weight:600;">कृपया काही सेकंद प्रतीक्षा करा</p>
 </div>
 
+<!-- TOP NAVIGATION -->
 <header>
     <div class="logo-box">
-        <img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" alt="Anik Finance">
+        <img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" alt="Anik Finance Logo">
     </div>
     <div class="header-title">
-        <h1><i class="fas fa-users-cog"></i> STAFF PERFORMANCE MIRROR</h1>
+        <h1>Official Staff Mirror</h1>
     </div>
     <div class="user-actions">
-        <button class="btn-refresh" onclick="window.print()" style="background: var(--dark);">
-            <i class="fas fa-print"></i> PDF म्हणून सेव्ह करा
+        <button class="btn btn-print" onclick="window.print()">
+            <i class="fas fa-file-pdf"></i> PDF म्हणून सेव्ह करा
         </button>
     </div>
 </header>
 
 <div class="container">
     
-    <!-- Advanced Filter Options -->
+    <!-- FILTER MANAGEMENT SECTION -->
     <div class="glass-panel">
         <div class="filter-row">
             <div class="input-group">
-                <label><i class="far fa-calendar-alt"></i> प्रारंभ तारीख</label>
+                <label><i class="fas fa-calendar-day"></i> प्रारंभ तारीख (Start)</label>
                 <input type="date" id="startDate">
             </div>
             <div class="input-group">
-                <label><i class="far fa-calendar-check"></i> अंतिम तारीख</label>
+                <label><i class="fas fa-calendar-check"></i> अंतिम तारीख (End)</label>
                 <input type="date" id="endDate">
             </div>
             <div class="input-group">
-                <label><i class="fas fa-code-branch"></i> शाखा निवडा</label>
+                <label><i class="fas fa-map-marker-alt"></i> शाखा निवडा (Branch)</label>
                 <select id="branchFilter">
                     <option value="ALL">सर्व शाखा (All Branches)</option>
                 </select>
             </div>
             <div class="input-group">
-                <label><i class="fas fa-user-tag"></i> कर्मचारी पद</label>
+                <label><i class="fas fa-user-shield"></i> भूमिका (Role)</label>
                 <select id="roleFilter">
                     <option value="ALL">सर्व भूमिका (All Roles)</option>
                     <option value="CA">CA - क्रेडिट असिस्टंट</option>
@@ -445,18 +764,18 @@
                     <option value="TA">TA - अकाऊंटंट</option>
                 </select>
             </div>
-            <div class="btn-group">
-                <button class="btn-refresh" onclick="processData()">
-                    <i class="fas fa-sync-alt"></i> रिफ्रेश डेटा
+            <div class="btn-container">
+                <button class="btn btn-refresh" onclick="processData()">
+                    <i class="fas fa-sync-alt"></i> डेटा रिफ्रेश
                 </button>
-                <button class="btn-refresh btn-excel" onclick="exportAttendanceToExcel()">
+                <button class="btn btn-excel" onclick="exportAttendanceToExcel()">
                     <i class="fas fa-file-excel"></i> Excel डाउनलोड
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Summary Statistics Dashboard -->
+    <!-- KPI SUMMARY DASHBOARD -->
     <div class="stats-grid">
         <div class="stat-card" style="border-color: var(--primary);">
             <div class="stat-icon" style="background: var(--primary-light); color: var(--primary);"><i class="fas fa-users"></i></div>
@@ -464,11 +783,11 @@
         </div>
         <div class="stat-card" style="border-color: var(--success);">
             <div class="stat-icon" style="background: #dcfce7; color: var(--success);"><i class="fas fa-check-double"></i></div>
-            <div class="stat-info"><h3 id="statSubmitted">0</h3><p>प्राप्त रिपोर्ट (P)</p></div>
+            <div class="stat-info"><h3 id="statSubmitted">0</h3><p>रिपोर्ट प्राप्त (P)</p></div>
         </div>
         <div class="stat-card" style="border-color: var(--danger);">
             <div class="stat-icon" style="background: #fee2e2; color: var(--danger);"><i class="fas fa-user-clock"></i></div>
-            <div class="stat-info"><h3 id="statPending">0</h3><p>प्रलंबित दिवस (A)</p></div>
+            <div class="stat-info"><h3 id="statPending">0</h3><p>अनुपस्थित (A)</p></div>
         </div>
         <div class="stat-card" style="border-color: var(--warning);">
             <div class="stat-icon" style="background: #fef9c3; color: var(--warning);"><i class="fas fa-umbrella-beach"></i></div>
@@ -476,17 +795,15 @@
         </div>
     </div>
 
-    <!-- Performance Matrix - Expanded Full Width -->
+    <!-- MAIN FULL WIDTH MATRIX TABLE -->
     <div class="full-content">
         <div class="table-card">
             <div class="table-header">
-                <h3><i class="fas fa-calendar-alt"></i> कर्मचारी उपस्थिती आणि दैनंदिन अहवाल मॅट्रिक्स</h3>
-                <div style="display: flex; gap: 1.5rem; align-items: center;">
-                    <div style="font-size:0.9rem; background: #f1f5f9; padding: 6px 12px; border-radius: 8px;">
-                        <span style="margin-right:15px;"><i class="fas fa-square" style="color:#22c55e"></i> <b>P:</b> हजर</span>
-                        <span style="margin-right:15px;"><i class="fas fa-square" style="color:#ef4444"></i> <b>A:</b> गैरहजर</span>
-                        <span><i class="fas fa-square" style="color:#facc15"></i> <b>L:</b> रजा</span>
-                    </div>
+                <h3><i class="fas fa-th-list"></i> कर्मचारी उपस्थिती आणि अहवाल मॅट्रिक्स</h3>
+                <div class="legend">
+                    <div class="legend-item"><i class="fas fa-square" style="color:#dcfce7"></i> P: हजर</div>
+                    <div class="legend-item"><i class="fas fa-square" style="color:#fee2e2"></i> A: गैरहजर</div>
+                    <div class="legend-item"><i class="fas fa-square" style="color:#fef9c3"></i> L: रजा</div>
                 </div>
             </div>
             <div class="table-wrapper">
@@ -500,12 +817,12 @@
 
 </div>
 
-<!-- Global Detailed Report Modal -->
+<!-- GLOBAL REPORT MODAL -->
 <div id="reportModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3 id="modalTitle" style="margin:0;"><i class="fas fa-file-invoice"></i> अहवाल तपशील</h3>
-            <span style="cursor:pointer; font-size:2rem; font-weight: 300;" onclick="closeModal()">&times;</span>
+            <h3 id="modalTitle" style="margin:0;"><i class="fas fa-file-invoice"></i> दैनिक अहवाल तपशील</h3>
+            <span style="cursor:pointer; font-size:2.5rem; font-weight:300;" onclick="closeModal()">&times;</span>
         </div>
         <div class="modal-body">
             <div id="reportDetailContent" class="data-grid"></div>
@@ -515,15 +832,14 @@
 
 <script>
 /**
- * Application Configuration & API Credentials
+ * =================================================================
+ * 1. CONFIGURATION & DATA SCHEMA
+ * =================================================================
  */
 const API_KEY = "AIzaSyCib9D8dkRRV7MyGDfTcCqaubl19RnCdhQ";
 const SHEET_ID = "1--ve2YhfEwX-ZddBQr2nT-lxShvmdgczD6szJrii0wg";
 
-/**
- * Data Schema Mapping for different staff roles
- * This ensures the correct labels are shown in the detailed report modal
- */
+// Field labels mapping for each role based on spreadsheet columns
 const SCHEMA = {
     BM: ["Timestamp", "तारीख", "नाव", "युनिट", "रजा स्थिती", "BM Acc", "BM Amt", "BM Cash", "BM Digi", "OD1_C", "OD1_A", "OD2_C", "OD2_A", "OD3_C", "OD3_A", "Disb_Cust", "Disb_Amt", "Autopay", "Appr_Total", "Appr_Sanc", "Appr_Rej", "Meets", "Notes", "Cash_Note", "Imp_Note"],
     FX: ["Timestamp", "तारीख", "नाव", "युनिट", "रजा स्थिती", "CA नाव", "Ac", "Amt", "Cash", "Digi", "null", "H_Cash", "H_Why", "OD_Ac", "OD_Amt", "Auto_Done", "P5_Acc", "P5_Amt", "P6_Cnt", "P6_Rej", "Appr_Done", "Appr_Pen", "Village", "Notes", "Complaints"],
@@ -531,279 +847,299 @@ const SCHEMA = {
     TA: ["Timestamp", "तारीख", "नाव", "युनिट", "रजा स्थिती", "Report_Cnt", "Coll_Match", "Cash_Hand", "Bank_Depo", "Depo_Reason", "Fin_Sys_Date", "SPMB_Date", "All_CA_Rec", "CA_Pending", "New_OD", "OD_Amt", "EMI_Act", "EMI_Fail", "Rec_Track", "Notes", "Declaration"]
 };
 
-// Application State Store
+// Application State
 let store = {
     staff: [],
     allReports: [],
-    dates: [],
-    branches: []
+    dates: []
 };
 
 /**
- * Initial Launch Operations
+ * =================================================================
+ * 2. INITIALIZATION
+ * =================================================================
  */
-window.onload = () => {
-    setDefaultDates();
-    loadAllData();
-};
-
-/**
- * Sets the default date filter to the last 15 days
- */
-function setDefaultDates() {
+window.onload = function() {
+    console.log("System Initializing...");
+    
+    // Set default filter to last 15 days
     const today = new Date();
     const fifteenDaysAgo = new Date();
     fifteenDaysAgo.setDate(today.getDate() - 15);
     
     document.getElementById('startDate').valueAsDate = fifteenDaysAgo;
     document.getElementById('endDate').valueAsDate = today;
-}
+    
+    loadAllData();
+};
 
 /**
- * Fetches specific sheet data from Google Sheets API
+ * Fetches data from specific sheet tabs using Google Sheets API
  */
-async function fetchSheet(tab) {
+async function fetchSheet(tabName) {
     try {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${tab}?key=${API_KEY}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        return data.values || [];
-    } catch (e) {
-        console.error(`Fetch Error for tab ${tab}:`, e);
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${tabName}?key=${API_KEY}`;
+        const response = await fetch(url);
+        const json = await response.json();
+        return json.values || [];
+    } catch (error) {
+        console.error(`Error fetching ${tabName}:`, error);
         return [];
     }
 }
 
 /**
- * Loads all required staff and report data simultaneously
+ * Loads staff list and all reporting tabs simultaneously
  */
 async function loadAllData() {
     document.getElementById('loader').style.display = 'flex';
     
-    const [sData, caData, fxData, bmData, taData] = await Promise.all([
-        fetchSheet("Staff_Data"),
-        fetchSheet("CA_Reports"),
-        fetchSheet("FX_Reports"),
-        fetchSheet("BM_Reports"),
-        fetchSheet("TA_Reports")
-    ]);
+    try {
+        const [staffData, caReports, fxReports, bmReports, taReports] = await Promise.all([
+            fetchSheet("Staff_Data"),
+            fetchSheet("CA_Reports"),
+            fetchSheet("FX_Reports"),
+            fetchSheet("BM_Reports"),
+            fetchSheet("TA_Reports")
+        ]);
 
-    // Format Staff Data
-    store.staff = sData.slice(1);
-    
-    // Merge all individual role reports into a unified array with metadata
-    store.allReports = [
-        ...caData.slice(1).map(r => ({ data: r, role: 'CA' })),
-        ...fxData.slice(1).map(r => ({ data: r, role: 'FX' })),
-        ...bmData.slice(1).map(r => ({ data: r, role: 'BM' })),
-        ...taData.slice(1).map(r => ({ data: r, role: 'TA' }))
-    ];
+        // 1. Process Staff List
+        store.staff = staffData.slice(1);
+        
+        // 2. Aggregate all reports into a unified array with role metadata
+        store.allReports = [
+            ...caReports.slice(1).map(row => ({ data: row, role: 'CA' })),
+            ...fxReports.slice(1).map(row => ({ data: row, role: 'FX' })),
+            ...bmReports.slice(1).map(row => ({ data: row, role: 'BM' })),
+            ...taReports.slice(1).map(row => ({ data: row, role: 'TA' }))
+        ];
 
-    // Populate Branch Filter Dropdown
-    const branchList = [...new Set(store.staff.map(s => s[2]))].filter(Boolean).sort();
-    const branchSelect = document.getElementById('branchFilter');
-    branchList.forEach(b => {
-        let opt = document.createElement('option');
-        opt.value = b; 
-        opt.textContent = b;
-        branchSelect.appendChild(opt);
-    });
+        // 3. Populate Branch Dropdown
+        const branches = [...new Set(store.staff.map(s => s[2]))].filter(Boolean).sort();
+        const branchSelect = document.getElementById('branchFilter');
+        branches.forEach(b => {
+            const opt = document.createElement('option');
+            opt.value = b;
+            opt.textContent = b;
+            branchSelect.appendChild(opt);
+        });
 
-    // Start processing initial view
-    processData();
-    
-    document.getElementById('loader').style.display = 'none';
+        // 4. Initial Process
+        processData();
+        
+        document.getElementById('loader').style.display = 'none';
+    } catch (err) {
+        alert("डेटा लोड करताना तांत्रिक अडचण आली. कृपया इंटरनेट तपासा.");
+        console.error(err);
+    }
 }
 
 /**
- * Normalizes date strings from sheet format (DD/MM/YYYY) to standard YYYY-MM-DD
+ * =================================================================
+ * 3. CORE LOGIC & RENDERING
+ * =================================================================
  */
-function normalizeDate(dateStr) {
-    if (!dateStr) return null;
-    let parts = dateStr.split(' ')[0].split('/');
+
+/**
+ * Converts spreadsheet date (DD/MM/YYYY) to standard YYYY-MM-DD
+ */
+function normalizeDate(dStr) {
+    if (!dStr) return null;
+    let parts = dStr.split(' ')[0].split('/');
     if (parts.length === 3) {
-        // Sheet often uses D/M/YYYY or DD/MM/YYYY
         return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
     }
-    return dateStr.split(' ')[0]; // Already in expected format
+    return dStr.split(' ')[0]; 
 }
 
 /**
- * Generates an array of date strings between start and end
- */
-function generateDateArray(start, end) {
-    let arr = [];
-    let dt = new Date(start);
-    let ed = new Date(end);
-    while (dt <= ed) {
-        arr.push(new Date(dt).toISOString().split('T')[0]);
-        dt.setDate(dt.getDate() + 1);
-    }
-    return arr;
-}
-
-/**
- * Main Controller: Filter staff and trigger UI rendering
+ * Primary processing function triggered by refresh button or initial load
  */
 function processData() {
-    const start = document.getElementById('startDate').value;
-    const end = document.getElementById('endDate').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
     const branch = document.getElementById('branchFilter').value;
     const role = document.getElementById('roleFilter').value;
 
-    if (!start || !end) {
+    if (!startDate || !endDate) {
         alert("कृपया तारखा निवडा!");
         return;
     }
 
-    store.dates = generateDateArray(start, end);
-    
+    // Generate date sequence
+    store.dates = [];
+    let current = new Date(startDate);
+    const end = new Date(endDate);
+    while (current <= end) {
+        store.dates.push(new Date(current).toISOString().split('T')[0]);
+        current.setDate(current.getDate() + 1);
+    }
+
+    // Filter staff list based on UI selections
     const filteredStaff = store.staff.filter(s => 
         (branch === "ALL" || s[2] === branch) && 
         (role === "ALL" || s[1] === role)
     );
 
-    renderAttendanceMatrix(filteredStaff);
+    renderMatrix(filteredStaff);
 }
 
 /**
- * Renders the primary Matrix Table with attendance badges
+ * Renders the primary matrix table with staff details and attendance badges
  */
-function renderAttendanceMatrix(staffList) {
+function renderMatrix(staffList) {
     const head = document.getElementById('tableHead');
     const body = document.getElementById('tableBody');
     
-    // Construct Dynamic Table Header with Dates
-    let hHtml = `<tr><th class="sticky-col">कर्मचारी तपशील (नाव/शाखा)</th>`;
+    // 1. Build Header
+    let headHtml = `<tr><th class="sticky-col">कर्मचारी तपशील (नाव / शाखा / भूमिका)</th>`;
     store.dates.forEach(d => {
         const dObj = new Date(d);
-        const dayName = dObj.toLocaleDateString('mr-IN', {weekday: 'short'});
-        hHtml += `<th>${dObj.getDate()}/${dObj.getMonth()+1}<br><small>${dayName}</small></th>`;
+        const displayDate = `${dObj.getDate()}/${dObj.getMonth()+1}`;
+        const dayLabel = dObj.toLocaleDateString('mr-IN', {weekday: 'short'});
+        headHtml += `<th>${displayDate}<br><small style="opacity:0.6">${dayLabel}</small></th>`;
     });
-    hHtml += `</tr>`;
-    head.innerHTML = hHtml;
+    headHtml += `</tr>`;
+    head.innerHTML = headHtml;
 
-    // Cumulative stats for the KPI section
-    let totalP = 0, totalA = 0, totalL = 0;
+    // 2. Build Rows and Calculate Stats
+    let totalPresent = 0, totalAbsent = 0, totalLeave = 0;
+    let bodyHtml = "";
 
-    // Construct Table Body Rows
-    let bHtml = "";
-    staffList.forEach(s => {
-        const sName = s[0].trim();
-        const sRole = s[1].trim();
-        const sBranch = s[2].trim();
+    staffList.forEach(staffRow => {
+        const name = staffRow[0].trim();
+        const role = staffRow[1].trim();
+        const branch = staffRow[2].trim();
 
-        bHtml += `<tr>
+        bodyHtml += `<tr>
             <td class="sticky-col">
-                <div class="staff-info-box">
-                    <div class="staff-main-name">${sName}</div>
-                    <div class="staff-sub-detail"><i class="fas fa-map-marker-alt"></i> ${sBranch}</div>
-                    <span class="role-tag tag-${sRole}">${sRole}</span>
+                <div class="staff-info">
+                    <span class="staff-name">${name}</span>
+                    <span class="staff-branch"><i class="fas fa-map-marker-alt"></i> ${branch}</span>
+                    <span class="role-tag tag-${role}">${role}</span>
                 </div>
             </td>`;
 
-        store.dates.forEach(d => {
-            // Search for a matching report in the store
+        store.dates.forEach(dateStr => {
+            // Check for existing report for this staff and date
             const report = store.allReports.find(r => 
-                r.data[2].trim() === sName && normalizeDate(r.data[1]) === d
+                r.data[2].trim() === name && normalizeDate(r.data[1]) === dateStr
             );
 
             if (report) {
-                // Check if the report indicates a Leave status
-                const isLeave = report.data[4] && (report.data[4].includes("रजा") || report.data[4].toLowerCase().includes("leave"));
+                // Determine if it's a leave or normal present
+                const leaveStatus = report.data[4] || "";
+                const isLeave = leaveStatus.includes("रजा") || leaveStatus.toLowerCase().includes("leave");
+
                 if (isLeave) {
-                    bHtml += `<td><button class="badge badge-L" onclick="viewReport('${encodeURIComponent(JSON.stringify(report))}')">L</button></td>`;
-                    totalL++;
+                    bodyHtml += `<td><button class="badge badge-L" onclick="openReportDetail('${encodeURIComponent(JSON.stringify(report))}')">L</button></td>`;
+                    totalLeave++;
                 } else {
-                    bHtml += `<td><button class="badge badge-P" onclick="viewReport('${encodeURIComponent(JSON.stringify(report))}')">P</button></td>`;
-                    totalP++;
+                    bodyHtml += `<td><button class="badge badge-P" onclick="openReportDetail('${encodeURIComponent(JSON.stringify(report))}')">P</button></td>`;
+                    totalPresent++;
                 }
             } else {
-                // If no report found, mark as Absent
-                bHtml += `<td><span class="badge badge-A">A</span></td>`;
-                totalA++;
+                bodyHtml += `<td><span class="badge badge-A">A</span></td>`;
+                totalAbsent++;
             }
         });
-        bHtml += `</tr>`;
+        bodyHtml += `</tr>`;
     });
 
-    body.innerHTML = bHtml;
-    
-    // Update KPI Dashboard Numbers
+    body.innerHTML = bodyHtml;
+
+    // Update KPI Dashboard
     document.getElementById('statTotalStaff').innerText = staffList.length;
-    document.getElementById('statSubmitted').innerText = totalP;
-    document.getElementById('statPending').innerText = totalA;
-    document.getElementById('statLeaves').innerText = totalL;
+    document.getElementById('statSubmitted').innerText = totalPresent;
+    document.getElementById('statPending').innerText = totalAbsent;
+    document.getElementById('statLeaves').innerText = totalLeave;
 }
 
 /**
- * Opens the Modal and populates it with detailed report data
+ * =================================================================
+ * 4. UI INTERACTIVE COMPONENTS
+ * =================================================================
  */
-function viewReport(encodedData) {
-    const report = JSON.parse(decodeURIComponent(encodedData));
-    const role = report.role;
-    const data = report.data;
+
+/**
+ * Opens the Modal and populates it with encoded report data
+ */
+function openReportDetail(encodedData) {
+    const reportObj = JSON.parse(decodeURIComponent(encodedData));
+    const role = reportObj.role;
+    const data = reportObj.data;
     const labels = SCHEMA[role];
 
-    document.getElementById('modalTitle').innerHTML = `<i class="fas fa-user-circle"></i> ${data[2]} - <span style="font-weight:400; opacity:0.8;">${role} अहवाल (${data[1]})</span>`;
+    document.getElementById('modalTitle').innerHTML = `
+        <i class="fas fa-user-circle"></i> ${data[2]} - 
+        <span style="font-weight:400;">${role} दैनिक अहवाल (${data[1]})</span>
+    `;
     
-    let html = "";
-    labels.forEach((label, i) => {
-        // Skip timestamp and empty labels
-        if (!label || label === "null" || i === 0) return;
+    let detailHtml = "";
+    labels.forEach((label, idx) => {
+        // Skip timestamp (idx 0) and invalid labels
+        if (!label || label === "null" || idx === 0) return;
         
-        let val = data[i] || '<span style="color:#cbd5e1">-</span>';
+        const value = data[idx] || '<span style="color:#cbd5e1">-</span>';
         
-        html += `
+        detailHtml += `
             <div class="data-item">
                 <div class="data-label">${label}</div>
-                <div class="data-value">${val}</div>
+                <div class="data-value">${value}</div>
             </div>
         `;
     });
 
-    document.getElementById('reportDetailContent').innerHTML = html;
+    document.getElementById('reportDetailContent').innerHTML = detailHtml;
     document.getElementById('reportModal').style.display = 'block';
 }
 
 /**
- * UI Helper: Close Modal
+ * Closes the detail modal
  */
 function closeModal() {
     document.getElementById('reportModal').style.display = 'none';
 }
 
 /**
- * UI Helper: Close modal on outside click
+ * Close modal if user clicks outside content
  */
 window.onclick = function(event) {
-    if (event.target == document.getElementById('reportModal')) closeModal();
+    if (event.target == document.getElementById('reportModal')) {
+        closeModal();
+    }
 }
 
 /**
- * EXPORT FEATURE: Converts matrix to CSV for Excel
- * Preserves Marathi characters with BOM
+ * =================================================================
+ * 5. EXPORT & PRINT FEATURES
+ * =================================================================
+ */
+
+/**
+ * Generates a clean Excel-compatible CSV file from the current matrix
+ * Supports Marathi characters via UTF-8 BOM
  */
 function exportAttendanceToExcel() {
     const table = document.getElementById("attendanceTable");
     if (!table || table.rows.length === 0) {
-        alert("डाउनलोड करण्यासाठी आधी डेटा लोड करा!");
+        alert("डाउनलोड करण्यासाठी डेटा उपलब्ध नाही!");
         return;
     }
 
     let csvContent = "";
     
-    // 1. Process Header
+    // Process Header Row
     const headerRow = table.querySelector("thead tr");
     const headerCols = headerRow.querySelectorAll("th");
     let headerData = [];
     headerCols.forEach(col => {
-        let text = col.innerText.replace(/\n/g, " ").trim();
-        headerData.push('"' + text + '"');
+        let cleanText = col.innerText.replace(/\n/g, " ").trim();
+        headerData.push('"' + cleanText + '"');
     });
     csvContent += headerData.join(",") + "\n";
 
-    // 2. Process Body Rows
+    // Process Body Rows
     const bodyRows = table.querySelectorAll("tbody tr");
     bodyRows.forEach(row => {
         let rowData = [];
@@ -811,13 +1147,12 @@ function exportAttendanceToExcel() {
         
         cells.forEach((cell, index) => {
             if (index === 0) {
-                // Name column formatting for CSV
-                let name = cell.querySelector(".staff-main-name") ? cell.querySelector(".staff-main-name").innerText : "";
-                let branch = cell.querySelector(".staff-sub-detail") ? cell.querySelector(".staff-sub-detail").innerText.replace(/.* /,'') : "";
+                // Format the name column specifically for Excel
+                let name = cell.querySelector(".staff-name") ? cell.querySelector(".staff-name").innerText : "";
+                let branch = cell.querySelector(".staff-branch") ? cell.querySelector(".staff-branch").innerText.replace(/.* /,'') : "";
                 let role = cell.querySelector(".role-tag") ? cell.querySelector(".role-tag").innerText : "";
-                rowData.push('"' + name + " [" + role + "] - " + branch + '"');
+                rowData.push('"' + name + " (" + role + ") - " + branch + '"');
             } else {
-                // Presence status
                 let status = cell.innerText.trim();
                 rowData.push('"' + status + '"');
             }
@@ -825,8 +1160,8 @@ function exportAttendanceToExcel() {
         csvContent += rowData.join(",") + "\n";
     });
 
-    // 3. Trigger Download
-    const BOM = "\uFEFF"; // Byte Order Mark for Excel Marathi support
+    // Handle Download with UTF-8 BOM for Marathi support
+    const BOM = "\uFEFF";
     const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -835,12 +1170,22 @@ function exportAttendanceToExcel() {
     const dEnd = document.getElementById("endDate").value;
     
     link.setAttribute("href", url);
-    link.setAttribute("download", `Anik_Finance_Attendance_${dStart}_to_${dEnd}.csv`);
+    link.setAttribute("download", `Anik_Attendance_${dStart}_to_${dEnd}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 }
+
+/**
+ * Custom function to handle PDF conversion via Browser Print
+ * The CSS @media print handles the formatting for landscape.
+ */
+function initiateOfficialPrint() {
+    console.log("Preparing official matrix print...");
+    window.print();
+}
+
 </script>
 
 </body>
