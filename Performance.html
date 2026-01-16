@@ -66,8 +66,8 @@
 
         .filter-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.2rem;
             align-items: flex-end;
         }
 
@@ -87,7 +87,7 @@
             background: var(--primary);
             color: white;
             border: none;
-            padding: 0.85rem 1.5rem;
+            padding: 0.85rem 1.2rem;
             border-radius: 0.5rem;
             font-weight: 600;
             cursor: pointer;
@@ -98,6 +98,13 @@
             transition: 0.3s;
         }
         .btn-refresh:hover { background: #004494; transform: translateY(-2px); }
+        
+        .btn-excel {
+            background: #059669;
+        }
+        .btn-excel:hover {
+            background: #047857;
+        }
 
         /* KPI Dashboard */
         .stats-grid {
@@ -343,6 +350,9 @@
             </div>
             <button class="btn-refresh" onclick="processData()">
                 <i class="fas fa-sync-alt"></i> डेटा रिफ्रेश
+            </button>
+            <button class="btn-refresh btn-excel" onclick="exportAttendanceToExcel()">
+                <i class="fas fa-file-excel"></i> Excel डाउनलोड
             </button>
         </div>
     </div>
@@ -730,6 +740,72 @@ function drawChart(p, a, l) {
 
     const chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
     chart.draw(data, options);
+}
+
+/**
+ * NEW EXPORT TO EXCEL FUNCTION
+ * Converts the current Matrix Table into a CSV file compatible with Excel
+ * Handles Marathi characters using UTF-8 BOM.
+ */
+function exportAttendanceToExcel() {
+    const table = document.getElementById("attendanceTable");
+    if (!table || table.rows.length === 0) {
+        alert("डाउनलोड करण्यासाठी डेटा उपलब्ध नाही!");
+        return;
+    }
+
+    let csvContent = "";
+    
+    // Header Processing
+    const headerRow = table.querySelector("thead tr");
+    const headerCols = headerRow.querySelectorAll("th");
+    let headerData = [];
+    headerCols.forEach(col => {
+        // Cleaning the date text (removing <br> and <small> parts for CSV)
+        let text = col.innerText.replace(/\n/g, " ").trim();
+        headerData.push('"' + text + '"');
+    });
+    csvContent += headerData.join(",") + "\n";
+
+    // Body Processing
+    const bodyRows = table.querySelectorAll("tbody tr");
+    bodyRows.forEach(row => {
+        let rowData = [];
+        const cells = row.querySelectorAll("td");
+        
+        cells.forEach((cell, index) => {
+            if (index === 0) {
+                // First Column (Staff Name + Role + Branch)
+                // We extract only the main text to keep Excel clean
+                let name = cell.querySelector(".rank-name") ? cell.querySelector(".rank-name").innerText : "";
+                let branch = cell.querySelector("div:nth-child(2)") ? cell.querySelector("div:nth-child(2)").innerText : "";
+                let role = cell.querySelector(".role-tag") ? cell.querySelector(".role-tag").innerText : "";
+                rowData.push('"' + name + " (" + role + ") - " + branch + '"');
+            } else {
+                // Presence columns (P, A, L)
+                let status = cell.innerText.trim();
+                rowData.push('"' + status + '"');
+            }
+        });
+        csvContent += rowData.join(",") + "\n";
+    });
+
+    // Create Download Link
+    // Adding BOM for Marathi Language Support in Excel
+    const BOM = "\uFEFF";
+    const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+    
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Anik_Attendance_Report_${startDate}_to_${endDate}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 </script>
 
