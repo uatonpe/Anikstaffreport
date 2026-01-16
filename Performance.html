@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anik Finance Pro - Staff Performance Mirror</title>
+    <title>Anik Finance Pro - Staff Performance Mirror (Full View)</title>
     
     <!-- Google Fonts & Charts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
@@ -36,29 +36,39 @@
             overflow-x: hidden;
         }
 
-        /* Top Header */
+        /* Top Header Navigation */
         header {
             background: white;
-            padding: 1rem 2rem;
+            padding: 1.2rem 2.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
             position: sticky;
             top: 0;
             z-index: 1000;
         }
 
-        .logo-box img { height: 50px; }
-        .header-title h1 { margin: 0; font-size: 1.25rem; color: var(--primary); }
+        .logo-box img { height: 55px; }
+        .header-title h1 { 
+            margin: 0; 
+            font-size: 1.5rem; 
+            color: var(--primary); 
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
 
-        .container { max-width: 1500px; margin: 2rem auto; padding: 0 1.5rem; }
+        .container { 
+            max-width: 100%; 
+            margin: 1.5rem auto; 
+            padding: 0 2rem; 
+        }
 
-        /* Filter Panel */
+        /* Filter Panel Styling */
         .glass-panel {
             background: white;
-            padding: 1.5rem;
-            border-radius: 1rem;
+            padding: 1.8rem;
+            border-radius: 1.25rem;
             box-shadow: var(--shadow);
             margin-bottom: 2rem;
             border: 1px solid var(--border);
@@ -67,166 +77,235 @@
         .filter-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1.2rem;
+            gap: 1.5rem;
             align-items: flex-end;
         }
 
-        .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
-        .input-group label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--primary); }
+        .input-group { display: flex; flex-direction: column; gap: 0.6rem; }
+        .input-group label { 
+            font-size: 0.8rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            color: #64748b;
+            letter-spacing: 0.5px;
+        }
         .input-group input, .input-group select {
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            border: 1px solid var(--border);
-            font-size: 0.9rem;
+            padding: 0.85rem;
+            border-radius: 0.6rem;
+            border: 1.5px solid var(--border);
+            font-size: 0.95rem;
             outline: none;
             transition: all 0.3s;
+            background-color: #fcfdfe;
+            color: var(--dark);
         }
-        .input-group input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+        .input-group input:focus, .input-group select:focus { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 4px var(--primary-light); 
+            background-color: white;
+        }
 
+        /* Button Actions */
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+        }
         .btn-refresh {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 0.85rem 1.2rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
+            padding: 0.85rem 1.8rem;
+            border-radius: 0.6rem;
+            font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            transition: 0.3s;
+            gap: 0.6rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(0, 86, 179, 0.2);
         }
-        .btn-refresh:hover { background: #004494; transform: translateY(-2px); }
+        .btn-refresh:hover { background: #004494; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 86, 179, 0.3); }
         
         .btn-excel {
             background: #059669;
+            box-shadow: 0 4px 6px -1px rgba(5, 150, 105, 0.2);
         }
         .btn-excel:hover {
             background: #047857;
+            box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.3);
         }
 
-        /* KPI Dashboard */
+        /* KPI Dashboard Cards */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
         .stat-card {
             background: white;
-            padding: 1.5rem;
-            border-radius: 1rem;
+            padding: 1.8rem;
+            border-radius: 1.25rem;
             display: flex;
             align-items: center;
-            gap: 1rem;
-            border-bottom: 4px solid #ddd;
+            gap: 1.2rem;
+            border-bottom: 5px solid #ddd;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: 0.3s;
         }
+        .stat-card:hover { transform: translateY(-5px); }
         .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 0.75rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
         }
-        .stat-info h3 { margin: 0; font-size: 1.5rem; }
-        .stat-info p { margin: 0; font-size: 0.8rem; color: #64748b; font-weight: 600; }
+        .stat-info h3 { margin: 0; font-size: 1.8rem; font-weight: 800; color: var(--dark); }
+        .stat-info p { margin: 0; font-size: 0.9rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
 
-        /* Main Content Layout */
-        .content-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 2rem;
+        /* Main Full Width Table Content */
+        .full-content {
+            width: 100%;
+            margin-bottom: 3rem;
         }
 
-        @media (max-width: 1100px) { .content-grid { grid-template-columns: 1fr; } }
-
-        /* Performance Table Styling */
         .table-card {
             background: white;
-            border-radius: 1rem;
+            border-radius: 1.25rem;
             box-shadow: var(--shadow);
             overflow: hidden;
             border: 1px solid var(--border);
         }
+        
         .table-header {
-            padding: 1.5rem;
+            padding: 1.8rem;
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background-color: #ffffff;
         }
-        .table-wrapper { overflow-x: auto; width: 100%; max-height: 700px; }
-        
-        table { width: 100%; border-collapse: collapse; text-align: center; }
-        th, td { padding: 1rem; border: 1px solid #f1f5f9; font-size: 0.85rem; }
-        th { background: #f8fafc; color: #475569; position: sticky; top: 0; z-index: 10; font-weight: 700; }
+        .table-header h3 { 
+            font-size: 1.4rem; 
+            margin: 0; 
+            display: flex; 
+            align-items: center; 
+            gap: 0.8rem; 
+            color: var(--dark);
+        }
 
+        /* Large Matrix Grid Layout */
+        .table-wrapper { 
+            overflow-x: auto; 
+            width: 100%; 
+            max-height: 750px; 
+            position: relative;
+        }
+        
+        table { 
+            width: 100%; 
+            border-collapse: separate; 
+            border-spacing: 0;
+            text-align: center; 
+        }
+
+        th, td { 
+            padding: 1.2rem 1rem; 
+            border-bottom: 1px solid #f1f5f9; 
+            border-right: 1px solid #f1f5f9;
+            font-size: 1rem; 
+            min-width: 80px;
+        }
+
+        th { 
+            background: #f8fafc; 
+            color: #475569; 
+            position: sticky; 
+            top: 0; 
+            z-index: 20; 
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* Sticky Column for Staff Name - Width Increased */
         .sticky-col {
             position: sticky;
             left: 0;
             background: white;
-            z-index: 5;
+            z-index: 30;
             text-align: left;
-            min-width: 200px;
-            border-right: 2px solid var(--border);
+            min-width: 280px;
+            border-right: 3px solid var(--primary-light);
+            box-shadow: 4px 0 8px -2px rgba(0,0,0,0.05);
         }
+        
+        tr:hover td.sticky-col { background: #f1f7ff; }
+        tr:hover td { background-color: #f8fafc; }
 
-        /* Status Pills */
+        /* Attendance Status Badges - Made Larger */
         .badge {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
+            font-weight: 800;
+            font-size: 1.1rem;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.3s;
             border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        .badge-P { background: #dcfce7; color: #166534; }
-        .badge-P:hover { background: #22c55e; color: white; }
-        .badge-A { background: #fee2e2; color: #991b1b; }
-        .badge-L { background: #fef9c3; color: #854d0e; }
+        .badge-P { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+        .badge-P:hover { background: #22c55e; color: white; transform: scale(1.1); }
+        
+        .badge-A { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+        .badge-A:hover { background: #ef4444; color: white; transform: scale(1.1); }
+        
+        .badge-L { background: #fef9c3; color: #a16207; border: 1px solid #fef08a; }
+        .badge-L:hover { background: #facc15; color: white; transform: scale(1.1); }
 
-        /* AI Insights */
-        .insight-section { display: flex; flex-direction: column; gap: 1.5rem; }
-        .insight-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 1rem;
-            box-shadow: var(--shadow);
-            border-top: 5px solid var(--primary);
-        }
-        .insight-card h4 { margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem; color: var(--primary); }
-        .insight-list { list-style: none; padding: 0; margin: 0; }
-        .insight-item {
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #f1f5f9;
-            font-size: 0.9rem;
+        .staff-info-box {
             display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
+            flex-direction: column;
+            gap: 4px;
         }
-        .insight-item i { margin-top: 3px; }
-
-        /* Ranking List */
-        .rank-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #f8fafc;
+        .staff-main-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--dark);
         }
-        .rank-name { font-weight: 600; font-size: 0.9rem; }
-        .rank-val { background: var(--primary-light); color: var(--primary); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; }
+        .staff-sub-detail {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 500;
+        }
 
-        /* Modal Structure */
+        /* Role Tag UI */
+        .role-tag { 
+            font-size: 0.75rem; 
+            padding: 4px 10px; 
+            border-radius: 6px; 
+            font-weight: 800; 
+            margin-top: 6px; 
+            display: inline-block;
+            text-align: center;
+            width: fit-content;
+        }
+        .tag-CA { background: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; }
+        .tag-FX { background: #fce7f3; color: #be185d; border: 1px solid #fbcfe8; }
+        .tag-BM { background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
+        .tag-TA { background: #ccfbf1; color: #0f766e; border: 1px solid #99f6e4; }
+
+        /* Report Modal Detail Styling */
         .modal {
             display: none;
             position: fixed;
@@ -235,21 +314,21 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(5px);
-            animation: fadeIn 0.3s;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
         .modal-content {
             background: white;
-            margin: 3% auto;
-            width: 90%;
-            max-width: 800px;
-            border-radius: 1.25rem;
+            margin: 2% auto;
+            width: 85%;
+            max-width: 900px;
+            border-radius: 1.5rem;
             overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
         .modal-header {
-            padding: 1.5rem;
+            padding: 1.8rem 2.5rem;
             background: var(--primary);
             color: white;
             display: flex;
@@ -257,54 +336,70 @@
             align-items: center;
         }
         .modal-body {
-            padding: 2rem;
-            max-height: 70vh;
+            padding: 2.5rem;
+            max-height: 75vh;
             overflow-y: auto;
+            background-color: #f8fafc;
         }
-        
         .data-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.2rem;
         }
         .data-item {
-            background: #f8fafc;
-            padding: 1rem;
-            border-radius: 0.75rem;
+            background: white;
+            padding: 1.2rem;
+            border-radius: 1rem;
             border: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
-        .data-label { font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem; }
-        .data-value { font-size: 1rem; font-weight: 600; color: var(--dark); }
+        .data-label { 
+            font-size: 0.75rem; 
+            color: #94a3b8; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            margin-bottom: 0.5rem; 
+            letter-spacing: 0.5px;
+        }
+        .data-value { 
+            font-size: 1.1rem; 
+            font-weight: 600; 
+            color: var(--dark); 
+        }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-        /* Loading Spinner */
+        /* Loader Overlay */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: white; display: flex; flex-direction: column;
             justify-content: center; align-items: center; z-index: 9999;
         }
         .spinner {
-            width: 50px; height: 50px; border: 5px solid #f3f3f3;
-            border-top: 5px solid var(--primary); border-radius: 50%;
+            width: 60px; height: 60px; border: 6px solid #f3f3f3;
+            border-top: 6px solid var(--primary); border-radius: 50%;
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Role Badge UI */
-        .role-tag { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; margin-top: 4px; display: inline-block; }
-        .tag-CA { background: #e0e7ff; color: #4338ca; }
-        .tag-FX { background: #fce7f3; color: #be185d; }
-        .tag-BM { background: #ffedd5; color: #c2410c; }
-        .tag-TA { background: #ccfbf1; color: #0f766e; }
+        /* Print Settings */
+        @media print {
+            .glass-panel, header, .btn-group, .user-actions { display: none !important; }
+            .container { margin: 0; padding: 0; width: 100%; }
+            .table-card { box-shadow: none; border: 1px solid #000; }
+            th, td { border: 1px solid #ccc !important; font-size: 8pt; }
+            .sticky-col { position: relative !important; border-right: 1px solid #ccc !important; }
+        }
 
     </style>
 </head>
 <body>
 
+<!-- Data Loading Indicator -->
 <div id="loader">
     <div class="spinner"></div>
-    <p style="margin-top:15px; font-weight:600; color:var(--primary);">डेटा लोड होत आहे, कृपया थांबा...</p>
+    <p style="margin-top:20px; font-weight:700; color:var(--primary); font-size:1.2rem;">डेटा विश्लेषित होत आहे...</p>
+    <p style="color: #64748b;">कृपया काही क्षण प्रतीक्षा करा</p>
 </div>
 
 <header>
@@ -312,52 +407,56 @@
         <img src="https://anikfin.com/wp-content/uploads/2024/06/anik-horizontal-1-1024x400.png" alt="Anik Finance">
     </div>
     <div class="header-title">
-        <h1><i class="fas fa-chart-line"></i> Staff Performance Mirror</h1>
+        <h1><i class="fas fa-users-cog"></i> STAFF PERFORMANCE MIRROR</h1>
     </div>
     <div class="user-actions">
-        <button class="btn-refresh" onclick="window.print()"><i class="fas fa-print"></i> रिपोर्ट सेव्ह करा</button>
+        <button class="btn-refresh" onclick="window.print()" style="background: var(--dark);">
+            <i class="fas fa-print"></i> PDF म्हणून सेव्ह करा
+        </button>
     </div>
 </header>
 
 <div class="container">
     
-    <!-- Filter Section -->
+    <!-- Advanced Filter Options -->
     <div class="glass-panel">
         <div class="filter-row">
             <div class="input-group">
-                <label>कधीपासून (From Date)</label>
+                <label><i class="far fa-calendar-alt"></i> प्रारंभ तारीख</label>
                 <input type="date" id="startDate">
             </div>
             <div class="input-group">
-                <label>कधीपर्यंत (To Date)</label>
+                <label><i class="far fa-calendar-check"></i> अंतिम तारीख</label>
                 <input type="date" id="endDate">
             </div>
             <div class="input-group">
-                <label>शाखा निवडा (Select Branch)</label>
+                <label><i class="fas fa-code-branch"></i> शाखा निवडा</label>
                 <select id="branchFilter">
                     <option value="ALL">सर्व शाखा (All Branches)</option>
                 </select>
             </div>
             <div class="input-group">
-                <label>भूमिका (Role)</label>
+                <label><i class="fas fa-user-tag"></i> कर्मचारी पद</label>
                 <select id="roleFilter">
-                    <option value="ALL">सर्व भूमिका</option>
-                    <option value="CA">CA (क्रेडिट असिस्टंट)</option>
-                    <option value="FX">FX (फील्ड एक्झिक्युटिव्ह)</option>
-                    <option value="BM">BM (शाखा व्यवस्थापक)</option>
-                    <option value="TA">TA (अकाऊंटंट)</option>
+                    <option value="ALL">सर्व भूमिका (All Roles)</option>
+                    <option value="CA">CA - क्रेडिट असिस्टंट</option>
+                    <option value="FX">FX - फील्ड एक्झिक्युटिव्ह</option>
+                    <option value="BM">BM - शाखा व्यवस्थापक</option>
+                    <option value="TA">TA - अकाऊंटंट</option>
                 </select>
             </div>
-            <button class="btn-refresh" onclick="processData()">
-                <i class="fas fa-sync-alt"></i> डेटा रिफ्रेश
-            </button>
-            <button class="btn-refresh btn-excel" onclick="exportAttendanceToExcel()">
-                <i class="fas fa-file-excel"></i> Excel डाउनलोड
-            </button>
+            <div class="btn-group">
+                <button class="btn-refresh" onclick="processData()">
+                    <i class="fas fa-sync-alt"></i> रिफ्रेश डेटा
+                </button>
+                <button class="btn-refresh btn-excel" onclick="exportAttendanceToExcel()">
+                    <i class="fas fa-file-excel"></i> Excel डाउनलोड
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- KPI Summary Cards -->
+    <!-- Summary Statistics Dashboard -->
     <div class="stats-grid">
         <div class="stat-card" style="border-color: var(--primary);">
             <div class="stat-icon" style="background: var(--primary-light); color: var(--primary);"><i class="fas fa-users"></i></div>
@@ -377,15 +476,17 @@
         </div>
     </div>
 
-    <div class="content-grid">
-        <!-- Main Performance Matrix -->
+    <!-- Performance Matrix - Expanded Full Width -->
+    <div class="full-content">
         <div class="table-card">
             <div class="table-header">
-                <h3 style="margin:0;"><i class="fas fa-calendar-check"></i> कर्मचारी उपस्थिती आणि अहवाल मॅट्रिक्स</h3>
-                <div style="font-size:0.8rem;">
-                    <span style="margin-right:10px;"><i class="fas fa-square" style="color:#dcfce7"></i> P: हजर</span>
-                    <span style="margin-right:10px;"><i class="fas fa-square" style="color:#fee2e2"></i> A: गैरहजर</span>
-                    <span><i class="fas fa-square" style="color:#fef9c3"></i> L: रजा</span>
+                <h3><i class="fas fa-calendar-alt"></i> कर्मचारी उपस्थिती आणि दैनंदिन अहवाल मॅट्रिक्स</h3>
+                <div style="display: flex; gap: 1.5rem; align-items: center;">
+                    <div style="font-size:0.9rem; background: #f1f5f9; padding: 6px 12px; border-radius: 8px;">
+                        <span style="margin-right:15px;"><i class="fas fa-square" style="color:#22c55e"></i> <b>P:</b> हजर</span>
+                        <span style="margin-right:15px;"><i class="fas fa-square" style="color:#ef4444"></i> <b>A:</b> गैरहजर</span>
+                        <span><i class="fas fa-square" style="color:#facc15"></i> <b>L:</b> रजा</span>
+                    </div>
                 </div>
             </div>
             <div class="table-wrapper">
@@ -395,40 +496,16 @@
                 </table>
             </div>
         </div>
-
-        <!-- AI Insights & Trends Sidebar -->
-        <div class="insight-section">
-            <div class="insight-card">
-                <h4><i class="fas fa-robot"></i> AI ऑडिट आणि निरीक्षणे</h4>
-                <div class="insight-list" id="aiInsightsList">
-                    <div class="insight-item"><i class="fas fa-info-circle text-info"></i> डेटा लोड झाल्यावर निरीक्षणे दिसतील.</div>
-                </div>
-            </div>
-
-            <div class="insight-card" style="border-top-color: var(--success);">
-                <h4><i class="fas fa-trophy"></i> टॉप रिपोर्टर्स (Top Submitters)</h4>
-                <div id="topPerformersList"></div>
-            </div>
-
-            <div class="insight-card" style="border-top-color: var(--danger);">
-                <h4><i class="fas fa-exclamation-triangle"></i> सर्वात जास्त गैरहजर (Missing Reports)</h4>
-                <div id="lowPerformersList"></div>
-            </div>
-
-            <div class="insight-card">
-                <h4><i class="fas fa-chart-pie"></i> साप्ताहिक ओव्हरव्ह्यू</h4>
-                <div id="piechart_3d" style="width: 100%; height: 200px;"></div>
-            </div>
-        </div>
     </div>
+
 </div>
 
-<!-- Report Detail Modal -->
+<!-- Global Detailed Report Modal -->
 <div id="reportModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3 id="modalTitle" style="margin:0;">रिपोर्ट तपशील</h3>
-            <span style="cursor:pointer; font-size:1.5rem;" onclick="closeModal()">&times;</span>
+            <h3 id="modalTitle" style="margin:0;"><i class="fas fa-file-invoice"></i> अहवाल तपशील</h3>
+            <span style="cursor:pointer; font-size:2rem; font-weight: 300;" onclick="closeModal()">&times;</span>
         </div>
         <div class="modal-body">
             <div id="reportDetailContent" class="data-grid"></div>
@@ -437,11 +514,16 @@
 </div>
 
 <script>
-// configuration & API
+/**
+ * Application Configuration & API Credentials
+ */
 const API_KEY = "AIzaSyCib9D8dkRRV7MyGDfTcCqaubl19RnCdhQ";
 const SHEET_ID = "1--ve2YhfEwX-ZddBQr2nT-lxShvmdgczD6szJrii0wg";
 
-// Global Schema for all roles
+/**
+ * Data Schema Mapping for different staff roles
+ * This ensures the correct labels are shown in the detailed report modal
+ */
 const SCHEMA = {
     BM: ["Timestamp", "तारीख", "नाव", "युनिट", "रजा स्थिती", "BM Acc", "BM Amt", "BM Cash", "BM Digi", "OD1_C", "OD1_A", "OD2_C", "OD2_A", "OD3_C", "OD3_A", "Disb_Cust", "Disb_Amt", "Autopay", "Appr_Total", "Appr_Sanc", "Appr_Rej", "Meets", "Notes", "Cash_Note", "Imp_Note"],
     FX: ["Timestamp", "तारीख", "नाव", "युनिट", "रजा स्थिती", "CA नाव", "Ac", "Amt", "Cash", "Digi", "null", "H_Cash", "H_Why", "OD_Ac", "OD_Amt", "Auto_Done", "P5_Acc", "P5_Amt", "P6_Cnt", "P6_Rej", "Appr_Done", "Appr_Pen", "Village", "Notes", "Complaints"],
@@ -449,6 +531,7 @@ const SCHEMA = {
     TA: ["Timestamp", "तारीख", "नाव", "युनिट", "रजा स्थिती", "Report_Cnt", "Coll_Match", "Cash_Hand", "Bank_Depo", "Depo_Reason", "Fin_Sys_Date", "SPMB_Date", "All_CA_Rec", "CA_Pending", "New_OD", "OD_Amt", "EMI_Act", "EMI_Fail", "Rec_Track", "Notes", "Declaration"]
 };
 
+// Application State Store
 let store = {
     staff: [],
     allReports: [],
@@ -456,21 +539,29 @@ let store = {
     branches: []
 };
 
-// Start initialization
+/**
+ * Initial Launch Operations
+ */
 window.onload = () => {
     setDefaultDates();
     loadAllData();
 };
 
+/**
+ * Sets the default date filter to the last 15 days
+ */
 function setDefaultDates() {
     const today = new Date();
-    const tenDaysAgo = new Date();
-    tenDaysAgo.setDate(today.getDate() - 10);
+    const fifteenDaysAgo = new Date();
+    fifteenDaysAgo.setDate(today.getDate() - 15);
     
-    document.getElementById('startDate').valueAsDate = tenDaysAgo;
+    document.getElementById('startDate').valueAsDate = fifteenDaysAgo;
     document.getElementById('endDate').valueAsDate = today;
 }
 
+/**
+ * Fetches specific sheet data from Google Sheets API
+ */
 async function fetchSheet(tab) {
     try {
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${tab}?key=${API_KEY}`;
@@ -478,11 +569,14 @@ async function fetchSheet(tab) {
         const data = await res.json();
         return data.values || [];
     } catch (e) {
-        console.error("Fetch Error:", e);
+        console.error(`Fetch Error for tab ${tab}:`, e);
         return [];
     }
 }
 
+/**
+ * Loads all required staff and report data simultaneously
+ */
 async function loadAllData() {
     document.getElementById('loader').style.display = 'flex';
     
@@ -494,9 +588,10 @@ async function loadAllData() {
         fetchSheet("TA_Reports")
     ]);
 
+    // Format Staff Data
     store.staff = sData.slice(1);
     
-    // Merge all with roles
+    // Merge all individual role reports into a unified array with metadata
     store.allReports = [
         ...caData.slice(1).map(r => ({ data: r, role: 'CA' })),
         ...fxData.slice(1).map(r => ({ data: r, role: 'FX' })),
@@ -504,31 +599,38 @@ async function loadAllData() {
         ...taData.slice(1).map(r => ({ data: r, role: 'TA' }))
     ];
 
-    // Branch setup
+    // Populate Branch Filter Dropdown
     const branchList = [...new Set(store.staff.map(s => s[2]))].filter(Boolean).sort();
     const branchSelect = document.getElementById('branchFilter');
     branchList.forEach(b => {
         let opt = document.createElement('option');
-        opt.value = b; opt.textContent = b;
+        opt.value = b; 
+        opt.textContent = b;
         branchSelect.appendChild(opt);
     });
 
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(processData);
+    // Start processing initial view
+    processData();
     
     document.getElementById('loader').style.display = 'none';
 }
 
+/**
+ * Normalizes date strings from sheet format (DD/MM/YYYY) to standard YYYY-MM-DD
+ */
 function normalizeDate(dateStr) {
     if (!dateStr) return null;
     let parts = dateStr.split(' ')[0].split('/');
     if (parts.length === 3) {
-        // Handle d/m/yyyy or dd/mm/yyyy
+        // Sheet often uses D/M/YYYY or DD/MM/YYYY
         return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
     }
-    return dateStr.split(' ')[0]; // Already yyyy-mm-dd
+    return dateStr.split(' ')[0]; // Already in expected format
 }
 
+/**
+ * Generates an array of date strings between start and end
+ */
 function generateDateArray(start, end) {
     let arr = [];
     let dt = new Date(start);
@@ -540,63 +642,74 @@ function generateDateArray(start, end) {
     return arr;
 }
 
+/**
+ * Main Controller: Filter staff and trigger UI rendering
+ */
 function processData() {
     const start = document.getElementById('startDate').value;
     const end = document.getElementById('endDate').value;
     const branch = document.getElementById('branchFilter').value;
     const role = document.getElementById('roleFilter').value;
 
-    if (!start || !end) return;
+    if (!start || !end) {
+        alert("कृपया तारखा निवडा!");
+        return;
+    }
 
     store.dates = generateDateArray(start, end);
+    
     const filteredStaff = store.staff.filter(s => 
         (branch === "ALL" || s[2] === branch) && 
         (role === "ALL" || s[1] === role)
     );
 
     renderAttendanceMatrix(filteredStaff);
-    calculateInsights(filteredStaff);
 }
 
+/**
+ * Renders the primary Matrix Table with attendance badges
+ */
 function renderAttendanceMatrix(staffList) {
     const head = document.getElementById('tableHead');
     const body = document.getElementById('tableBody');
     
-    // Header
-    let hHtml = `<tr><th class="sticky-col">कर्मचारी तपशील</th>`;
+    // Construct Dynamic Table Header with Dates
+    let hHtml = `<tr><th class="sticky-col">कर्मचारी तपशील (नाव/शाखा)</th>`;
     store.dates.forEach(d => {
         const dObj = new Date(d);
-        hHtml += `<th>${dObj.getDate()}/${dObj.getMonth()+1}<br><small>${dObj.toLocaleDateString('mr-IN', {weekday: 'short'})}</small></th>`;
+        const dayName = dObj.toLocaleDateString('mr-IN', {weekday: 'short'});
+        hHtml += `<th>${dObj.getDate()}/${dObj.getMonth()+1}<br><small>${dayName}</small></th>`;
     });
     hHtml += `</tr>`;
     head.innerHTML = hHtml;
 
-    // Stats variables
+    // Cumulative stats for the KPI section
     let totalP = 0, totalA = 0, totalL = 0;
-    let staffPerfRank = [];
 
-    // Body
+    // Construct Table Body Rows
     let bHtml = "";
     staffList.forEach(s => {
         const sName = s[0].trim();
         const sRole = s[1].trim();
         const sBranch = s[2].trim();
-        let sSubmitted = 0;
 
         bHtml += `<tr>
             <td class="sticky-col">
-                <div class="rank-name">${sName}</div>
-                <div style="font-size:0.7rem; color:#64748b">${sBranch}</div>
-                <span class="role-tag tag-${sRole}">${sRole}</span>
+                <div class="staff-info-box">
+                    <div class="staff-main-name">${sName}</div>
+                    <div class="staff-sub-detail"><i class="fas fa-map-marker-alt"></i> ${sBranch}</div>
+                    <span class="role-tag tag-${sRole}">${sRole}</span>
+                </div>
             </td>`;
 
         store.dates.forEach(d => {
-            // Find report
+            // Search for a matching report in the store
             const report = store.allReports.find(r => 
                 r.data[2].trim() === sName && normalizeDate(r.data[1]) === d
             );
 
             if (report) {
+                // Check if the report indicates a Leave status
                 const isLeave = report.data[4] && (report.data[4].includes("रजा") || report.data[4].toLowerCase().includes("leave"));
                 if (isLeave) {
                     bHtml += `<td><button class="badge badge-L" onclick="viewReport('${encodeURIComponent(JSON.stringify(report))}')">L</button></td>`;
@@ -604,108 +717,47 @@ function renderAttendanceMatrix(staffList) {
                 } else {
                     bHtml += `<td><button class="badge badge-P" onclick="viewReport('${encodeURIComponent(JSON.stringify(report))}')">P</button></td>`;
                     totalP++;
-                    sSubmitted++;
                 }
             } else {
+                // If no report found, mark as Absent
                 bHtml += `<td><span class="badge badge-A">A</span></td>`;
                 totalA++;
             }
         });
         bHtml += `</tr>`;
-        
-        staffPerfRank.push({ name: sName, count: sSubmitted, total: store.dates.length });
     });
 
     body.innerHTML = bHtml;
     
-    // Update Stats
+    // Update KPI Dashboard Numbers
     document.getElementById('statTotalStaff').innerText = staffList.length;
     document.getElementById('statSubmitted').innerText = totalP;
     document.getElementById('statPending').innerText = totalA;
     document.getElementById('statLeaves').innerText = totalL;
-
-    updateRankingUI(staffPerfRank);
-    drawChart(totalP, totalA, totalL);
 }
 
-function updateRankingUI(rankData) {
-    const topDiv = document.getElementById('topPerformersList');
-    const lowDiv = document.getElementById('lowPerformersList');
-    
-    // Sort
-    const sorted = [...rankData].sort((a,b) => b.count - a.count);
-    
-    topDiv.innerHTML = sorted.slice(0, 5).map(r => `
-        <div class="rank-item">
-            <span class="rank-name">${r.name}</span>
-            <span class="rank-val">${r.count} अहवाल</span>
-        </div>
-    `).join('');
-
-    lowDiv.innerHTML = sorted.filter(r => r.count < (store.dates.length/2)).slice(-5).map(r => `
-        <div class="rank-item">
-            <span class="rank-name">${r.name}</span>
-            <span class="rank-val" style="background:#fee2e2; color:#ef4444">${r.count}/${r.total}</span>
-        </div>
-    `).join('');
-}
-
-function calculateInsights(staffList) {
-    const list = document.getElementById('aiInsightsList');
-    let insights = [];
-
-    // 1. General Participation
-    const totalPossible = staffList.length * store.dates.length;
-    const submitted = parseInt(document.getElementById('statSubmitted').innerText);
-    const perc = Math.round((submitted/totalPossible)*100);
-
-    if (perc > 80) insights.push({icon: 'fa-thumbs-up', color: 'success', text: `या कालावधीत ब्रांचचे रिपोर्टिंग ${perc}% आहे. कर्मचारी शिस्तबद्ध आहेत.`});
-    else insights.push({icon: 'fa-exclamation-circle', color: 'danger', text: `रिपोर्टिंग फक्त ${perc}% आहे. अनेक कर्मचारी रिपोर्ट देण्यास टाळाटाळ करत आहेत.`});
-
-    // 2. Data Audit (Specific for Roles)
-    const recentReports = store.allReports.filter(r => store.dates.includes(normalizeDate(r.data[1])));
-    
-    // Check TA Cash
-    const highCashTA = recentReports.filter(r => r.role === 'TA' && parseFloat(r.data[7]) > 50000);
-    if (highCashTA.length > 0) {
-        insights.push({icon: 'fa-money-bill-wave', color: 'warning', text: `${highCashTA[0].data[2]} (TA) कडे ₹${highCashTA[0].data[7]} रोख रक्कम शिल्लक दिसत आहे.`});
-    }
-
-    // Check CA Performance
-    const highPendingCA = recentReports.filter(r => r.role === 'CA' && parseInt(r.data[15]) > 10);
-    if (highPendingCA.length > 0) {
-        insights.push({icon: 'fa-file-invoice', color: 'danger', text: `${highPendingCA[0].data[2]} कडे ${highPendingCA[0].data[15]} फॉर्म प्रलंबित आहेत.`});
-    }
-
-    // 3. Leaf Tracking
-    const leafCount = parseInt(document.getElementById('statLeaves').innerText);
-    if (leafCount > (staffList.length * 0.2)) {
-        insights.push({icon: 'fa-umbrella-beach', color: 'warning', text: `या कालावधीत सरासरीपेक्षा जास्त कर्मचारी रजेवर होते.`});
-    }
-
-    list.innerHTML = insights.map(i => `
-        <div class="insight-item">
-            <i class="fas ${i.icon}" style="color: var(--${i.color})"></i>
-            <span>${i.text}</span>
-        </div>
-    `).join('');
-}
-
+/**
+ * Opens the Modal and populates it with detailed report data
+ */
 function viewReport(encodedData) {
     const report = JSON.parse(decodeURIComponent(encodedData));
     const role = report.role;
     const data = report.data;
     const labels = SCHEMA[role];
 
-    document.getElementById('modalTitle').innerText = `${data[2]} - ${role} रिपोर्ट (${data[1]})`;
+    document.getElementById('modalTitle').innerHTML = `<i class="fas fa-user-circle"></i> ${data[2]} - <span style="font-weight:400; opacity:0.8;">${role} अहवाल (${data[1]})</span>`;
     
     let html = "";
     labels.forEach((label, i) => {
+        // Skip timestamp and empty labels
         if (!label || label === "null" || i === 0) return;
+        
+        let val = data[i] || '<span style="color:#cbd5e1">-</span>';
+        
         html += `
             <div class="data-item">
                 <div class="data-label">${label}</div>
-                <div class="data-value">${data[i] || '-'}</div>
+                <div class="data-value">${val}</div>
             </div>
         `;
     });
@@ -714,60 +766,44 @@ function viewReport(encodedData) {
     document.getElementById('reportModal').style.display = 'block';
 }
 
+/**
+ * UI Helper: Close Modal
+ */
 function closeModal() {
     document.getElementById('reportModal').style.display = 'none';
 }
 
+/**
+ * UI Helper: Close modal on outside click
+ */
 window.onclick = function(event) {
     if (event.target == document.getElementById('reportModal')) closeModal();
 }
 
-function drawChart(p, a, l) {
-    const data = google.visualization.arrayToDataTable([
-        ['Status', 'Count'],
-        ['Submitted (P)', p],
-        ['Absent (A)', a],
-        ['Leave (L)', l]
-    ]);
-
-    const options = {
-        pieHole: 0.4,
-        colors: ['#10b981', '#ef4444', '#f59e0b'],
-        chartArea: {width: '100%', height: '80%'},
-        legend: {position: 'bottom'},
-        backgroundColor: 'transparent'
-    };
-
-    const chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
-    chart.draw(data, options);
-}
-
 /**
- * NEW EXPORT TO EXCEL FUNCTION
- * Converts the current Matrix Table into a CSV file compatible with Excel
- * Handles Marathi characters using UTF-8 BOM.
+ * EXPORT FEATURE: Converts matrix to CSV for Excel
+ * Preserves Marathi characters with BOM
  */
 function exportAttendanceToExcel() {
     const table = document.getElementById("attendanceTable");
     if (!table || table.rows.length === 0) {
-        alert("डाउनलोड करण्यासाठी डेटा उपलब्ध नाही!");
+        alert("डाउनलोड करण्यासाठी आधी डेटा लोड करा!");
         return;
     }
 
     let csvContent = "";
     
-    // Header Processing
+    // 1. Process Header
     const headerRow = table.querySelector("thead tr");
     const headerCols = headerRow.querySelectorAll("th");
     let headerData = [];
     headerCols.forEach(col => {
-        // Cleaning the date text (removing <br> and <small> parts for CSV)
         let text = col.innerText.replace(/\n/g, " ").trim();
         headerData.push('"' + text + '"');
     });
     csvContent += headerData.join(",") + "\n";
 
-    // Body Processing
+    // 2. Process Body Rows
     const bodyRows = table.querySelectorAll("tbody tr");
     bodyRows.forEach(row => {
         let rowData = [];
@@ -775,14 +811,13 @@ function exportAttendanceToExcel() {
         
         cells.forEach((cell, index) => {
             if (index === 0) {
-                // First Column (Staff Name + Role + Branch)
-                // We extract only the main text to keep Excel clean
-                let name = cell.querySelector(".rank-name") ? cell.querySelector(".rank-name").innerText : "";
-                let branch = cell.querySelector("div:nth-child(2)") ? cell.querySelector("div:nth-child(2)").innerText : "";
+                // Name column formatting for CSV
+                let name = cell.querySelector(".staff-main-name") ? cell.querySelector(".staff-main-name").innerText : "";
+                let branch = cell.querySelector(".staff-sub-detail") ? cell.querySelector(".staff-sub-detail").innerText.replace(/.* /,'') : "";
                 let role = cell.querySelector(".role-tag") ? cell.querySelector(".role-tag").innerText : "";
-                rowData.push('"' + name + " (" + role + ") - " + branch + '"');
+                rowData.push('"' + name + " [" + role + "] - " + branch + '"');
             } else {
-                // Presence columns (P, A, L)
+                // Presence status
                 let status = cell.innerText.trim();
                 rowData.push('"' + status + '"');
             }
@@ -790,18 +825,17 @@ function exportAttendanceToExcel() {
         csvContent += rowData.join(",") + "\n";
     });
 
-    // Create Download Link
-    // Adding BOM for Marathi Language Support in Excel
-    const BOM = "\uFEFF";
+    // 3. Trigger Download
+    const BOM = "\uFEFF"; // Byte Order Mark for Excel Marathi support
     const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     
-    const startDate = document.getElementById("startDate").value;
-    const endDate = document.getElementById("endDate").value;
+    const dStart = document.getElementById("startDate").value;
+    const dEnd = document.getElementById("endDate").value;
     
     link.setAttribute("href", url);
-    link.setAttribute("download", `Anik_Attendance_Report_${startDate}_to_${endDate}.csv`);
+    link.setAttribute("download", `Anik_Finance_Attendance_${dStart}_to_${dEnd}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
